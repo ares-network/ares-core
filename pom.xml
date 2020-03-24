@@ -33,6 +33,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.llewkcor:ares-commons</include>
+                                    <include>co.aikar</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -47,6 +48,12 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <!-- ACF -->
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
     </repositories>
 
@@ -80,6 +87,13 @@
             <artifactId>bukkit</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- ACF -->
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Ares Commons Library -->

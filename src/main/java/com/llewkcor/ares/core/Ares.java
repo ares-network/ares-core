@@ -1,5 +1,6 @@
 package com.llewkcor.ares.core;
 
+import co.aikar.commands.PaperCommandManager;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.llewkcor.ares.core.bridge.BridgeManager;
 import com.llewkcor.ares.core.configs.ConfigManager;
@@ -15,12 +16,14 @@ public final class Ares extends JavaPlugin {
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
+    @Getter protected PaperCommandManager commandManager;
 
     @Override
     public void onEnable() {
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
         this.bridgeManager = new BridgeManager(this);
+        this.commandManager = new PaperCommandManager(this);
 
         configManager.load();
 
@@ -29,6 +32,9 @@ public final class Ares extends JavaPlugin {
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new AresEventListener(this), this);
+
+        // Commands
+        commandManager.registerCommand(new NetworkCommand(this));
     }
 
     @Override
