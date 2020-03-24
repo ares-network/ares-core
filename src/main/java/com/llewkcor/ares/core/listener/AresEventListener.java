@@ -29,6 +29,10 @@ import java.util.List;
 public final class AresEventListener implements Listener {
     @Getter public final Ares plugin;
 
+    /**
+     * Listens for Bukkit Chat events and converts them in to Ares ProcessedChatEvent
+     * @param event Bukkit AsyncPlayerChatEvent
+     */
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         final ProcessedChatEvent aresEvent = new ProcessedChatEvent(event.getPlayer(), event.getMessage(), event.getRecipients());
@@ -48,6 +52,13 @@ public final class AresEventListener implements Listener {
         });
     }
 
+    /**
+     * Listens for Bukkit PlayerMoveEvent and converts it to an Ares PlayerBigMoveEvent if they move a full block
+     *
+     * The PlayerBigMoveEvent allows for significantly more efficient move checks and should always be used whenever possible
+     *
+     * @param event Bukkit PlayerMoveEvent
+     */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
@@ -66,6 +77,10 @@ public final class AresEventListener implements Listener {
         }
     }
 
+    /**
+     * Listens for Bukkit EntityDamageByEntityEvent and converts it to an Ares PlayerDamagePlayerEvent if it meets the proper requirements
+     * @param event Bukkit EntityDamageByEntityEvent
+     */
     @EventHandler (priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
@@ -105,6 +120,10 @@ public final class AresEventListener implements Listener {
         }
     }
 
+    /**
+     * Listens for Bukkit PotionSplashEvent and converts it to an Ares PlayerSplashPlayerEvent if it meets the requirements
+     * @param event Bukkit PotionSplashEvent
+     */
     @EventHandler
     public void onPotionSplash(PotionSplashEvent event) {
         final ThrownPotion potion = event.getPotion();

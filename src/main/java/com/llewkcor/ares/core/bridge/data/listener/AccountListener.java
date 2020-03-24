@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.event.ProcessedChatEvent;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
+import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.bridge.data.DataManager;
 import com.llewkcor.ares.core.bridge.data.account.AccountDAO;
 import com.llewkcor.ares.core.bridge.data.account.AresAccount;
@@ -27,6 +28,10 @@ public final class AccountListener implements Listener {
         this.dataManager = dataManager;
     }
 
+    /**
+     * Handles Ares Account loading/creation
+     * @param event Bukkit Event
+     */
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
         final UUID uniqueId = event.getUniqueId();
@@ -55,6 +60,10 @@ public final class AccountListener implements Listener {
         dataManager.getAccountRepository().add(account);
     }
 
+    /**
+     * Handles issuing warning if player is not connected to the web
+     * @param event Bukkit PlayerJoinEvent
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -69,6 +78,10 @@ public final class AccountListener implements Listener {
         }
     }
 
+    /**
+     * Handles saving Ares Account to database upon disconnecting
+     * @param event Bukkit PlayerQuitEvent
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
@@ -76,6 +89,8 @@ public final class AccountListener implements Listener {
         dataManager.getAccountByBukkitID(player.getUniqueId(), new FailablePromise<AresAccount>() {
             @Override
             public void success(AresAccount aresAccount) {
+                aresAccount.setLastLogin(Time.now());
+
                 AccountDAO.saveAccount(dataManager.getBridgeManager().getPlugin().getDatabaseInstance(), aresAccount);
                 dataManager.getAccountRepository().remove(aresAccount);
             }
@@ -87,6 +102,10 @@ public final class AccountListener implements Listener {
         });
     }
 
+    /**
+     * Handles filtering chat messages and applies each players settings
+     * @param event Ares ProcessedChatEvent
+     */
     @EventHandler (priority = EventPriority.LOW)
     public void onProcessedChat(ProcessedChatEvent event) {
         final Player player = event.getPlayer();
