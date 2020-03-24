@@ -1,0 +1,6 @@
+settings:
+  domain: 'https://example.com/'
+  warn-unverified-on-join: true
+  sessions:
+    account-create-expire: 1800
+    account-reset-expire: 1800
