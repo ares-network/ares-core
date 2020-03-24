@@ -1,0 +1,39 @@
+auto-save:
+  enabled: true
+  interval: 900
+
+spawn-settings:
+  random-spawn-radius: 3000
+
+network-settings:
+  name:
+    min-length: 3
+    max-length: 32
+    allow-spaces: true
+    banned-names:
+      - 'ADMIN'
+      - 'ADMINISTRATOR'
+      - 'STAFF'
+      - 'MOD'
+      - 'MODERATOR'
+  max-members: 100
+  max-joined-networks: 10
+  cooldowns:
+    rename: 30
+    create: 1800
+
+timer-settings:
+  fresh-spawn-pearl-protection: 300
+  enderpearl: 30
+  combat-tag:
+    attacker: 60
+    attacked: 30
+    logger-keep-alive: 30
+    crapple: 10
+    gapple: 10800
+
+message-settings:
+  range-chat: true
+  chat-ranges:
+    general: 1000.0
+    death-messages: 500.0

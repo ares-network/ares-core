@@ -1,0 +1,6 @@
+settings:
+  cuboid_size: 16
+  alert_check_interval: 3
+  trigger_for_invis_players: false
+  log_entry_expire_seconds: 259200
+  mature: 600

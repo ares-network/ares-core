@@ -1,0 +1,37 @@
+settings:
+  reinforcements:
+    STONE:
+      durability: 50
+      mature: 300
+    IRON:
+      durability: 300
+      mature: 1800
+    DIAMOND:
+      durability: 2000
+      mature: 14400
+  non-reinforceables:
+    - 'BEDROCK'
+    - 'ENDER_PORTAL_FRAME'
+    - 'SAPLING'
+    - 'LONG_GRASS'
+    - 'DEAD_BUSH'
+    - 'PISTON_EXTENSION'
+    - 'PISTON_MOVING_PIECE'
+    - 'RED_ROSE'
+    - 'YELLOW_FLOWER'
+    - 'BROWN_MUSHROOM'
+    - 'RED_MUSHROOM'
+    - 'TNT'
+    - 'CROPS'
+    - 'FIRE'
+    - 'SNOW'
+    - 'ICE'
+    - 'CACTUS'
+    - 'SUGAR_CANE_BLOCK'
+    - 'PORTAL'
+    - 'CAKE_BLOCK'
+    - 'PUMPKIN_STEM'
+    - 'MELON_STEM'
+    - 'VINE'
+    - 'NETHER_WARTS'
+    - 'ENDER_PORTAL'

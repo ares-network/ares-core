@@ -1,0 +1,7 @@
+settings:
+  ban_duration: 604800
+  ban_world: 'world_the_end'
+  clean_inv_upon_summon: true
+  max_pearl_accounts: 2
+  broadcast_pearl_create: true
+  broadcast_pearl_free: true
