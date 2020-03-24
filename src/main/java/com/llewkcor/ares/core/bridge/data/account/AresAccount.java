@@ -2,6 +2,7 @@ package com.llewkcor.ares.core.bridge.data.account;
 
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDocument;
+import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
     @Getter public long initialLogin;
     @Getter @Setter public long lastLogin;
     @Getter @Setter public boolean webConnected;
-    // TODO: Store ip address
+    @Getter @Setter public long address;
     @Getter public AresAccountSettings settings;
 
     /**
@@ -32,6 +33,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.initialLogin = Time.now();
         this.lastLogin = Time.now();
         this.webConnected = false;
+        this.address = 0L;
         this.settings = new AresAccountSettings();
     }
 
@@ -46,6 +48,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.initialLogin = Time.now();
         this.lastLogin = Time.now();
         this.webConnected = false;
+        this.address = IPS.toLong(player.getAddress().getHostString());
         this.settings = new AresAccountSettings();
     }
 
@@ -61,6 +64,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.initialLogin = Time.now();
         this.lastLogin = Time.now();
         this.webConnected = false;
+        this.address = 0L;
         this.settings = new AresAccountSettings();
     }
 
@@ -72,6 +76,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.initialLogin = document.getLong("initial_login");
         this.lastLogin = document.getLong("last_login");
         this.webConnected = document.getBoolean("web_connected");
+        this.address = document.getLong("address");
         this.settings = new AresAccountSettings().fromDocument(document.get("settings", Document.class));
 
         return this;
@@ -86,6 +91,7 @@ public final class AresAccount implements MongoDocument<AresAccount> {
                 .append("initial_login", initialLogin)
                 .append("last_login", lastLogin)
                 .append("web_connected", webConnected)
+                .append("address", address)
                 .append("settings", settings.toDocument());
     }
 

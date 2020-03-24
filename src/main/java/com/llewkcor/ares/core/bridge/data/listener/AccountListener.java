@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.event.ProcessedChatEvent;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
+import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.bridge.data.DataManager;
 import com.llewkcor.ares.core.bridge.data.account.AccountDAO;
@@ -37,6 +38,7 @@ public final class AccountListener implements Listener {
         final UUID uniqueId = event.getUniqueId();
         final String username = event.getName();
         final String address = event.getAddress().getHostAddress();
+        final long convertedAddress = IPS.toLong(address);
         boolean updated = false;
         AresAccount account = AccountDAO.getAccountByBukkitID(dataManager.getBridgeManager().getPlugin().getDatabaseInstance(), uniqueId);
 
@@ -51,7 +53,11 @@ public final class AccountListener implements Listener {
             updated = true;
         }
 
-        // TODO: IP Address
+        if (convertedAddress != account.getAddress()) {
+            Logger.print("Updated profile address for " + username);
+            account.setAddress(convertedAddress);
+            updated = true;
+        }
 
         if (updated) {
             AccountDAO.saveAccount(dataManager.getBridgeManager().getPlugin().getDatabaseInstance(), account);
