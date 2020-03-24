@@ -7,10 +7,12 @@ import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.bridge.BridgeManager;
 import com.llewkcor.ares.core.bridge.data.account.AccountDAO;
 import com.llewkcor.ares.core.bridge.data.account.AresAccount;
+import com.llewkcor.ares.core.bridge.data.listener.AccountListener;
 import com.llewkcor.ares.core.bridge.data.session.AccountCreateSession;
 import com.llewkcor.ares.core.bridge.data.session.AccountResetSession;
 import com.llewkcor.ares.core.bridge.data.session.AccountSession;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +29,26 @@ public final class DataManager {
         this.dataHandler = new DataHandler(this);
         this.accountRepository = Sets.newConcurrentHashSet();
         this.accountSessionRepository = Sets.newConcurrentHashSet();
+
+        Bukkit.getPluginManager().registerEvents(new AccountListener(this), bridgeManager.getPlugin());
+    }
+
+    /**
+     * Retrieves an Ares Account from cache only using the Ares Account ID
+     * @param uniqueId Ares Account ID
+     * @return Ares Account
+     */
+    public AresAccount getAccountByAresID(UUID uniqueId) {
+        return accountRepository.stream().filter(account -> account.getUniqueId().equals(uniqueId)).findFirst().orElse(null);
+    }
+
+    /**
+     * Retrieves an Ares Account from cache only using the Bukkit UUID
+     * @param uniqueId Bukkit UUID
+     * @return Ares Account
+     */
+    public AresAccount getAccountByBukkitID(UUID uniqueId) {
+        return accountRepository.stream().filter(account -> account.getBukkitId().equals(uniqueId)).findFirst().orElse(null);
     }
 
     /**
