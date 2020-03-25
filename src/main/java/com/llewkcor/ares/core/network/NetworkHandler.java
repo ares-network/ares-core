@@ -4,16 +4,19 @@ import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.network.data.NetworkDAO;
 import com.llewkcor.ares.core.network.handlers.NetworkCreateHandler;
+import com.llewkcor.ares.core.network.handlers.NetworkInviteHandler;
 import lombok.Getter;
 
 public final class NetworkHandler {
     @Getter public final NetworkManager manager;
 
     @Getter public final NetworkCreateHandler createHandler;
+    @Getter public final NetworkInviteHandler inviteHandler;
 
     public NetworkHandler(NetworkManager manager) {
         this.manager = manager;
         this.createHandler = new NetworkCreateHandler(this);
+        this.inviteHandler = new NetworkInviteHandler(this);
     }
 
     /**

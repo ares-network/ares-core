@@ -46,7 +46,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Invite a player to your network")
     @CommandCompletion("@players @networks")
     public void onInvite(Player player, String username, String network) {
+        plugin.getNetworkManager().getHandler().getInviteHandler().inviteMember(player, network, username, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("uninvite|uninv")
