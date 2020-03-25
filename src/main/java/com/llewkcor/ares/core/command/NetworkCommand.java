@@ -76,11 +76,11 @@ public final class NetworkCommand extends BaseCommand {
 
     }
 
-    @Subcommand("permission|permissions|perm|perms|p")
+    @Subcommand("config|conf|configure|settings")
     @Syntax("<network name>")
-    @Description("Access a networks permission settings")
+    @Description("Access a networks settings menu")
     @CommandCompletion("@networks")
-    public void onPermissions(Player player, String network) {
+    public void onConfig(Player player, String network) {
 
     }
 
@@ -111,6 +111,6 @@ public final class NetworkCommand extends BaseCommand {
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
-        sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GOLD + "/network help " + (help.getPage() + 1) + ChatColor.YELLOW + " to see the next page");
+        sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GOLD + "/" + help.getCommandName() + " help " + (help.getPage() + 1) + ChatColor.YELLOW + " to see the next page");
     }
 }
