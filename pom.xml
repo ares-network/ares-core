@@ -34,6 +34,7 @@
                                 <includes>
                                     <include>com.llewkcor:ares-commons</include>
                                     <include>co.aikar</include>
+                                    <include>net.jodah</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
