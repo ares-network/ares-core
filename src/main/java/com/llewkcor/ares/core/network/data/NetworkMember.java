@@ -41,6 +41,18 @@ public final class NetworkMember implements MongoDocument<NetworkMember> {
         }
     }
 
+    NetworkMember(UUID uniqueId, String username) {
+        this.uniqueId = uniqueId;
+        this.username = username;
+        this.grantedPermissions = Collections.synchronizedList(Lists.newArrayList());
+
+        for (NetworkPermission permission : NetworkPermission.values()) {
+            if (permission.isDefaultValue()) {
+                grantedPermissions.add(permission);
+            }
+        }
+    }
+
     /**
      * Returns true if this member has access to the provided permission
      * @param permission Network Permission

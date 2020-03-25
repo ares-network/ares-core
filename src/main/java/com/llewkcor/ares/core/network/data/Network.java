@@ -131,6 +131,20 @@ public final class Network implements MongoDocument<Network> {
     }
 
     /**
+     * Adds a new member to the network using Bukkit UUID and Bukkit Username
+     * @param uniqueId Bukkit UUID
+     * @param username Bukkit Username
+     */
+    public void addMember(UUID uniqueId, String username) {
+        final NetworkMember member = new NetworkMember(uniqueId, username);
+
+        members.add(member);
+        pendingMembers.remove(uniqueId);
+
+        Logger.print(username + " joined network " + name + "(" + uniqueId.toString() + ")", true);
+    }
+
+    /**
      * Removes a player from this network
      * @param uniqueId Bukkit UUID
      */
