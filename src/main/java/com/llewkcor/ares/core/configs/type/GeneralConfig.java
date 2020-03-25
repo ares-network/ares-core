@@ -18,7 +18,7 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int minNetworkNameLength;
     @Getter public int maxNetworkNameLength;
     @Getter public List<String> bannedNetworkNames;
-
+    @Getter public int maxNetworkMembers;
     @Getter public int networkCreateCooldown;
 
     public GeneralConfig(ConfigManager configManager) {
@@ -34,7 +34,7 @@ public final class GeneralConfig implements AresConfig {
         minNetworkNameLength = config.getInt("network-settings.name.min-length");
         maxNetworkNameLength = config.getInt("network-settings.name.max-length");
         bannedNetworkNames = (List<String>)config.getList("network-settings.name.banned-names");
-
+        maxNetworkMembers = config.getInt("network-settings.max-members");
         networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
 
         Logger.print("General configuration loaded");
