@@ -33,6 +33,6 @@ public final class AccountCommand extends BaseCommand {
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
-        sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GOLD + "/network help " + (help.getPage() + 1) + ChatColor.YELLOW + " to see the next page");
+        sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GOLD + "/" + help.getCommandName() + " help " + (help.getPage() + 1) + ChatColor.YELLOW + " to see the next page");
     }
 }
