@@ -106,6 +106,33 @@ public final class DataManager {
     }
 
     /**
+     * Retrieves an Ares Account by Bukkit Username
+     * @param username Username
+     * @param promise Promise
+     */
+    public void getAccountByUsername(String username, FailablePromise<AresAccount> promise) {
+        final AresAccount cachedProfile = accountRepository.stream().filter(account -> account.getUsername().equals(username)).findFirst().orElse(null);
+
+        if (cachedProfile != null) {
+            promise.success(cachedProfile);
+            return;
+        }
+
+        new Scheduler(bridgeManager.getPlugin()).async(() -> {
+            final AresAccount result = AccountDAO.getAccountByUsername(bridgeManager.getPlugin().getDatabaseInstance(), username);
+
+            new Scheduler(bridgeManager.getPlugin()).sync(() -> {
+                if (result != null) {
+                    promise.success(result);
+                    return;
+                }
+
+                promise.fail("Account not found");
+            }).run();
+        }).run();
+    }
+
+    /**
      * Returns a collection of expired Account Sessions
      * @return Collection of expired account sessions
      */

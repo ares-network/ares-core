@@ -58,6 +58,29 @@ public final class AccountDAO {
     }
 
     /**
+     * Retrieves an Ares Account from the database
+     * @param database Database
+     * @param username Bukkit Username
+     * @return Ares Account
+     */
+    public static AresAccount getAccountByUsername(MongoDB database, String username) {
+        final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
+        final Document existing;
+
+        if (collection == null) {
+            return null;
+        }
+
+        existing = collection.find(Filters.eq("username", username)).first();
+
+        if (existing != null) {
+            return new AresAccount().fromDocument(existing);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Saves an Ares Account to the database
      * @param database Database
      * @param account Ares Account
