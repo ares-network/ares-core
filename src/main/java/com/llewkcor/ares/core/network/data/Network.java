@@ -173,6 +173,6 @@ public final class Network implements MongoDocument<Network> {
                 .append("create_date", createDate)
                 .append("members", membersDocuments)
                 .append("pending_members", pendingMembers)
-                .append("config", configuration);
+                .append("config", configuration.toDocument());
     }
 }
