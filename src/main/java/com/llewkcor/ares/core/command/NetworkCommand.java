@@ -3,6 +3,7 @@ package com.llewkcor.ares.core.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
+import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.core.Ares;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,17 @@ public final class NetworkCommand extends BaseCommand {
     @Syntax("<network name>")
     @Description("Create a new network")
     public void onCreate(Player player, String name) {
+        plugin.getNetworkManager().getHandler().getCreateHandler().createNetwork(player, name, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.GREEN + "Network has been created");
+            }
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("delete|del")

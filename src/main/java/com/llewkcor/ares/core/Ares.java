@@ -37,6 +37,9 @@ public final class Ares extends JavaPlugin {
         this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
         databaseInstance.openConnection();
 
+        // Load Data
+        networkManager.getHandler().loadAll(true);
+
         // Listeners
         Bukkit.getPluginManager().registerEvents(new AresEventListener(this), this);
 

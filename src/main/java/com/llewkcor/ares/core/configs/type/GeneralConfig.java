@@ -7,21 +7,35 @@ import com.llewkcor.ares.core.configs.ConfigManager;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.util.List;
+
 public final class GeneralConfig implements AresConfig {
     @Getter public final ConfigManager configManager;
     @Getter public YamlConfiguration config;
 
     @Getter public String databaseUri;
 
+    @Getter public int minNetworkNameLength;
+    @Getter public int maxNetworkNameLength;
+    @Getter public List<String> bannedNetworkNames;
+
+    @Getter public int networkCreateCooldown;
+
     public GeneralConfig(ConfigManager configManager) {
         this.configManager = configManager;
     }
 
-    @Override
+    @SuppressWarnings("unchecked") @Override
     public void load() {
         config = Configs.getConfig(configManager.getPlugin(), "general");
 
         databaseUri = config.getString("database");
+
+        minNetworkNameLength = config.getInt("network-settings.name.min-length");
+        maxNetworkNameLength = config.getInt("network-settings.name.max-length");
+        bannedNetworkNames = (List<String>)config.getList("network-settings.name.banned-names");
+
+        networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
 
         Logger.print("General configuration loaded");
     }
