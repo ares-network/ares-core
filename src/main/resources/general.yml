@@ -11,7 +11,6 @@ network-settings:
   name:
     min-length: 3
     max-length: 32
-    allow-spaces: true
     banned-names:
       - 'ADMIN'
       - 'ADMINISTRATOR'
