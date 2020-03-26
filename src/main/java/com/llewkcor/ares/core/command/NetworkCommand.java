@@ -69,7 +69,29 @@ public final class NetworkCommand extends BaseCommand {
     @Syntax("<network name> [password]")
     @Description("Join a network")
     public void onJoin(Player player, String network, @Optional String password) {
+        if (password != null) {
+            plugin.getNetworkManager().getHandler().getInviteHandler().acceptInvite(player, network, password, new SimplePromise() {
+                @Override
+                public void success() {}
 
+                @Override
+                public void fail(String s) {
+                    player.sendMessage(ChatColor.RED + s);
+                }
+            });
+
+            return;
+        }
+
+        plugin.getNetworkManager().getHandler().getInviteHandler().acceptInvite(player, network, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("leave")

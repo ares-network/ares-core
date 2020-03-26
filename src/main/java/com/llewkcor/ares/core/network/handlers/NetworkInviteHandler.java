@@ -95,7 +95,93 @@ public final class NetworkInviteHandler {
 
     }
 
-    public void acceptInvite(Player player, String network, SimplePromise promise) {
+    /**
+     * Accept an invitation to join a network
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void acceptInvite(Player player, String networkName, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
+        if (handler.getManager().getNetworksByPlayer(player).size() >= handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxJoinedNetworks() && !admin) {
+            promise.fail("You have joined the max amount of networks per account. Leave other networks you're in and try to accept this invitation again");
+            return;
+        }
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        if (!network.getPendingMembers().contains(player.getUniqueId()) && !admin) {
+            promise.fail("You have not been invited to this network");
+            return;
+        }
+
+        if (network.getMembers().stream().anyMatch(member -> member.getUniqueId().equals(player.getUniqueId())) && !admin) {
+            promise.fail("You are already a member of this network");
+            return;
+        }
+
+        if (network.getMembers().size() >= handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers() && !admin) {
+            promise.fail("Network is full");
+            return;
+        }
+
+        network.addMember(player);
+        network.getPendingMembers().remove(player.getUniqueId());
+        network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
+        Logger.print(player.getName());
+        promise.success();
+    }
+
+    /**
+     * Accept an invitation to join a network via password
+     * @param player Player
+     * @param networkName Network Name
+     * @param password Network Password
+     * @param promise Promise
+     */
+    public void acceptInvite(Player player, String networkName, String password, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (handler.getManager().getNetworksByPlayer(player).size() >= handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxJoinedNetworks() && !admin) {
+            promise.fail("You have joined the max amount of networks per account. Leave other networks you're in and try to accept this invitation again");
+            return;
+        }
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        if (network.getMembers().stream().anyMatch(member -> member.getUniqueId().equals(player.getUniqueId())) && !admin) {
+            promise.fail("You are already a member of this network");
+            return;
+        }
+
+        if (network.getMembers().size() >= handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers() && !admin) {
+            promise.fail("Network is full");
+            return;
+        }
+
+        if (!network.getConfiguration().isPasswordEnabled()) {
+            promise.fail("Password access is not allowed for this network");
+            return;
+        }
+
+        if (!password.equalsIgnoreCase(network.getConfiguration().getPassword())) {
+            promise.fail("Incorrect password");
+            return;
+        }
+
+        network.addMember(player);
+        network.getPendingMembers().remove(player.getUniqueId());
+        network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
+        Logger.print(player.getName());
+        promise.success();
     }
 }
