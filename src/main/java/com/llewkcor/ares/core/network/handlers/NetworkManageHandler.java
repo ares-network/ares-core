@@ -99,6 +99,13 @@ public final class NetworkManageHandler {
 
     }
 
+    /**
+     * Handles renaming a network
+     * @param player Player
+     * @param networkName Current network name
+     * @param newName New network name
+     * @param promise Promise
+     */
     public void renameNetwork(Player player, String networkName, String newName, SimplePromise promise) {
         final Network network = handler.getManager().getNetworkByName(networkName);
         final UUID bukkitID = player.getUniqueId();
