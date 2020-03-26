@@ -158,7 +158,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Rename a network")
     @CommandCompletion("@networks")
     public void onRename(Player player, String network, String newName) {
+        plugin.getNetworkManager().getHandler().getManageHandler().renameNetwork(player, network, newName, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("disband")

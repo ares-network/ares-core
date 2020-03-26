@@ -21,6 +21,7 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int maxNetworkMembers;
     @Getter public int maxJoinedNetworks;
     @Getter public int networkCreateCooldown;
+    @Getter public int networkRenameCooldown;
 
     public GeneralConfig(ConfigManager configManager) {
         this.configManager = configManager;
@@ -38,6 +39,7 @@ public final class GeneralConfig implements AresConfig {
         maxNetworkMembers = config.getInt("network-settings.max-members");
         maxJoinedNetworks = config.getInt("network-settings.max-joined-networks");
         networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
+        networkRenameCooldown = config.getInt("network-settings.cooldowns.rename");
 
         Logger.print("General configuration loaded");
     }
