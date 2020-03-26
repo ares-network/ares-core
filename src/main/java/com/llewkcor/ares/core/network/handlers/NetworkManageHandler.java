@@ -1,6 +1,7 @@
 package com.llewkcor.ares.core.network.handlers;
 
 import com.google.common.collect.Maps;
+import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
@@ -22,8 +23,43 @@ public final class NetworkManageHandler {
         this.renameCooldowns = Maps.newConcurrentMap();
     }
 
-    public void deleteNetwork(Player player, String network, SimplePromise promise) {
+    /**
+     * Handles the deletion of a network
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void deleteNetwork(Player player, String networkName, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember networkMember = network.getMember(player);
+
+        if (networkMember == null) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (!networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        // TODO: Delete all snitches and factories related to this network
+
+        network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
+        network.getMembers().clear();
+        network.getPendingMembers().clear();
+        handler.getManager().getNetworkRepository().remove(network);
+
+        Logger.print("Network " + network.getName() + "(" + network.getUniqueId().toString() + ") has been disbanded by " + player.getName() + "(" + player.getUniqueId().toString() + ")");
+
+        promise.success();
     }
 
     /**

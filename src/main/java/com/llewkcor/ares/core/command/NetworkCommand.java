@@ -38,7 +38,17 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Delete an existing network")
     @CommandCompletion("@networks")
     public void onDelete(Player player, String name) {
+        plugin.getNetworkManager().getHandler().getManageHandler().deleteNetwork(player, name, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.GREEN + "Network has been deleted");
+            }
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("invite|inv")
