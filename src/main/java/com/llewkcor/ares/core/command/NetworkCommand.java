@@ -33,7 +33,7 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("delete|del")
+    @Subcommand("delete|del|disband")
     @Syntax("<network name>")
     @Description("Delete an existing network")
     @CommandCompletion("@networks")
@@ -167,14 +167,6 @@ public final class NetworkCommand extends BaseCommand {
                 player.sendMessage(ChatColor.RED + s);
             }
         });
-    }
-
-    @Subcommand("disband")
-    @Syntax("<network name>")
-    @Description("Disband a network")
-    @CommandCompletion("@networks")
-    public void onDisband(Player player, String network) {
-
     }
 
     @Subcommand("password|pass|pw")
