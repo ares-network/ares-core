@@ -32,6 +32,7 @@ public final class Ares extends JavaPlugin {
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
         this.bridgeManager = new BridgeManager(this);
+        this.snitchManager = new SnitchManager(this);
         this.commandManager = new PaperCommandManager(this);
 
         configManager.load();
