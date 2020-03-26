@@ -61,7 +61,14 @@ public final class NetworkInviteHandler {
                 network.sendMessage(ChatColor.YELLOW + player.getName() + " invited " + aresAccount.getUsername() + " to " + network.getName());
                 Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") invited " + aresAccount.getUsername() + "(" + aresAccount.getBukkitId().toString() + ") to " + network.getName() + "(" + network.getUniqueId().toString() + ")");
 
-                if (aresAccount.getSettings().isAutoAcceptNetworkInvites() && network.getMembers().size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()) {
+                if (
+                                        // Offline user is accepting automatically
+                                aresAccount.getSettings().isAutoAcceptNetworkInvites()
+                                        // Network has enough room for them to join
+                                && network.getMembers().size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()
+                                        // Player is not in too many networks
+                                && handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxJoinedNetworks()) {
+
                     network.addMember(aresAccount.getUniqueId(), aresAccount.getUsername());
                     network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
                     return;
