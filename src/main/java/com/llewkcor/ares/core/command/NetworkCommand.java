@@ -174,7 +174,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Update a networks password")
     @CommandCompletion("@networks")
     public void onPassword(Player player, String network, String password) {
+        plugin.getNetworkManager().getHandler().getManageHandler().changePassword(player, network, password, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @HelpCommand

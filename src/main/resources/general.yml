@@ -17,6 +17,9 @@ network-settings:
       - 'STAFF'
       - 'MOD'
       - 'MODERATOR'
+  password:
+    min-length: 3
+    max-length: 16
   max-members: 100
   max-joined-networks: 10
   cooldowns:

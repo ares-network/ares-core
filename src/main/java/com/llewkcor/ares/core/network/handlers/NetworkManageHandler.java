@@ -169,4 +169,58 @@ public final class NetworkManageHandler {
 
         promise.success();
     }
+
+    /**
+     * Handles updating the password to join a network
+     * @param player Player
+     * @param networkName Network Name
+     * @param password Password
+     * @param promise Promise
+     */
+    public void changePassword(Player player, String networkName, String password, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember networkMember = network.getMember(player);
+
+        if (networkMember == null && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (networkMember != null && !networkMember.hasPermission(NetworkPermission.ADMIN)) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        if (!password.matches("^[A-Za-z0-9_.]+$")) {
+            promise.fail("Name may only contain characters A-Z & 0-9");
+            return;
+        }
+
+        if (password.length() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMinPasswordLength()) {
+            promise.fail("Name must be at least " + handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMinPasswordLength() + " characters long");
+            return;
+        }
+
+        if (password.length() > handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxPasswordLength()) {
+            promise.fail("Name must be " + handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxPasswordLength() + " characters long or less");
+            return;
+        }
+
+        network.getConfiguration().setPassword(password);
+        network.sendMessage(ChatColor.YELLOW + player.getName() + " updated the password for " + network.getName());
+        Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") changed the password for " + network.getName() + "(" + network.getUniqueId().toString() + ") to " + password);
+
+        if (!network.getConfiguration().isPasswordEnabled()) {
+            player.sendMessage(ChatColor.RED + "Network password access is currently disabled. Enable this feature in your network configuration by typing '/network config " + network.getName() + "'");
+        }
+
+        promise.success();
+    }
 }
