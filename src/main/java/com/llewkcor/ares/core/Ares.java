@@ -69,6 +69,7 @@ public final class Ares extends JavaPlugin {
     @Override
     public void onDisable() {
         networkManager.getHandler().saveAll(true);
+        snitchManager.getHandler().saveAll(true);
 
         databaseInstance.closeConnection();
     }
