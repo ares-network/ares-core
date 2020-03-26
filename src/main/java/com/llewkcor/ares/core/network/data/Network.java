@@ -87,6 +87,33 @@ public final class Network implements MongoDocument<Network> {
     }
 
     /**
+     * Returns a NetworkMember instance matching the provided Bukkit Player
+     * @param player Bukkit Player
+     * @return NetworkMember
+     */
+    public NetworkMember getMember(Player player) {
+        return getMember(player.getUniqueId());
+    }
+
+    /**
+     * Returns a NetworkMember instance matching the provided Bukkit UUID
+     * @param uniqueId Bukkit UUID
+     * @return NetworkMember
+     */
+    public NetworkMember getMember(UUID uniqueId) {
+        return members.stream().filter(member -> member.getUniqueId().equals(uniqueId)).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns a NetworkMember instance matching the provided Bukkit Username
+     * @param username Bukkit Username
+     * @return NetworkMember
+     */
+    public NetworkMember getMember(String username) {
+        return members.stream().filter(member -> member.getUsername().equals(username)).findFirst().orElse(null);
+    }
+
+    /**
      * Returns an Immutable collection of all Network Members who are currently online
      * @return Immutable Collection of Members
      */
