@@ -31,8 +31,9 @@ public final class NetworkCreateHandler {
      */
     public void createNetwork(Player player, String name, SimplePromise promise) {
         final UUID bukkitUUID = player.getUniqueId();
+        final boolean admin = player.hasPermission("arescore.admin");
 
-        if (createCooldowns.containsKey(player.getUniqueId())) {
+        if (createCooldowns.containsKey(player.getUniqueId()) && !admin) {
             final long remaining = createCooldowns.get(player.getUniqueId()) - Time.now();
             promise.fail("Please wait " + Time.convertToRemaining(remaining) + " before attempting to create another network");
             return;
