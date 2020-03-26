@@ -134,7 +134,15 @@ public final class NetworkCommand extends BaseCommand {
     @Syntax("<network name>")
     @Description("Print information for a network")
     public void onShow(Player player, String network) {
+        plugin.getNetworkManager().getHandler().getDisplayHandler().printDisplay(player, network, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("kick")
