@@ -10,6 +10,7 @@ import com.llewkcor.ares.core.configs.ConfigManager;
 import com.llewkcor.ares.core.listener.AresEventListener;
 import com.llewkcor.ares.core.network.NetworkManager;
 import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.snitch.SnitchManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import java.util.List;
 public final class Ares extends JavaPlugin {
     @Getter public ConfigManager configManager;
     @Getter public NetworkManager networkManager;
+    @Getter public SnitchManager snitchManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -39,6 +41,7 @@ public final class Ares extends JavaPlugin {
 
         // Load Data
         networkManager.getHandler().loadAll(true);
+        snitchManager.getHandler().loadAll(true);
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new AresEventListener(this), this);
