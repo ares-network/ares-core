@@ -72,9 +72,10 @@ public final class NetworkInviteHandler {
                     network.addMember(aresAccount.getUniqueId(), aresAccount.getUsername());
                     network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
                     return;
+
                 }
 
-                network.getPendingMembers().add(aresAccount.getUniqueId());
+                network.getPendingMembers().add(aresAccount.getBukkitId());
 
                 final Player invitedPlayer = Bukkit.getPlayer(aresAccount.getBukkitId());
 
