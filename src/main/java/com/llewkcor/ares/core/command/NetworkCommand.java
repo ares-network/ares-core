@@ -62,7 +62,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Revoke an invitation to a network")
     @CommandCompletion("@players @networks")
     public void onUninvite(Player player, String username, String network) {
+        plugin.getNetworkManager().getHandler().getInviteHandler().uninviteMember(player, network, username, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("accept|join")

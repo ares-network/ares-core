@@ -91,8 +91,53 @@ public final class NetworkInviteHandler {
         });
     }
 
-    public void uninviteMember(Player player, String network, String username, SimplePromise promise) {
+    /**
+     * Revokes an existing invitation to join a network
+     * @param player Revoking Player
+     * @param networkName Network Name
+     * @param username Revoked Username
+     * @param promise Promise
+     */
+    public void uninviteMember(Player player, String networkName, String username, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember networkMember = network.getMembers().stream().filter(member -> member.getUniqueId().equals(player.getUniqueId())).findFirst().orElse(null);
+
+        if (networkMember == null || !network.isMember(player) && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (!networkMember.hasPermission(NetworkPermission.INVITE_MEMBERS) && !networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        handler.getManager().getPlugin().getBridgeManager().getDataManager().getAccountByUsername(username, new FailablePromise<AresAccount>() {
+            @Override
+            public void success(AresAccount aresAccount) {
+                if (!network.getPendingMembers().contains(aresAccount.getBukkitId())) {
+                    promise.fail("Player did not have a pending invitation to join this network");
+                    return;
+                }
+
+                network.getPendingMembers().remove(aresAccount.getBukkitId());
+                network.sendMessage(ChatColor.YELLOW + player.getName() + " revoked " + aresAccount.getUsername() + "'s invitation to join " + network.getName());
+                Logger.print(player.getName() + " revoked " + aresAccount.getUsername() + "'s invitation to join " + network.getName() + "(" + network.getUniqueId().toString() + ")");
+                promise.success();
+            }
+
+            @Override
+            public void fail(String s) {
+                promise.fail("Account not found");
+            }
+        });
     }
 
     /**
