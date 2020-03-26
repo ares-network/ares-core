@@ -107,7 +107,17 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Leave a network")
     @CommandCompletion("@networks")
     public void onLeave(Player player, String network) {
+        plugin.getNetworkManager().getHandler().getManageHandler().leaveNetwork(player, network, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.YELLOW + "You have left the network");
+            }
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("show|who")
