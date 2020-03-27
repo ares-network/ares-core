@@ -13,6 +13,7 @@ import com.llewkcor.ares.core.snitch.listener.SnitchListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -49,11 +50,16 @@ public final class SnitchManager {
         }).repeat(0L, 1L).run();
 
         this.movementTask = new Scheduler(plugin).sync(() -> {
-            Bukkit.getOnlinePlayers().forEach(player -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
                 final UUID bukkitUUID = player.getUniqueId();
                 final BLocatable currentLocation = new BLocatable(player.getLocation().getBlock());
                 final Collection<Network> networks = plugin.getNetworkManager().getNetworksByPlayer(player);
                 final Set<UUID> networkIds = Sets.newHashSet();
+                final boolean admin = player.hasPermission("arescore.admin");
+
+                if (admin) {
+                    continue;
+                }
 
                 for (Network network : networks) {
                     networkIds.add(network.getUniqueId());
@@ -95,7 +101,7 @@ public final class SnitchManager {
                 };
 
                 searchQueue.add(task);
-            });
+            }
         }).repeat(0L, 3 * 20L).run();
     }
 

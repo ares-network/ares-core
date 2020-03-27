@@ -42,6 +42,10 @@ public final class SnitchListener implements Listener {
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
 
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         if (block == null || block.getType().equals(Material.AIR)) {
             return;
         }
@@ -77,6 +81,10 @@ public final class SnitchListener implements Listener {
         final Player player = event.getPlayer();
         final Block block = event.getBlockPlaced();
 
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         if (block == null || block.getType().equals(Material.AIR)) {
             return;
         }
@@ -106,6 +114,11 @@ public final class SnitchListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         final BLocatable location = new BLocatable(player.getLocation().getBlock());
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
@@ -132,6 +145,11 @@ public final class SnitchListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -163,6 +181,10 @@ public final class SnitchListener implements Listener {
         final Player player = event.getPlayer();
         final Block block = event.getClickedBlock();
         final Action action = event.getAction();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
 
         if (block == null || block.getType().equals(Material.AIR)) {
             return;
@@ -206,6 +228,10 @@ public final class SnitchListener implements Listener {
             return;
         }
 
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -231,6 +257,7 @@ public final class SnitchListener implements Listener {
     @EventHandler
     public void removePlayerOnDisconnect(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+
         final List<Snitch> spottedBy = manager.getSnitchBySpotted(player.getUniqueId());
 
         if (spottedBy.isEmpty()) {
