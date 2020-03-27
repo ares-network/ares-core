@@ -95,18 +95,6 @@ public final class Snitch implements MongoDocument<Snitch> {
     }
 
     /**
-     * Returns true if the provided Bukkit UUID has moved since they were last spotted
-     * @param uniqueId Bukkit UUID
-     * @param location Location
-     * @return True if the player has moved
-     */
-    public boolean hasMovedSinceLastSeen(UUID uniqueId, BLocatable location) {
-        final BLocatable lastSeenLocation = spotted.get(uniqueId);
-
-        return (location.getX() == lastSeenLocation.getX() && location.getY() == lastSeenLocation.getY() && location.getZ() == lastSeenLocation.getZ());
-    }
-
-    /**
      * Returns a sorted immutable list of Snitch Entries by creation date
      * @return ImmutableList of SnitchEntry instances
      */
