@@ -265,6 +265,13 @@ public final class SnitchHandler {
             return;
         }
 
+        final NetworkMember networkMember = network.getMember(player);
+
+        if (networkMember != null && !(networkMember.hasPermission(NetworkPermission.ADMIN) || networkMember.hasPermission(NetworkPermission.VIEW_SNITCHES)) && !admin) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
         final List<SnitchEntry> entries = Lists.newArrayList(snitch.getSortedEntries());
 
         if (snitch.getLogEntries().isEmpty() || entries.isEmpty()) {
