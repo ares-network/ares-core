@@ -169,7 +169,14 @@ public final class SnitchHandler {
         }
     }
 
-    public void viewLogs(Player player, Block block, int page, String timeframe, SimplePromise promise) {
+    /**
+     * Handles printing log information for a Snitch
+     * @param player Player
+     * @param block Snitch Block
+     * @param page Log Page
+     * @param promise Promise
+     */
+    public void viewLogs(Player player, Block block, int page, SimplePromise promise) {
         final Snitch snitch = getManager().getSnitchByBlock(block);
         final boolean admin = player.hasPermission("arescore.admin");
         long maxTime = 0;
