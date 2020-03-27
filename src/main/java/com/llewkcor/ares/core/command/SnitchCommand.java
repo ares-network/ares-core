@@ -74,6 +74,29 @@ public final class SnitchCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("clear")
+    @Description("Clear the logs for the snitch you are looking at")
+    public void onClear(Player player) {
+        final Block target = player.getTargetBlock((Set<Material>)null, 4);
+
+        if (target == null || !target.getType().equals(Material.JUKEBOX)) {
+            player.sendMessage(ChatColor.RED + "You are not looking at a Jukebox");
+            return;
+        }
+
+        plugin.getSnitchManager().getHandler().clearLogs(player, target, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.GREEN + "Snitch log entries have been cleared");
+            }
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();

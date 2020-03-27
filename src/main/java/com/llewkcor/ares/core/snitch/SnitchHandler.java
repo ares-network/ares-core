@@ -192,6 +192,47 @@ public final class SnitchHandler {
     }
 
     /**
+     * Handles clearing the log entries for a snitch
+     * @param player Player
+     * @param block Snitch Block
+     * @param promise Promise
+     */
+    public void clearLogs(Player player, Block block, SimplePromise promise) {
+        final Snitch snitch = getManager().getSnitchByBlock(block);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (snitch == null) {
+            promise.fail("This block is not a snitch");
+            return;
+        }
+
+        final Network network = getManager().getPlugin().getNetworkManager().getNetworkByID(snitch.getOwnerId());
+
+        if (network == null) {
+            promise.fail("Network not found for this snitch");
+            return;
+        }
+
+        if (!network.isMember(player) && !admin) {
+            promise.fail("You do not have ownership of this snitch");
+            return;
+        }
+
+        final NetworkMember networkMember = network.getMember(player);
+
+        if (networkMember != null && !(networkMember.hasPermission(NetworkPermission.ADMIN) || networkMember.hasPermission(NetworkPermission.VIEW_SNITCHES)) && !admin) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        snitch.getLogEntries().clear();
+
+        Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") cleared the logs for a snitch owned by " + network.getName() + "(" + network.getUniqueId().toString() + ") at " + snitch.getLocation().toString());
+
+        promise.success();
+    }
+
+    /**
      * Handles printing log information for a Snitch
      * @param player Player
      * @param block Snitch Block
