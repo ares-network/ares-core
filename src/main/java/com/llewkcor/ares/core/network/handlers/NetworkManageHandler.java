@@ -7,12 +7,16 @@ import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.network.data.NetworkDAO;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
+import com.llewkcor.ares.core.snitch.data.Snitch;
+import com.llewkcor.ares.core.snitch.data.SnitchDAO;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -52,12 +56,21 @@ public final class NetworkManageHandler {
             return;
         }
 
-        // TODO: Delete all snitches and factories related to this network
+        final List<Snitch> snitches = handler.getManager().getPlugin().getSnitchManager().getSnitchByOwner(network);
+        handler.getManager().getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
 
         network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
         network.getMembers().clear();
         network.getPendingMembers().clear();
         handler.getManager().getNetworkRepository().remove(network);
+
+        new Scheduler(handler.getManager().getPlugin()).async(() -> {
+            NetworkDAO.deleteNetwork(handler.getManager().getPlugin().getDatabaseInstance(), network);
+
+            for (Snitch snitch : snitches) {
+                SnitchDAO.deleteSnitch(handler.getManager().getPlugin().getDatabaseInstance(), snitch);
+            }
+        }).run();
 
         Logger.print("Network " + network.getName() + "(" + network.getUniqueId().toString() + ") has been disbanded by " + player.getName() + "(" + player.getUniqueId().toString() + ")");
 

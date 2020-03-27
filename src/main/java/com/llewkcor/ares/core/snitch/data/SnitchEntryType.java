@@ -10,7 +10,8 @@ public enum SnitchEntryType {
     BLOCK_INTERACTION("Block Interaction"),
     LOGIN("Connected"),
     LOGOUT("Disconnected"),
-    KILL("Entity Slain");
+    SPOTTED("Spotted"),
+    KILL("Player Slain");
 
     @Getter public final String displayName;
 }
