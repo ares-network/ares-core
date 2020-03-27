@@ -49,7 +49,7 @@ public final class NetworkHandler {
      */
     public void saveAll(boolean blocking) {
         if (blocking) {
-            Logger.warn("Blocking the thread while attempting to save all networks from the database");
+            Logger.warn("Blocking the thread while attempting to save all networks to the database");
             NetworkDAO.saveNetworks(manager.getPlugin().getDatabaseInstance(), manager.getNetworkRepository());
             Logger.print("Saved " + manager.getNetworkRepository().size() + " Networks");
             return;
