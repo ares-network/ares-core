@@ -15,9 +15,7 @@ import com.llewkcor.ares.core.snitch.data.SnitchDAO;
 import com.llewkcor.ares.core.snitch.data.SnitchEntry;
 import com.llewkcor.ares.core.snitch.data.SnitchEntryType;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -66,6 +64,30 @@ public final class SnitchHandler {
         new Scheduler(manager.getPlugin()).async(() -> {
             SnitchDAO.saveSnitches(manager.getPlugin().getDatabaseInstance(), manager.getSnitchRepository());
             new Scheduler(manager.getPlugin()).sync(() -> Logger.print("Saved " + manager.getSnitchRepository().size() + " Snitches")).run();
+        }).run();
+    }
+
+    /**
+     * Performs a scrub on all Snitch Entries to remove expired log entries
+     */
+    public void performEntryCleanup() {
+        Logger.warn("Starting Snitch Log Cleanup...");
+
+        new Scheduler(manager.getPlugin()).async(() -> {
+            manager.getSnitchRepository().forEach(snitch -> {
+                final List<SnitchEntry> toRemove = Lists.newArrayList();
+
+                snitch.getLogEntries().forEach(entry -> {
+                    if (entry.getExpireDate() <= Time.now()) {
+                        toRemove.add(entry);
+                    }
+                });
+
+                snitch.getLogEntries().removeAll(toRemove);
+                SnitchDAO.saveSnitch(manager.getPlugin().getDatabaseInstance(), snitch);
+            });
+
+            new Scheduler(manager.getPlugin()).sync(() -> Logger.print("Completed Snitch Log Cleanup")).run();
         }).run();
     }
 

@@ -65,6 +65,9 @@ public final class Ares extends JavaPlugin {
 
             return ImmutableList.copyOf(networkNames);
         });
+
+        // Cleanup Tasks
+        snitchManager.getHandler().performEntryCleanup();
     }
 
     @Override
