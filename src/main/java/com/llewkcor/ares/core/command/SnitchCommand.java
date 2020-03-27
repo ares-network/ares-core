@@ -46,17 +46,24 @@ public final class SnitchCommand extends BaseCommand {
     }
 
     @Subcommand("log")
-    @Syntax("<page> [timeframe]")
+    @Syntax("[page]")
     @Description("View logs for the snitch you are looking at")
-    public void onLog(Player player, int page, @Optional String timeframe) {
+    public void onLog(Player player, @Optional String pageName) {
         final Block target = player.getTargetBlock((Set<Material>)null, 4);
+        int page = 1;
+
+        if (pageName != null) {
+            try {
+                page = Integer.parseInt(pageName);
+            } catch (NumberFormatException ignored) {}
+        }
 
         if (target == null || !target.getType().equals(Material.JUKEBOX)) {
             player.sendMessage(ChatColor.RED + "You are not looking at a Jukebox");
             return;
         }
 
-        plugin.getSnitchManager().getHandler().viewLogs(player, target, page, timeframe, new SimplePromise() {
+        plugin.getSnitchManager().getHandler().viewLogs(player, target, page, new SimplePromise() {
             @Override
             public void success() {}
 

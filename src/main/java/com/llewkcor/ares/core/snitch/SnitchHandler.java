@@ -179,19 +179,10 @@ public final class SnitchHandler {
     public void viewLogs(Player player, Block block, int page, SimplePromise promise) {
         final Snitch snitch = getManager().getSnitchByBlock(block);
         final boolean admin = player.hasPermission("arescore.admin");
-        long maxTime = 0;
 
+        // Fix 0 display
         if (page < 1) {
             page = 1;
-        }
-
-        if (timeframe != null) {
-            try {
-                maxTime = Time.now() + (Time.parseTime(timeframe));
-            } catch (NumberFormatException ex) {
-                promise.fail("Invalid timeframe format");
-                return;
-            }
         }
 
         if (snitch == null) {
@@ -200,7 +191,6 @@ public final class SnitchHandler {
         }
 
         final Network network = getManager().getPlugin().getNetworkManager().getNetworkByID(snitch.getOwnerId());
-        final long finalMaxTime = maxTime;
 
         if (network == null) {
             promise.fail("Network not found for this snitch");
@@ -212,12 +202,13 @@ public final class SnitchHandler {
             return;
         }
 
-        if (snitch.getLogEntries().isEmpty()) {
+        final List<SnitchEntry> entries = Lists.newArrayList(snitch.getSortedEntries());
+
+        if (snitch.getLogEntries().isEmpty() || entries.isEmpty()) {
             promise.fail("Could not find any records within the provided timeframe");
             return;
         }
 
-        final List<SnitchEntry> entries = Lists.newArrayList(snitch.getSortedEntries());
         final int start = (page > 1) ? ((page - 1) * 10) : 0;
         final int end = (start + 10);
         final int totalPages = Math.round(entries.size() / 10);
@@ -252,7 +243,7 @@ public final class SnitchHandler {
             player.sendMessage(ChatColor.RESET + " ");
         }
 
-        player.sendMessage(ChatColor.GOLD + "Page " + ChatColor.YELLOW + page + "/" + (totalPages - 1));
+        player.sendMessage(ChatColor.GOLD + "Page " + ChatColor.YELLOW + page + "/" + (totalPages));
 
         promise.success();
     }
