@@ -285,6 +285,10 @@ public final class SnitchHandler {
 
         Collections.reverse(entries);
 
+        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
+        player.sendMessage(ChatColor.YELLOW + snitch.getName() + " Log Entries");
+        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
+
         for (int i = start; i < end; i++) {
             if (entries.size() <= end) {
                 break;
@@ -293,11 +297,11 @@ public final class SnitchHandler {
             final SnitchEntry entry = entries.get(i);
 
             switch(entry.getType()) {
-                case BLOCK_BREAK : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getBlock() + ChatColor.GRAY + " broken by " + ChatColor.BLUE + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
+                case BLOCK_BREAK : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " broken by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
                     break;
-                case BLOCK_PLACE : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getBlock() + ChatColor.GRAY + " placed by " + ChatColor.BLUE + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
+                case BLOCK_PLACE : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " placed by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
                     break;
-                case BLOCK_INTERACTION : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getBlock() + ChatColor.GRAY + " interacted with by " + ChatColor.BLUE + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
+                case BLOCK_INTERACTION : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " interacted with by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
                     break;
                 case KILL : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.DARK_RED + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " died at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
                     break;
@@ -314,6 +318,7 @@ public final class SnitchHandler {
         }
 
         player.sendMessage(ChatColor.GOLD + "Showing page " + ChatColor.YELLOW + page + "/" + (totalPages));
+        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
 
         promise.success();
     }
