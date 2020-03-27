@@ -65,4 +65,20 @@ public final class NetworkDAO {
             }
         });
     }
+
+    /**
+     * Deletes a Network from the provided MongoDB instance
+     * @param database MongoDB Instance
+     * @param network Network
+     */
+    public static void deleteNetwork(MongoDB database, Network network) {
+        final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
+        final Document existing = collection.find(Filters.eq("id", network.getUniqueId())).first();
+
+        if (existing == null) {
+            return;
+        }
+
+        collection.deleteOne(existing);
+    }
 }
