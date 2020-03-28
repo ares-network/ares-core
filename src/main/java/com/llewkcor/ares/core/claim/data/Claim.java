@@ -12,7 +12,7 @@ import java.util.UUID;
 public final class Claim implements MongoDocument<Claim> {
     @Getter public UUID uniqueId;
     @Getter public UUID ownerId;
-    @Getter public BLocatable location;
+    @Getter @Setter public BLocatable location;
     @Getter public ClaimType type;
     @Getter @Setter public int health;
     @Getter @Setter public long matureTime;
@@ -48,7 +48,7 @@ public final class Claim implements MongoDocument<Claim> {
      * @return Health as percent
      */
     public String getHealthAsPercent() {
-        return (health / type.getDurability() * 100) + "%";
+        return String.format("%.1f", (health * 100.0) / type.getDurability()) + "%";
     }
 
     @Override

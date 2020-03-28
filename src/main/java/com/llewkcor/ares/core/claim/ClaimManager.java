@@ -1,22 +1,37 @@
 package com.llewkcor.ares.core.claim;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.claim.data.Claim;
+import com.llewkcor.ares.core.claim.listener.ClaimCreatorListener;
+import com.llewkcor.ares.core.claim.listener.ClaimListener;
+import com.llewkcor.ares.core.claim.session.ClaimSession;
+import com.llewkcor.ares.core.network.data.Network;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class ClaimManager {
     @Getter public final Ares plugin;
+    @Getter public final ClaimHandler handler;
     @Getter public final Set<Claim> claimRepository;
+    @Getter public final Set<ClaimSession> activeClaimSessions;
 
     public ClaimManager(Ares plugin) {
         this.plugin = plugin;
+        this.handler = new ClaimHandler(this);
         this.claimRepository = Sets.newConcurrentHashSet();
+        this.activeClaimSessions = Sets.newConcurrentHashSet();
+
+        Bukkit.getPluginManager().registerEvents(new ClaimListener(this), plugin);
+        Bukkit.getPluginManager().registerEvents(new ClaimCreatorListener(this), plugin);
     }
 
     /**
@@ -62,5 +77,23 @@ public final class ClaimManager {
                                 claim.getLocation().getWorldName().equals(block.getWorldName()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Returns an Immutable List containing all Claim blocks owned by the provided Network UUID
+     * @param network Network
+     * @return ImmutableList of Claims
+     */
+    public ImmutableList<Claim> getClaimByOwner(Network network) {
+        return ImmutableList.copyOf(claimRepository.stream().filter(claim -> claim.getOwnerId().equals(network.getUniqueId())).collect(Collectors.toList()));
+    }
+
+    /**
+     * Returns a Claim Session instance matching the provided Bukkit Player's UUID
+     * @param player Bukkit Player
+     * @return ClaimSession
+     */
+    public ClaimSession getSessionByPlayer(Player player) {
+        return activeClaimSessions.stream().filter(claimSession -> claimSession.getUniqueId().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 }

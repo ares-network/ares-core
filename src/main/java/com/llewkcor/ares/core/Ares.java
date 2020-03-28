@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.llewkcor.ares.core.bridge.BridgeManager;
+import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.command.*;
 import com.llewkcor.ares.core.configs.ConfigManager;
 import com.llewkcor.ares.core.listener.AresEventListener;
@@ -22,6 +23,7 @@ public final class Ares extends JavaPlugin {
     @Getter public ConfigManager configManager;
     @Getter public NetworkManager networkManager;
     @Getter public SnitchManager snitchManager;
+    @Getter public ClaimManager claimManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -33,6 +35,7 @@ public final class Ares extends JavaPlugin {
         this.networkManager = new NetworkManager(this);
         this.bridgeManager = new BridgeManager(this);
         this.snitchManager = new SnitchManager(this);
+        this.claimManager = new ClaimManager(this);
         this.commandManager = new PaperCommandManager(this);
 
         configManager.load();
@@ -41,6 +44,7 @@ public final class Ares extends JavaPlugin {
         databaseInstance.openConnection();
 
         // Load Data
+        claimManager.getHandler().loadAll(true);
         networkManager.getHandler().loadAll(true);
         snitchManager.getHandler().loadAll(true);
 
@@ -54,6 +58,7 @@ public final class Ares extends JavaPlugin {
         commandManager.registerCommand(new AccountCommand(this));
         commandManager.registerCommand(new PrisonPearlCommand(this));
         commandManager.registerCommand(new SnitchCommand(this));
+        commandManager.registerCommand(new ClaimCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
@@ -72,6 +77,7 @@ public final class Ares extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        claimManager.getHandler().saveAll(true);
         networkManager.getHandler().saveAll(true);
         snitchManager.getHandler().saveAll(true);
 
