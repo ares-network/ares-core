@@ -5,6 +5,8 @@ import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.claim.data.Claim;
+import com.llewkcor.ares.core.claim.data.ClaimDAO;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkDAO;
@@ -57,7 +59,10 @@ public final class NetworkManageHandler {
         }
 
         final List<Snitch> snitches = handler.getManager().getPlugin().getSnitchManager().getSnitchByOwner(network);
+        final List<Claim> claims = handler.getManager().getPlugin().getClaimManager().getClaimByOwner(network);
+
         handler.getManager().getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
+        handler.getManager().getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
 
         network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
         network.getMembers().clear();
@@ -69,6 +74,10 @@ public final class NetworkManageHandler {
 
             for (Snitch snitch : snitches) {
                 SnitchDAO.deleteSnitch(handler.getManager().getPlugin().getDatabaseInstance(), snitch);
+            }
+
+            for (Claim claim : claims) {
+                ClaimDAO.deleteClaim(handler.getManager().getPlugin().getDatabaseInstance(), claim);
             }
         }).run();
 
