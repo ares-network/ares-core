@@ -37,7 +37,7 @@ public final class SnitchHandler {
      */
     public void loadAll(boolean blocking) {
         if (blocking) {
-            Logger.warn("Blocking the thread while attempting to load all networks from the database");
+            Logger.warn("Blocking the thread while attempting to load all snitches from the database");
             manager.getSnitchRepository().addAll(SnitchDAO.getSnitches(manager.getPlugin().getDatabaseInstance()));
             Logger.print("Loaded " + manager.getSnitchRepository().size() + " Snitches");
             return;
@@ -55,7 +55,7 @@ public final class SnitchHandler {
      */
     public void saveAll(boolean blocking) {
         if (blocking) {
-            Logger.warn("Blocking the thread while attempting to save all networks to the database");
+            Logger.warn("Blocking the thread while attempting to save all snitches to the database");
             SnitchDAO.saveSnitches(manager.getPlugin().getDatabaseInstance(), manager.getSnitchRepository());
             Logger.print("Saved " + manager.getSnitchRepository().size() + " Networks");
             return;

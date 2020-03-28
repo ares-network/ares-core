@@ -22,13 +22,13 @@ public final class SnitchDAO {
      */
     public static ImmutableCollection<Snitch> getSnitches(MongoDB database) {
         final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
-        final List<Snitch> networks = Lists.newArrayList();
+        final List<Snitch> snitches = Lists.newArrayList();
 
         for (Document document : collection.find()) {
-            networks.add(new Snitch().fromDocument(document));
+            snitches.add(new Snitch().fromDocument(document));
         }
 
-        return ImmutableList.copyOf(networks);
+        return ImmutableList.copyOf(snitches);
     }
 
     /**
