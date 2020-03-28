@@ -23,6 +23,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -242,5 +243,21 @@ public final class ClaimListener implements Listener {
                 affectedClaim.setLocation(new BLocatable(newBlock));
             }
         }
+    }
+
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onEntityBreakDoor(EntityBreakDoorEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Block block = event.getBlock();
+        final Claim claim = manager.getClaimByBlock(block);
+
+        if (claim == null) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 }
