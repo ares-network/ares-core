@@ -77,7 +77,7 @@ public final class ClaimCommand extends BaseCommand {
     }
 
     @Subcommand("off|disable")
-    @Description("Remove yourself from all claiming mods")
+    @Description("Remove yourself from all claiming modes")
     public void onDisable(Player player) {
         plugin.getClaimManager().getHandler().disableSession(player, new SimplePromise() {
             @Override
