@@ -211,6 +211,8 @@ public final class ClaimListener implements Listener {
             if (affectedClaim != null) {
                 final Block newBlock = affected.getRelative(event.getDirection());
                 affectedClaim.setLocation(new BLocatable(newBlock));
+                affectedClaim.setChunkX(newBlock.getChunk().getX());
+                affectedClaim.setChunkX(newBlock.getChunk().getZ());
             }
         }
     }
@@ -240,6 +242,8 @@ public final class ClaimListener implements Listener {
             if (affectedClaim != null) {
                 final Block newBlock = affected.getRelative(event.getDirection());
                 affectedClaim.setLocation(new BLocatable(newBlock));
+                affectedClaim.setChunkX(newBlock.getChunk().getX());
+                affectedClaim.setChunkX(newBlock.getChunk().getZ());
             }
         }
     }

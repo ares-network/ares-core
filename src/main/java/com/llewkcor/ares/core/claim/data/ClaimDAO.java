@@ -32,6 +32,24 @@ public final class ClaimDAO {
     }
 
     /**
+     * Returns an Immutable Collection of all claims within the provided chunk coordinates
+     * @param database Database
+     * @param chunkX Chunk X
+     * @param chunkZ Chunk Z
+     * @return Immutable Collection of claims
+     */
+    public static ImmutableCollection<Claim> getChunkClaims(MongoDB database, int chunkX, int chunkZ) {
+        final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
+        final List<Claim> claims = Lists.newArrayList();
+
+        for (Document document : collection.find(Filters.and(Filters.eq("chunk_x", chunkX), Filters.eq("chunk_z", chunkZ)))) {
+            claims.add(new Claim().fromDocument(document));
+        }
+
+        return ImmutableList.copyOf(claims);
+    }
+
+    /**
      * Save a single Claim instance to the provided MongoDB instance
      * @param database MongoDB Instance
      * @param claim Claim

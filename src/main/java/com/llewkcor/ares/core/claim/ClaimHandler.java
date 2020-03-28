@@ -3,6 +3,7 @@ package com.llewkcor.ares.core.claim;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.claim.data.ClaimDAO;
 import com.llewkcor.ares.core.claim.data.ClaimType;
 import com.llewkcor.ares.core.claim.session.ClaimSession;
@@ -14,6 +15,10 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ClaimHandler {
     @Getter public ClaimManager manager;
@@ -37,6 +42,31 @@ public final class ClaimHandler {
         new Scheduler(manager.getPlugin()).async(() -> {
             manager.getClaimRepository().addAll(ClaimDAO.getClaims(manager.getPlugin().getDatabaseInstance()));
             new Scheduler(manager.getPlugin()).sync(() -> Logger.print("Loaded " + manager.getClaimRepository().size() + " Claims")).run();
+        }).run();
+    }
+
+    /**
+     * Load all claims from a chunk stored in the database to memory
+     * @param chunkX Chunk X
+     * @param chunkZ Chunk Z
+     */
+    public void loadChunk(int chunkX, int chunkZ) {
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final Collection<Claim> loaded = ClaimDAO.getChunkClaims(manager.getPlugin().getDatabaseInstance(), chunkX, chunkZ);
+            loaded.stream().filter(claim -> manager.getClaimByID(claim.getUniqueId()) == null).forEach(valid -> manager.getClaimRepository().add(valid));
+        }).run();
+    }
+
+    /**
+     * Unload all claims from a chunk stored in memory
+     * @param chunkX Chunk X
+     * @param chunkZ Chunk Z
+     */
+    public void unloadChunk(int chunkX, int chunkZ) {
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final List<Claim> unloaded = manager.getClaimRepository().stream().filter(claim -> claim.getChunkX() == chunkX && claim.getChunkZ() == chunkZ).collect(Collectors.toList());
+            manager.getClaimRepository().removeAll(unloaded);
+            ClaimDAO.saveClaims(manager.getPlugin().getDatabaseInstance(), unloaded);
         }).run();
     }
 

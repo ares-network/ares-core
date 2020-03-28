@@ -91,7 +91,7 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        final Claim claim = new Claim(network.getUniqueId(), new BLocatable(block), session.getClaimType());
+        final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(block), session.getClaimType());
         manager.getClaimRepository().add(claim);
         block.getWorld().spigot().playEffect(block.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 15, 8);
     }
@@ -155,7 +155,7 @@ public final class ClaimCreatorListener implements Listener {
             hand.setType(Material.AIR);
         }
 
-        final Claim claim = new Claim(network.getUniqueId(), new BLocatable(block), session.getClaimType());
+        final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(block), session.getClaimType());
         manager.getClaimRepository().add(claim);
         block.getWorld().spigot().playEffect(block.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 15, 8);
     }

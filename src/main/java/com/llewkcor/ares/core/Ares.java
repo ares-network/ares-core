@@ -44,9 +44,9 @@ public final class Ares extends JavaPlugin {
         databaseInstance.openConnection();
 
         // Load Data
-        claimManager.getHandler().loadAll(true);
         networkManager.getHandler().loadAll(true);
         snitchManager.getHandler().loadAll(true);
+        claimManager.getHandler().loadAll(true);
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new AresEventListener(this), this);
