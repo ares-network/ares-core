@@ -14,15 +14,14 @@ import com.llewkcor.ares.core.network.data.NetworkPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -259,5 +258,45 @@ public final class ClaimListener implements Listener {
         }
 
         event.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onChestPlace(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final Block block = event.getBlockPlaced();
+
+        if (block == null || !(block.getType().equals(Material.CHEST) || block.getType().equals(Material.TRAPPED_CHEST))) {
+            return;
+        }
+
+        final Block east = block.getRelative(BlockFace.EAST);
+        final Block west = block.getRelative(BlockFace.WEST);
+        final Block north = block.getRelative(BlockFace.NORTH);
+        final Block south = block.getRelative(BlockFace.SOUTH);
+
+        final Claim cE = manager.getClaimByBlock(east);
+        final Claim cW = manager.getClaimByBlock(west);
+        final Claim cN = manager.getClaimByBlock(north);
+        final Claim cS = manager.getClaimByBlock(south);
+
+        if (cE != null && (east.getType().equals(Material.CHEST) || east.getType().equals(Material.TRAPPED_CHEST))) {
+            player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
+            event.setCancelled(true);
+        }
+
+        if (cW != null && (west.getType().equals(Material.CHEST) || west.getType().equals(Material.TRAPPED_CHEST))) {
+            player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
+            event.setCancelled(true);
+        }
+
+        if (cN != null && (north.getType().equals(Material.CHEST) || north.getType().equals(Material.TRAPPED_CHEST))) {
+            player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
+            event.setCancelled(true);
+        }
+
+        if (cS != null && (south.getType().equals(Material.CHEST) || south.getType().equals(Material.TRAPPED_CHEST))) {
+            player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
+            event.setCancelled(true);
+        }
     }
 }
