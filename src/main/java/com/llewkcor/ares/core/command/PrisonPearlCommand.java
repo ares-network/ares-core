@@ -3,6 +3,7 @@ package com.llewkcor.ares.core.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
+import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.core.Ares;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,17 @@ public final class PrisonPearlCommand extends BaseCommand {
     @Subcommand("locate")
     @Description("Locate your prison pearl")
     public void onLocate(Player player, @Optional String username) {
+        plugin.getPrisonPearlManager().getHandler().locatePearl(player, username, new FailablePromise<String>() {
+            @Override
+            public void success(String s) {
+                player.sendMessage(s);
+            }
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("free")
