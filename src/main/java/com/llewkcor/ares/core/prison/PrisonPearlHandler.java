@@ -8,7 +8,10 @@ import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.prison.data.PearlLocationType;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
+import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
+import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
@@ -78,6 +81,9 @@ public final class PrisonPearlHandler {
         }
 
         pearl.setExpireTime(Time.now());
+
+        final PrisonPearlReleaseEvent releaseEvent = new PrisonPearlReleaseEvent(pearl, reason);
+        Bukkit.getPluginManager().callEvent(releaseEvent);
     }
 
     /**
@@ -108,6 +114,9 @@ public final class PrisonPearlHandler {
         }
 
         manager.getPearlRepository().add(pearl);
+
+        final PrisonPearlCreateEvent createEvent = new PrisonPearlCreateEvent(pearl);
+        Bukkit.getPluginManager().callEvent(createEvent);
     }
 
     /**
