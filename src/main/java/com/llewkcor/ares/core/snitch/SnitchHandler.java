@@ -290,7 +290,7 @@ public final class SnitchHandler {
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
 
         for (int i = start; i < end; i++) {
-            if (entries.size() <= end) {
+            if (entries.size() <= i) {
                 break;
             }
 
