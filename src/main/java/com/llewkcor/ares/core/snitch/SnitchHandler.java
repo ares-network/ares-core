@@ -57,7 +57,7 @@ public final class SnitchHandler {
         if (blocking) {
             Logger.warn("Blocking the thread while attempting to save all snitches to the database");
             SnitchDAO.saveSnitches(manager.getPlugin().getDatabaseInstance(), manager.getSnitchRepository());
-            Logger.print("Saved " + manager.getSnitchRepository().size() + " Networks");
+            Logger.print("Saved " + manager.getSnitchRepository().size() + " Snitches");
             return;
         }
 
