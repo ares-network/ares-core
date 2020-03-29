@@ -74,7 +74,7 @@ public final class PrisonPearlHandler {
         final Player freePlayer = pearl.getImprisoned();
 
         if (freePlayer != null) {
-            freePlayer.sendMessage(ChatColor.GREEN + "You have been freed! Reason: " + reason);
+            freePlayer.sendMessage(ChatColor.GREEN + "You have been set free! Reason: " + reason);
         }
 
         pearl.setExpireTime(Time.now());
@@ -142,11 +142,11 @@ public final class PrisonPearlHandler {
         final PearlLocationType locationType = pearl.getLocationType();
 
         if (locationType.equals(PearlLocationType.PLAYER)) {
-            promise.success(ChatColor.DARK_PURPLE + "Your pearl is being held by a player at " + ChatColor.LIGHT_PURPLE + new BLocatable(location.getBlock()).toString());
+            promise.success(ChatColor.GRAY + "Your pearl is being held by a player at " + ChatColor.DARK_AQUA + new BLocatable(location.getBlock()).toString());
         } else if (locationType.equals(PearlLocationType.CONTAINER)) {
-            promise.success(ChatColor.DARK_PURPLE + "Your pearl is being held in a container at " + ChatColor.LIGHT_PURPLE + new BLocatable(location.getBlock()).toString());
+            promise.success(ChatColor.GRAY + "Your pearl is being held in a container at " + ChatColor.DARK_AQUA + new BLocatable(location.getBlock()).toString());
         } else {
-            promise.success(ChatColor.DARK_PURPLE + "Your pearl is laying on the ground at " + ChatColor.LIGHT_PURPLE + new BLocatable(location.getBlock()).toString());
+            promise.success(ChatColor.GRAY + "Your pearl is laying on the ground at " + ChatColor.DARK_AQUA + new BLocatable(location.getBlock()).toString());
         }
     }
 }

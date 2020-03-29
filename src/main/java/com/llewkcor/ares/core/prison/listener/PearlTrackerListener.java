@@ -555,15 +555,15 @@ public final class PearlTrackerListener implements Listener {
      */
     private String getLocationUpdate(BLocatable location, PearlLocationType type, String description) {
         if (type == PearlLocationType.GROUND) {
-            return ChatColor.DARK_PURPLE + "Your pearl is now on the ground at " + ChatColor.LIGHT_PURPLE + location.toString() + ChatColor.DARK_PURPLE + ", Reason: " + ChatColor.AQUA + description;
+            return ChatColor.GRAY + "Your pearl is now on the ground at " + ChatColor.DARK_AQUA + location.toString() + ChatColor.GRAY + ", Reason: " + ChatColor.AQUA + description;
         }
 
         else if (type == PearlLocationType.CONTAINER) {
-            return ChatColor.DARK_PURPLE + "Your pearl is now in a container at " + ChatColor.LIGHT_PURPLE + location.toString() + ChatColor.DARK_PURPLE + ", Reason: " + ChatColor.AQUA + description;
+            return ChatColor.GRAY + "Your pearl is now in a container at " + ChatColor.DARK_AQUA + location.toString() + ChatColor.GRAY + ", Reason: " + ChatColor.AQUA + description;
         }
 
         else {
-            return ChatColor.DARK_PURPLE + "Your pearl is now being held by a player at " + ChatColor.LIGHT_PURPLE + location.toString() + ChatColor.DARK_PURPLE + ", Reason: " + ChatColor.AQUA + description;
+            return ChatColor.GRAY + "Your pearl is now being held by a player at " + ChatColor.DARK_AQUA + location.toString() + ChatColor.GRAY + ", Reason: " + ChatColor.AQUA + description;
         }
     }
 }
