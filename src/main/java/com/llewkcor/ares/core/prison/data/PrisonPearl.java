@@ -164,7 +164,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
     public Document toDocument() {
         return new Document()
                 .append("id", uniqueId)
-                .append("username", imprisonedUsername)
+                .append("imprisoned_username", imprisonedUsername)
                 .append("imprisoned_id", imprisonedUUID)
                 .append("killer_username", killerUsername)
                 .append("killer_id", killerUUID)
