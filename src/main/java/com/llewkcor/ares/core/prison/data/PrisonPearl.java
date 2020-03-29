@@ -171,6 +171,6 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
                 .append("created", createTime)
                 .append("expire", expireTime)
                 .append("location", location.toDocument())
-                .append("location_type", locationType);
+                .append("location_type", locationType.name());
     }
 }
