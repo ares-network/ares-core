@@ -201,6 +201,7 @@ public final class PearlTrackerListener implements Listener {
 
             prisonPearl.setLocationType(PearlLocationType.PLAYER);
             prisonPearl.setLocation(new BLocatable(player.getLocation().getBlock()));
+            prisonPearl.setTrackedItem(null);
 
             final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -232,6 +233,7 @@ public final class PearlTrackerListener implements Listener {
 
                 prisonPearl.setLocationType(PearlLocationType.PLAYER);
                 prisonPearl.setLocation(new BLocatable(player.getLocation().getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -245,6 +247,7 @@ public final class PearlTrackerListener implements Listener {
 
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -274,6 +277,7 @@ public final class PearlTrackerListener implements Listener {
 
                     prisonPearl.setLocationType(PearlLocationType.PLAYER);
                     prisonPearl.setLocation(new BLocatable(player.getLocation().getBlock()));
+                    prisonPearl.setTrackedItem(null);
 
                     final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -287,6 +291,7 @@ public final class PearlTrackerListener implements Listener {
 
                     prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                     prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
+                    prisonPearl.setTrackedItem(null);
 
                     final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -319,6 +324,7 @@ public final class PearlTrackerListener implements Listener {
             if (holder instanceof Player) {
                 prisonPearl.setLocationType(PearlLocationType.PLAYER);
                 prisonPearl.setLocation(new BLocatable(player.getLocation().getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -330,6 +336,7 @@ public final class PearlTrackerListener implements Listener {
 
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -356,6 +363,7 @@ public final class PearlTrackerListener implements Listener {
             if (holder instanceof Player) {
                 prisonPearl.setLocationType(PearlLocationType.PLAYER);
                 prisonPearl.setLocation(new BLocatable(player.getLocation().getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
@@ -367,6 +375,7 @@ public final class PearlTrackerListener implements Listener {
 
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
+                prisonPearl.setTrackedItem(null);
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
