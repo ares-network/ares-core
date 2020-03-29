@@ -89,8 +89,9 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
         final List<String> lore = Lists.newArrayList();
 
         lore.add(ChatColor.DARK_PURPLE + "Prison Pearl");
-        lore.add(ChatColor.GOLD + "Imprisoned on: " + ChatColor.GRAY + Time.convertToSimpleDate(new Date(createTime)));
+        lore.add(ChatColor.GOLD + "Imprisoned on: " + ChatColor.GRAY + Time.convertToDate(new Date(createTime)));
         lore.add(ChatColor.GOLD + "Imprisoned by: " + ChatColor.GRAY + killerUsername);
+        lore.add(ChatColor.GOLD + "Expires on: " + ChatColor.GRAY + Time.convertToDate(new Date(expireTime)));
         lore.add(ChatColor.RESET + " ");
         lore.add(ChatColor.DARK_GRAY + uniqueId.toString());
 
