@@ -46,7 +46,7 @@ public final class PearlTrackerListener implements Listener {
 
         final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(itemStack);
 
-        if (prisonPearl == null) {
+        if (prisonPearl == null || prisonPearl.getLocationType().equals(PearlLocationType.GROUND)) {
             return;
         }
 
@@ -490,7 +490,7 @@ public final class PearlTrackerListener implements Listener {
 
         final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(itemStack);
 
-        if (prisonPearl == null) {
+        if (prisonPearl == null || prisonPearl.getLocationType().equals(PearlLocationType.GROUND)) {
             return;
         }
 
