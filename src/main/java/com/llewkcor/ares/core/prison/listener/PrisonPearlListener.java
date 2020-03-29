@@ -49,7 +49,7 @@ public final class PrisonPearlListener implements Listener {
             if (item.getAmount() > 1) {
                 item.setAmount(item.getAmount() - 1);
             } else {
-                item.setType(Material.AIR);
+                killer.getInventory().remove(item);
             }
 
             manager.getHandler().imprisonPlayer(player.getName(), player.getUniqueId(), killer);
