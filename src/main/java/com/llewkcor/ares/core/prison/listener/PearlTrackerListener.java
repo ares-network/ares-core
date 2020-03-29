@@ -10,8 +10,10 @@ import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -22,6 +24,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -412,6 +415,39 @@ public final class PearlTrackerListener implements Listener {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.RED + "Invalid inventory behavior");
                 }
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        final ItemStack item = player.getItemInHand();
+        final Entity entity = event.getRightClicked();
+
+        if (item == null || !item.getType().equals(Material.ENDER_PEARL)) {
+            return;
+        }
+
+        final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(item);
+
+        if (prisonPearl == null) {
+            return;
+        }
+
+        if (entity instanceof ItemFrame) {
+            prisonPearl.setLocation(new BLocatable(entity.getLocation().getBlock()));
+            prisonPearl.setLocationType(PearlLocationType.CONTAINER);
+            prisonPearl.setTrackedItem(null);
+
+            final Player imprisoned = prisonPearl.getImprisoned();
+
+            if (imprisoned != null) {
+                imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
             }
         }
     }
