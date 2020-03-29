@@ -39,5 +39,7 @@ timer-settings:
 message-settings:
   range-chat: true
   chat-ranges:
-    general: 1000.0
-    death-messages: 500.0
+    PLAYER_CHAT: 1000.0
+    DEATH_MESSAGE: 500.0
+    PLAYER_IMPRISONED: 250.0
+    PLAYER_RELEASED: 250.0

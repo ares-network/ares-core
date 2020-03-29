@@ -1,13 +1,16 @@
 package com.llewkcor.ares.core.configs.type;
 
+import com.google.common.collect.Maps;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.general.Configs;
+import com.llewkcor.ares.core.chat.data.ChatMessageType;
 import com.llewkcor.ares.core.configs.AresConfig;
 import com.llewkcor.ares.core.configs.ConfigManager;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 public final class GeneralConfig implements AresConfig {
     @Getter public final ConfigManager configManager;
@@ -24,6 +27,8 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int maxJoinedNetworks;
     @Getter public int networkCreateCooldown;
     @Getter public int networkRenameCooldown;
+    @Getter public boolean rangedChatEnabled;
+    @Getter public Map<ChatMessageType, Double> chatRanges;
 
     public GeneralConfig(ConfigManager configManager) {
         this.configManager = configManager;
@@ -44,6 +49,20 @@ public final class GeneralConfig implements AresConfig {
         maxJoinedNetworks = config.getInt("network-settings.max-joined-networks");
         networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
         networkRenameCooldown = config.getInt("network-settings.cooldowns.rename");
+
+        rangedChatEnabled = config.getBoolean("message-settings.range-chat");
+        chatRanges = Maps.newHashMap();
+
+        for (String chatType : config.getConfigurationSection("message-settings.chat-ranges").getKeys(false)) {
+            ChatMessageType type = null;
+
+            try {
+                type = ChatMessageType.valueOf(chatType);
+            } catch (IllegalArgumentException ignored) {}
+
+            final double distance = config.getInt("message-settings.chat-ranges." + chatType);
+            chatRanges.put(type, distance);
+        }
 
         Logger.print("General configuration loaded");
     }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.llewkcor.ares.core.bridge.BridgeManager;
+import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.command.*;
 import com.llewkcor.ares.core.configs.ConfigManager;
@@ -30,6 +31,7 @@ public final class Ares extends JavaPlugin {
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
     @Getter protected PaperCommandManager commandManager;
+    @Getter protected ChatManager chatManager;
 
     @Override
     public void onEnable() {
@@ -40,6 +42,7 @@ public final class Ares extends JavaPlugin {
         this.claimManager = new ClaimManager(this);
         this.prisonPearlManager = new PrisonPearlManager(this);
         this.commandManager = new PaperCommandManager(this);
+        this.chatManager = new ChatManager(this);
 
         configManager.load();
 
