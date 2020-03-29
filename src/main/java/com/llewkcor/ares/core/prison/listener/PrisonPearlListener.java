@@ -27,6 +27,10 @@ public final class PrisonPearlListener implements Listener {
         final Player player = event.getEntity();
         final Player killer = player.getKiller();
 
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         if (killer == null) {
             return;
         }
@@ -54,6 +58,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onThrowPearl(ProjectileLaunchEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!(event.getEntity() instanceof EnderPearl) || !(event.getEntity().getShooter() instanceof Player)) {
             return;
         }
@@ -95,7 +103,16 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerTeleportEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         final Player player = event.getPlayer();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         final PrisonPearl prisonPearl = manager.getPrisonPearlByPlayer(player.getUniqueId());
 
         if (prisonPearl == null) {
