@@ -4,12 +4,13 @@ import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -51,9 +52,27 @@ public final class PrisonPearlListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerFree(ProjectileLaunchEvent event) {
-        // TODO: Release player
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onThrowPearl(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof EnderPearl) || !(event.getEntity().getShooter() instanceof Player)) {
+            return;
+        }
+
+        final Player player = (Player)event.getEntity().getShooter();
+        final ItemStack hand = player.getItemInHand();
+
+        if (hand == null || !hand.getType().equals(Material.ENDER_PEARL)) {
+            return;
+        }
+
+        final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(hand);
+
+        if (prisonPearl == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+        manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
     }
 
     @EventHandler
