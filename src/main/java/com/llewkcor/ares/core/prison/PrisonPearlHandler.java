@@ -64,8 +64,6 @@ public final class PrisonPearlHandler {
 
     /**
      * Handles releasing a player from imprisonment
-     *
-     * TODO: Unfinished
      * @param pearl Prison Pearl
      * @param reason Release Reason
      */
