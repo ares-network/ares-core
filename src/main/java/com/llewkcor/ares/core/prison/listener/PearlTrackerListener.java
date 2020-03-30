@@ -248,6 +248,12 @@ public final class PearlTrackerListener implements Listener {
 
                 final Location blockLocation = getInventoryLocation(holder);
 
+                if (blockLocation == null) {
+                    player.sendMessage(ChatColor.RED + "Prison Pearls can not be stored in this inventory type");
+                    event.setCancelled(true);
+                    return;
+                }
+
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
                 prisonPearl.setTrackedItem(null);
@@ -292,6 +298,12 @@ public final class PearlTrackerListener implements Listener {
 
                     final Location blockLocation = getInventoryLocation(holder);
 
+                    if (blockLocation == null) {
+                        player.sendMessage(ChatColor.RED + "Prison Pearls can not be stored in this inventory type");
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                     prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
                     prisonPearl.setTrackedItem(null);
@@ -335,7 +347,14 @@ public final class PearlTrackerListener implements Listener {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                 }
             } else {
+
                 final Location blockLocation = getInventoryLocation(holder);
+
+                if (blockLocation == null) {
+                    player.sendMessage(ChatColor.RED + "Prison Pearls can not be stored in this inventory type");
+                    event.setCancelled(true);
+                    return;
+                }
 
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
@@ -374,7 +393,14 @@ public final class PearlTrackerListener implements Listener {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                 }
             } else {
+
                 final Location blockLocation = getInventoryLocation(holder);
+
+                if (blockLocation == null) {
+                    player.sendMessage(ChatColor.RED + "Prison Pearls can not be stored in this inventory type");
+                    event.setCancelled(true);
+                    return;
+                }
 
                 prisonPearl.setLocationType(PearlLocationType.CONTAINER);
                 prisonPearl.setLocation(new BLocatable(blockLocation.getBlock()));
@@ -577,6 +603,8 @@ public final class PearlTrackerListener implements Listener {
             return ((BrewingStand)holder).getLocation();
         } else if (holder instanceof Hopper) {
             return ((Hopper)holder).getLocation();
+        } else if (holder instanceof Dropper) {
+            return ((Dropper)holder).getLocation();
         } else {
             return null;
         }
