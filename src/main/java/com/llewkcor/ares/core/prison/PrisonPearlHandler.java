@@ -3,6 +3,7 @@ package com.llewkcor.ares.core.prison;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
+import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.prison.data.PearlLocationType;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
@@ -95,6 +97,23 @@ public final class PrisonPearlHandler {
         Bukkit.getPluginManager().callEvent(releaseEvent);
 
         new Scheduler(manager.getPlugin()).async(() -> PrisonPearlDAO.deletePearl(manager.getPlugin().getDatabaseInstance(), pearl)).run();
+    }
+
+    /**
+     * Handles forcefully releasing a player from imprisonment
+     * @param sender CommandSender
+     * @param username Username
+     * @param promise Promise
+     */
+    public void forceReleasePearl(CommandSender sender, String username, SimplePromise promise) {
+        final PrisonPearl prisonPearl = manager.getPrisonPearlByPlayer(username);
+
+        if (prisonPearl == null || prisonPearl.isExpired()) {
+            promise.fail("Player is not imprisoned");
+            return;
+        }
+
+        releasePearl(prisonPearl, "Force released by " + sender.getName());
     }
 
     /**

@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import com.llewkcor.ares.commons.promise.FailablePromise;
+import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.core.Ares;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,6 +39,18 @@ public final class PrisonPearlCommand extends BaseCommand {
     @CommandPermission("arescore.prisonpearl.free")
     @CommandCompletion("@players")
     public void onFree(CommandSender sender, String username) {
+        plugin.getPrisonPearlManager().getHandler().forceReleasePearl(sender, username, new SimplePromise() {
+            @Override
+            public void success() {
+                sender.sendMessage(ChatColor.GREEN + "Player has been released");
+            }
+
+            @Override
+            public void fail(String s) {
+                sender.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
 
     }
 
