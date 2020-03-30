@@ -8,10 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,10 +16,7 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -365,6 +359,7 @@ public final class PearlTrackerListener implements Listener {
                 if (imprisoned != null) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                 }
+
             }
         } else if (event.getAction().equals(InventoryAction.SWAP_WITH_CURSOR)) {
             final ItemStack item = event.getCursor();
@@ -411,6 +406,7 @@ public final class PearlTrackerListener implements Listener {
                 if (imprisoned != null) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                 }
+
             }
         } else if (
                 event.getAction().equals(InventoryAction.DROP_ALL_CURSOR) ||
@@ -583,6 +579,29 @@ public final class PearlTrackerListener implements Listener {
         }
 
         manager.getHandler().releasePearl(prisonPearl, "Pearl naturally despawned");
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        final Inventory inventory = event.getInventory();
+        int removed = 0;
+
+        for (ItemStack content : inventory.getContents()) {
+            if (content == null || !content.getType().equals(Material.ENDER_PEARL)) {
+                continue;
+            }
+
+            if (manager.isExpiredPrisonPearl(content)) {
+                inventory.removeItem(content);
+                removed += 1;
+            }
+        }
+
+        if (removed >= 0) {
+            for (HumanEntity viewer : inventory.getViewers()) {
+                viewer.sendMessage(ChatColor.YELLOW + "Removed " + removed + " expired Prison Pearls from this inventory");
+            }
+        }
     }
 
     /**

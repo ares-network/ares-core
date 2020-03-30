@@ -10,11 +10,14 @@ import com.llewkcor.ares.core.prison.listener.PearlTrackerListener;
 import com.llewkcor.ares.core.prison.listener.PrisonPearlListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -88,5 +91,33 @@ public final class PrisonPearlManager {
         }
 
         return world.getHighestBlockAt(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockZ()).getLocation();
+    }
+
+    /**
+     * Returns true if the provided item was at some point a prison pearl but is now expired
+     * @param item Bukkit ItemStack
+     * @return True if this is an expired prison pearl item
+     */
+    public boolean isExpiredPrisonPearl(ItemStack item) {
+        final PrisonPearl existing = getPrisonPearlByItem(item);
+
+        if (existing != null) {
+            return false;
+        }
+
+        final ItemMeta meta = item.getItemMeta();
+        final List<String> lore = meta.getLore();
+
+        if (lore == null || lore.isEmpty()) {
+            return false;
+        }
+
+        for (String loreLine : lore) {
+            if (loreLine.contains(ChatColor.DARK_PURPLE + "Prison Pearl")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
