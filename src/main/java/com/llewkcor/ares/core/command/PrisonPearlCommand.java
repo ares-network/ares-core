@@ -68,6 +68,18 @@ public final class PrisonPearlCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("toggle|mute")
+    @Description("Toggle Prison Pearl notification updates")
+    public void onMute(Player player) {
+        if (plugin.getPrisonPearlManager().isPearlNotificationsMuted(player)) {
+            plugin.getPrisonPearlManager().getMutedPearlNotifications().remove(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY + "Prison Pearl notifications " + ChatColor.GREEN + "enabled");
+        } else {
+            plugin.getPrisonPearlManager().getMutedPearlNotifications().add(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY + "Prison Pearl notifications " + ChatColor.RED + "disabled");
+        }
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();

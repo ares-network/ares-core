@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,12 +27,14 @@ public final class PrisonPearlManager {
     @Getter public final Ares plugin;
     @Getter public final PrisonPearlHandler handler;
     @Getter public final Set<PrisonPearl> pearlRepository;
+    @Getter public final Set<UUID> mutedPearlNotifications;
     @Getter public BukkitTask expireUpdater;
 
     public PrisonPearlManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new PrisonPearlHandler(this);
         this.pearlRepository = Sets.newConcurrentHashSet();
+        this.mutedPearlNotifications = Sets.newConcurrentHashSet();
 
         Bukkit.getPluginManager().registerEvents(new PearlTrackerListener(this), plugin);
         Bukkit.getPluginManager().registerEvents(new PrisonPearlListener(this), plugin);
@@ -76,6 +79,15 @@ public final class PrisonPearlManager {
      */
     public PrisonPearl getPrisonPearlByItem(ItemStack item) {
         return pearlRepository.stream().filter(pearl -> pearl.match(item) && !pearl.isExpired()).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns true if the provided Bukkit Player has prison pearl notifications muted
+     * @param player Player
+     * @return True if muted
+     */
+    public boolean isPearlNotificationsMuted(Player player) {
+        return mutedPearlNotifications.contains(player.getUniqueId());
     }
 
     /**

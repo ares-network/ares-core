@@ -53,7 +53,7 @@ public final class PearlTrackerListener implements Listener {
 
         final Player imprisoned = prisonPearl.getImprisoned();
 
-        if (imprisoned != null) {
+        if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
             imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), PearlLocationType.GROUND, player.getName() + " dropped on the ground"));
         }
     }
@@ -80,7 +80,7 @@ public final class PearlTrackerListener implements Listener {
 
         final Player imprisoned = prisonPearl.getImprisoned();
 
-        if (imprisoned != null) {
+        if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
             imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), PearlLocationType.PLAYER, player.getName() + " picked up"));
         }
     }
@@ -109,7 +109,7 @@ public final class PearlTrackerListener implements Listener {
 
             final Player imprisoned = prisonPearl.getImprisoned();
 
-            if (imprisoned != null) {
+            if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                 imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), PearlLocationType.GROUND, player.getName() + " dropped upon disconnecting"));
             }
         }
@@ -203,7 +203,7 @@ public final class PearlTrackerListener implements Listener {
 
             final Player imprisoned = prisonPearl.getImprisoned();
 
-            if (imprisoned != null) {
+            if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                 imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
             }
 
@@ -235,7 +235,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                 }
 
@@ -255,7 +255,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                 }
 
@@ -285,7 +285,7 @@ public final class PearlTrackerListener implements Listener {
 
                     final Player imprisoned = prisonPearl.getImprisoned();
 
-                    if (imprisoned != null) {
+                    if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                         imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                     }
 
@@ -305,7 +305,7 @@ public final class PearlTrackerListener implements Listener {
 
                     final Player imprisoned = prisonPearl.getImprisoned();
 
-                    if (imprisoned != null) {
+                    if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                         imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                     }
                 }
@@ -338,7 +338,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                 }
             } else {
@@ -357,7 +357,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                 }
 
@@ -385,7 +385,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), player.getName() + " grabbed out of a container"));
                 }
             } else {
@@ -404,7 +404,7 @@ public final class PearlTrackerListener implements Listener {
 
                 final Player imprisoned = prisonPearl.getImprisoned();
 
-                if (imprisoned != null) {
+                if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                     imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
                 }
 
@@ -469,7 +469,7 @@ public final class PearlTrackerListener implements Listener {
 
             final Player imprisoned = prisonPearl.getImprisoned();
 
-            if (imprisoned != null) {
+            if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
                 imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Placed in a container"));
             }
         }
@@ -502,7 +502,7 @@ public final class PearlTrackerListener implements Listener {
 
         final Player imprisoned = prisonPearl.getImprisoned();
 
-        if (imprisoned != null) {
+        if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
             imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Moved inside a container"));
         }
     }
@@ -533,7 +533,7 @@ public final class PearlTrackerListener implements Listener {
 
         final Player imprisoned = prisonPearl.getImprisoned();
 
-        if (imprisoned != null) {
+        if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
             imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Picked up by a hopper"));
         }
     }
@@ -559,7 +559,7 @@ public final class PearlTrackerListener implements Listener {
 
         final Player imprisoned = prisonPearl.getImprisoned();
 
-        if (imprisoned != null) {
+        if (imprisoned != null && !manager.isPearlNotificationsMuted(imprisoned)) {
             imprisoned.sendMessage(getLocationUpdate(prisonPearl.getLocation(), prisonPearl.getLocationType(), "Item dropped on the ground"));
         }
     }
