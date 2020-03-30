@@ -132,7 +132,8 @@ public final class PearlTrackerListener implements Listener {
                 continue;
             }
 
-            manager.getHandler().releasePearl(prisonPearl, "Naturally despawned");
+            event.setCancelled(true);
+            return;
         }
     }
 
