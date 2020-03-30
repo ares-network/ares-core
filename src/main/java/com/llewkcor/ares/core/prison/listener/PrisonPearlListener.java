@@ -1,12 +1,15 @@
 package com.llewkcor.ares.core.prison.listener;
 
+import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
+import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +25,40 @@ import org.bukkit.inventory.ItemStack;
 @AllArgsConstructor
 public final class PrisonPearlListener implements Listener {
     @Getter public final PrisonPearlManager manager;
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        final World world = player.getWorld();
+        final Location prison = manager.getPrisonLocation();
+        final PrisonPearl prisonPearl = manager.getPrisonPearlByPlayer(player.getUniqueId());
+
+        if (prisonPearl == null) {
+            return;
+        }
+
+        if (prison != null && !world.getName().equals(prison.getWorld().getName())) {
+            player.teleport(prison);
+        }
+
+        player.sendMessage(ChatColor.RED + "Your Prison Pearl will expire in " + Time.convertToRemaining(prisonPearl.getExpireTime() - Time.now()));
+        player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GOLD + "/pp locate" + ChatColor.GRAY + " to track the location of your Prison Pearl");
+        player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + "/pp info" + ChatColor.GRAY + " to view more information about your Prison Pearl");
+    }
+
+    @EventHandler
+    public void onPrisonPearl(PrisonPearlCreateEvent event) {
+        final PrisonPearl prisonPearl = event.getPrisonPearl();
+        final Player player = prisonPearl.getImprisoned();
+
+        if (player == null) {
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "Your Prison Pearl will expire in " + Time.convertToRemaining(prisonPearl.getExpireTime() - Time.now()));
+        player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GOLD + "/pp locate" + ChatColor.GRAY + " to track the location of your Prison Pearl");
+        player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + "/pp info" + ChatColor.GRAY + " to view more information about your Prison Pearl");
+    }
 
     @EventHandler
     public void onPlayerImprison(PlayerDeathEvent event) {
