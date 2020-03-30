@@ -64,12 +64,17 @@ public final class PrisonPearlListener implements Listener {
     public void onPlayerImprison(PlayerDeathEvent event) {
         final Player player = event.getEntity();
         final Player killer = player.getKiller();
+        final PrisonPearl existing = manager.getPrisonPearlByPlayer(player.getUniqueId());
 
         if (player.hasPermission("arescore.admin")) {
             return;
         }
 
         if (killer == null) {
+            return;
+        }
+
+        if (existing != null) {
             return;
         }
 
