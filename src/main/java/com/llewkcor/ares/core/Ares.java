@@ -80,6 +80,7 @@ public final class Ares extends JavaPlugin {
 
         // Cleanup Tasks
         snitchManager.getHandler().performEntryCleanup();
+        prisonPearlManager.getHandler().performPearlCleanup();
     }
 
     @Override

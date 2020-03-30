@@ -63,6 +63,17 @@ public final class PrisonPearlHandler {
     }
 
     /**
+     * Performs a scrub on all Prison Pearls to remove expired Prison Pearls from the database
+     */
+    public void performPearlCleanup() {
+        Logger.warn("Starting Prison Pearl Cleanup...");
+
+        new Scheduler(manager.getPlugin()).async(() ->
+                manager.getPearlRepository().stream().filter(PrisonPearl::isExpired).forEach(expiredPearl ->
+                        PrisonPearlDAO.deletePearl(manager.getPlugin().getDatabaseInstance(), expiredPearl))).run();
+    }
+
+    /**
      * Handles releasing a player from imprisonment
      * @param pearl Prison Pearl
      * @param reason Release Reason
