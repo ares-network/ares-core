@@ -2,24 +2,28 @@ package com.llewkcor.ares.core.prison;
 
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.logger.Logger;
+import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
+import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
 import com.llewkcor.ares.core.prison.listener.PearlTrackerListener;
 import com.llewkcor.ares.core.prison.listener.PrisonPearlListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class PrisonPearlManager {
     @Getter public final Ares plugin;
     @Getter public final PrisonPearlHandler handler;
     @Getter public final Set<PrisonPearl> pearlRepository;
+    @Getter public BukkitTask expireUpdater;
 
     public PrisonPearlManager(Ares plugin) {
         this.plugin = plugin;
@@ -28,6 +32,20 @@ public final class PrisonPearlManager {
 
         Bukkit.getPluginManager().registerEvents(new PearlTrackerListener(this), plugin);
         Bukkit.getPluginManager().registerEvents(new PrisonPearlListener(this), plugin);
+
+        this.expireUpdater = new Scheduler(plugin).async(() -> {
+            final Set<PrisonPearl> expired = pearlRepository.stream().filter(PrisonPearl::isExpired).collect(Collectors.toSet());
+
+            if (expired.isEmpty()) {
+                return;
+            }
+
+            expired.forEach(expiredPearl -> {
+                PrisonPearlDAO.deletePearl(plugin.getDatabaseInstance(), expiredPearl);
+
+                new Scheduler(plugin).sync(() -> handler.releasePearl(expiredPearl, "Imprisonment has naturally expired")).run();
+            });
+        }).repeat(20L, 5 * 20L).run();
     }
 
     /**
