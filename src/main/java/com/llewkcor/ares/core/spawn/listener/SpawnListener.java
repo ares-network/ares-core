@@ -7,6 +7,7 @@ import com.llewkcor.ares.core.spawn.data.SpawnDAO;
 import com.llewkcor.ares.core.spawn.data.SpawnData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,6 +36,7 @@ public final class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
         SpawnData spawnData = manager.getSpawnData(player);
 
         if (spawnData == null) {
@@ -46,11 +48,13 @@ public final class SpawnListener implements Listener {
             new Scheduler(manager.getPlugin()).async(() -> SpawnDAO.saveSpawnData(manager.getPlugin().getDatabaseInstance(), finalizedSpawnData)).run();
         }
 
-        if (!spawnData.isSpawned() || spawnData.isSendToSpawnOnJoin()) {
+        if (!spawnData.isSpawned() || spawnData.isSendToSpawnOnJoin() && prisonPearl == null) {
             spawnData.setSendToSpawnOnJoin(false);
             spawnData.setSpawned(false);
 
-            new Scheduler(manager.getPlugin()).sync(() -> player.teleport(manager.getSpawnLocation().getBukkit())).delay(3L).run();
+            new Scheduler(manager.getPlugin()).sync(() -> {
+                player.teleport(manager.getSpawnLocation().getBukkit());
+            }).delay(3L).run();
         }
     }
 
@@ -65,12 +69,12 @@ public final class SpawnListener implements Listener {
             return;
         }
 
-        spawnData.setSpawned(false);
-        spawnData.setSendToSpawnOnJoin(false);
-
         if (prisonPearl != null) {
             return;
         }
+
+        spawnData.setSpawned(false);
+        spawnData.setSendToSpawnOnJoin(false);
 
         event.setRespawnLocation(manager.getSpawnLocation().getBukkit());
     }
