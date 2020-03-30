@@ -82,6 +82,8 @@ public final class PrisonPearlHandler {
 
         final PrisonPearlReleaseEvent releaseEvent = new PrisonPearlReleaseEvent(pearl, reason);
         Bukkit.getPluginManager().callEvent(releaseEvent);
+
+        new Scheduler(manager.getPlugin()).async(() -> PrisonPearlDAO.deletePearl(manager.getPlugin().getDatabaseInstance(), pearl)).run();
     }
 
     /**

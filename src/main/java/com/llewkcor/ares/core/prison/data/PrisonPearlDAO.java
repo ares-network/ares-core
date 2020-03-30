@@ -72,7 +72,7 @@ public final class PrisonPearlDAO {
      * @param database MongoDB Instance
      * @param pearl Prison Pearl
      */
-    public static void deleteSnitch(MongoDB database, PrisonPearl pearl) {
+    public static void deletePearl(MongoDB database, PrisonPearl pearl) {
         final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
         final Document existing = collection.find(Filters.eq("id", pearl.getUniqueId())).first();
 
