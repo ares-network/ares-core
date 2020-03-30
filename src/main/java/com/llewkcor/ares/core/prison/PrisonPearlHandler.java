@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
 import java.util.UUID;
 
 public final class PrisonPearlHandler {
@@ -187,5 +188,33 @@ public final class PrisonPearlHandler {
         } else {
             promise.success(ChatColor.GRAY + "Your pearl is laying on the ground at " + ChatColor.DARK_AQUA + new BLocatable(location.getBlock()).toString());
         }
+    }
+
+    /**
+     * Prints the informmation about a Prison Pearl
+     * @param player Player
+     * @param username Username
+     * @param promise Promise
+     */
+    public void lookupInfo(Player player, String username, SimplePromise promise) {
+        final PrisonPearl pearl;
+
+        if (username != null) {
+            pearl = manager.getPrisonPearlByPlayer(username);
+        } else {
+            pearl = manager.getPrisonPearlByPlayer(player.getUniqueId());
+        }
+
+        if (pearl == null || pearl.isExpired()) {
+            promise.fail("Player is not imprisoned");
+            return;
+        }
+
+        player.sendMessage(ChatColor.GOLD + "Prison Pearl ID: " + ChatColor.GRAY + pearl.getUniqueId().toString());
+        player.sendMessage(ChatColor.GOLD + "Imprisoned by: " + ChatColor.GRAY + pearl.getKillerUsername());
+        player.sendMessage(ChatColor.GOLD + "Imprisoned on: " + ChatColor.GRAY + Time.convertToDate(new Date(pearl.getCreateTime())));
+        player.sendMessage(ChatColor.GOLD + "Expires in: " + ChatColor.GRAY + Time.convertToRemaining(pearl.getExpireTime() - Time.now()));
+        player.sendMessage(ChatColor.GRAY + "You can locate this Prison Pearl by typing '" + ChatColor.GOLD + "/pp locate [username]" + ChatColor.GRAY + "'.");
+        promise.success();
     }
 }

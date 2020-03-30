@@ -18,6 +18,7 @@ public final class PrisonPearlCommand extends BaseCommand {
     @Getter public final Ares plugin;
 
     @Subcommand("locate")
+    @Syntax("[player]")
     @Description("Locate your prison pearl")
     public void onLocate(Player player, @Optional String username) {
         plugin.getPrisonPearlManager().getHandler().locatePearl(player, username, new FailablePromise<String>() {
@@ -52,6 +53,19 @@ public final class PrisonPearlCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("info")
+    @Syntax("[player]")
+    @Description("View the information about your prison pearl")
+    public void onInfo(Player player, @Optional String username) {
+        plugin.getPrisonPearlManager().getHandler().lookupInfo(player, username, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @HelpCommand
