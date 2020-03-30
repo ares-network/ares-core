@@ -14,6 +14,7 @@ import com.llewkcor.ares.core.network.NetworkManager;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.snitch.SnitchManager;
+import com.llewkcor.ares.core.spawn.SpawnManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,6 +28,7 @@ public final class Ares extends JavaPlugin {
     @Getter public SnitchManager snitchManager;
     @Getter public ClaimManager claimManager;
     @Getter public PrisonPearlManager prisonPearlManager;
+    @Getter public SpawnManager spawnManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -43,6 +45,7 @@ public final class Ares extends JavaPlugin {
         this.prisonPearlManager = new PrisonPearlManager(this);
         this.commandManager = new PaperCommandManager(this);
         this.chatManager = new ChatManager(this);
+        this.spawnManager = new SpawnManager(this);
 
         configManager.load();
 
@@ -66,6 +69,7 @@ public final class Ares extends JavaPlugin {
         commandManager.registerCommand(new PrisonPearlCommand(this));
         commandManager.registerCommand(new SnitchCommand(this));
         commandManager.registerCommand(new ClaimCommand(this));
+        commandManager.registerCommand(new SpawnCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
@@ -89,6 +93,7 @@ public final class Ares extends JavaPlugin {
         networkManager.getHandler().saveAll(true);
         snitchManager.getHandler().saveAll(true);
         prisonPearlManager.getHandler().saveAll(true);
+        spawnManager.getHandler().saveAll(true);
 
         databaseInstance.closeConnection();
     }

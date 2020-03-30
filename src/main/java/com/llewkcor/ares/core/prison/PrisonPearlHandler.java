@@ -11,6 +11,8 @@ import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
+import com.llewkcor.ares.core.spawn.data.SpawnDAO;
+import com.llewkcor.ares.core.spawn.data.SpawnData;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -89,7 +91,24 @@ public final class PrisonPearlHandler {
         final Player freePlayer = pearl.getImprisoned();
 
         if (freePlayer != null) {
+            final SpawnData spawnData = manager.getPlugin().getSpawnManager().getSpawnData(freePlayer);
+
             freePlayer.sendMessage(ChatColor.GREEN + "You have been set free! Reason: " + reason);
+            freePlayer.teleport(manager.getPlugin().getSpawnManager().getSpawnLocation().getBukkit());
+
+            if (spawnData != null) {
+                spawnData.setSpawned(false);
+                spawnData.setSendToSpawnOnJoin(false);
+            }
+        } else {
+            new Scheduler(manager.getPlugin()).async(() -> {
+                final SpawnData spawnData = SpawnDAO.getSpawnData(manager.getPlugin().getDatabaseInstance(), pearl.getImprisonedUUID());
+
+                if (spawnData != null) {
+                    spawnData.setSpawned(false);
+                    spawnData.setSendToSpawnOnJoin(true);
+                }
+            }).run();
         }
 
         pearl.setExpireTime(Time.now());
