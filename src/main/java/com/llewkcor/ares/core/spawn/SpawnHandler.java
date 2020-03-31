@@ -120,6 +120,11 @@ public final class SpawnHandler {
             return;
         }
 
+        if (found.getUniqueId().equals(player.getUniqueId())) {
+            promise.fail("You can not send a teleport request to yourself");
+            return;
+        }
+
         manager.getTeleportRequests().put(player.getUniqueId(), found.getUniqueId());
         found.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GOLD + " has requested to teleport to your location from spawn. Type '" + ChatColor.YELLOW + "/spawn accept " + player.getName() + ChatColor.GOLD + "' to summon them.");
 
