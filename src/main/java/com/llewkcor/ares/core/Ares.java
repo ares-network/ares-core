@@ -42,7 +42,7 @@ public final class Ares extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.accountManager = (AccountManager) Bukkit.getPluginManager().getPlugin("Account_Manager");
+        this.accountManager = (AccountManager) Bukkit.getPluginManager().getPlugin("ares-account-manager");
 
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
