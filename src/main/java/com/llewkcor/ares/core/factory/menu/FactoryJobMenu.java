@@ -30,7 +30,7 @@ public final class FactoryJobMenu extends Menu {
     private BukkitTask updateTask;
 
     public FactoryJobMenu(Ares plugin, Player player, Factory factory) {
-        super(plugin, player, "Factory Jobs", 5);
+        super(plugin, player, "Factory Jobs", 1);
 
         this.ares = plugin;
         this.factory = factory;

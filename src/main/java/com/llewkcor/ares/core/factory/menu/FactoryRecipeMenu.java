@@ -55,6 +55,11 @@ public final class FactoryRecipeMenu extends Menu {
                     .build();
 
             addItem(new ClickableItem(icon, pos, click -> {
+                if (factory.getActiveJobs().size() >= 9) {
+                    player.sendMessage(ChatColor.RED + "This factory is working at max capacity. Please wait for a job to finish before starting a new one.");
+                    return;
+                }
+
                 if (!recipe.hasRequiredMaterials(player)) {
                     player.sendMessage(ChatColor.RED + "You do not have enough resources to start this job");
                     return;
