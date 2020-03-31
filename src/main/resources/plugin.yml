@@ -2,3 +2,4 @@ name: ares-core
 main: com.llewkcor.ares.core.Ares
 version: 1.0.0
 author: John Rockwell
+depends: [Account_Manager]

@@ -3,6 +3,7 @@ package com.llewkcor.ares.core;
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.llewkcor.ares.accman.AccountManager;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.llewkcor.ares.core.bridge.BridgeManager;
 import com.llewkcor.ares.core.chat.ChatManager;
@@ -24,6 +25,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public final class Ares extends JavaPlugin {
+    @Getter public AccountManager accountManager;
+
     @Getter public ConfigManager configManager;
     @Getter public NetworkManager networkManager;
     @Getter public SnitchManager snitchManager;
@@ -39,6 +42,8 @@ public final class Ares extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.accountManager = (AccountManager) Bukkit.getPluginManager().getPlugin("Account_Manager");
+
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
         this.bridgeManager = new BridgeManager(this);

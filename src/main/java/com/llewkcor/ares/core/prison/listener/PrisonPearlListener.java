@@ -1,5 +1,8 @@
 package com.llewkcor.ares.core.prison.listener;
 
+import com.google.common.collect.ImmutableCollection;
+import com.llewkcor.ares.accman.data.AccountEntry;
+import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
@@ -17,15 +20,37 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 public final class PrisonPearlListener implements Listener {
     @Getter public final PrisonPearlManager manager;
+
+    // TODO: Test this
+    @EventHandler
+    public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
+        final UUID uniqueId = event.getUniqueId();
+        final long address = IPS.toLong(event.getAddress().getHostAddress());
+        final ImmutableCollection<AccountEntry> accountEntries = manager.getPlugin().getAccountManager().getAccounts(uniqueId, address);
+        int activePrisonPearls = 0;
+
+        for (AccountEntry entry : accountEntries) {
+            final PrisonPearl pearl = manager.getPrisonPearlByPlayer(entry.getUniqueId());
+
+            if (pearl == null) {
+                continue;
+            }
+
+            activePrisonPearls += 1;
+        }
+
+        if (activePrisonPearls > manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have too many imprisoned accounts");
+        }
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

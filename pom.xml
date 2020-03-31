@@ -103,5 +103,13 @@
             <artifactId>ares-commons</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Ares Account Manager -->
+        <dependency>
+            <groupId>com.llewkcor</groupId>
+            <artifactId>ares-account-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
