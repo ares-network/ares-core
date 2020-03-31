@@ -128,6 +128,7 @@ public final class PrisonPearlListener implements Listener {
             }
 
             manager.getHandler().imprisonPlayer(player.getName(), player.getUniqueId(), killer);
+            break;
         }
     }
 
