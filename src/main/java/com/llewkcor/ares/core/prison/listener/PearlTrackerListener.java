@@ -585,7 +585,6 @@ public final class PearlTrackerListener implements Listener {
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         final Inventory inventory = event.getInventory();
-        int removed = 0;
 
         for (ItemStack content : inventory.getContents()) {
             if (content == null || !content.getType().equals(Material.ENDER_PEARL)) {
@@ -594,13 +593,6 @@ public final class PearlTrackerListener implements Listener {
 
             if (manager.isExpiredPrisonPearl(content)) {
                 inventory.removeItem(content);
-                removed += 1;
-            }
-        }
-
-        if (removed >= 0) {
-            for (HumanEntity viewer : inventory.getViewers()) {
-                viewer.sendMessage(ChatColor.YELLOW + "Removed " + removed + " expired Prison Pearls from this inventory");
             }
         }
     }
