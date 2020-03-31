@@ -1,0 +1,12 @@
+recipes:
+  RECIPE_A:
+    name: "Recipe A"
+    job_time: 30
+    input:
+      DIAMOND:
+        amount: 3
+      STICK:
+        amount: 4
+    output:
+      ENDER_PEARL:
+        amount: 4

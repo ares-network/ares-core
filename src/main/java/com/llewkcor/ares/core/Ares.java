@@ -9,6 +9,7 @@ import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.command.*;
 import com.llewkcor.ares.core.configs.ConfigManager;
+import com.llewkcor.ares.core.factory.FactoryManager;
 import com.llewkcor.ares.core.listener.AresEventListener;
 import com.llewkcor.ares.core.network.NetworkManager;
 import com.llewkcor.ares.core.network.data.Network;
@@ -29,6 +30,7 @@ public final class Ares extends JavaPlugin {
     @Getter public ClaimManager claimManager;
     @Getter public PrisonPearlManager prisonPearlManager;
     @Getter public SpawnManager spawnManager;
+    @Getter public FactoryManager factoryManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -46,6 +48,7 @@ public final class Ares extends JavaPlugin {
         this.commandManager = new PaperCommandManager(this);
         this.chatManager = new ChatManager(this);
         this.spawnManager = new SpawnManager(this);
+        this.factoryManager = new FactoryManager(this);
 
         configManager.load();
 
@@ -57,6 +60,7 @@ public final class Ares extends JavaPlugin {
         snitchManager.getHandler().loadAll(true);
         claimManager.getHandler().loadAll(true);
         prisonPearlManager.getHandler().loadAll(true);
+        factoryManager.getHandler().loadAll(true);
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new AresEventListener(this), this);
@@ -70,6 +74,7 @@ public final class Ares extends JavaPlugin {
         commandManager.registerCommand(new SnitchCommand(this));
         commandManager.registerCommand(new ClaimCommand(this));
         commandManager.registerCommand(new SpawnCommand(this));
+        commandManager.registerCommand(new FactoryCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
@@ -94,6 +99,7 @@ public final class Ares extends JavaPlugin {
         snitchManager.getHandler().saveAll(true);
         prisonPearlManager.getHandler().saveAll(true);
         spawnManager.getHandler().saveAll(true);
+        factoryManager.getHandler().saveAll(true);
 
         databaseInstance.closeConnection();
     }
