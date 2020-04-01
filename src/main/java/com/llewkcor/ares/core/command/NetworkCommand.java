@@ -158,7 +158,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Access a networks settings menu")
     @CommandCompletion("@networks")
     public void onConfig(Player player, String network) {
+        plugin.getNetworkManager().getHandler().getMenuHandler().openConfigMenu(player, network, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("rename")
