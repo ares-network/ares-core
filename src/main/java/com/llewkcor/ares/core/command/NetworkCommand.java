@@ -212,6 +212,22 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("permission|p|perm|perms")
+    @Description("Edit a players permissions for your network")
+    @Syntax("<network name> <username>")
+    @CommandCompletion("@networks @players")
+    public void onPermission(Player player, String networkName, String username) {
+        plugin.getNetworkManager().getHandler().getMenuHandler().openPlayerEditMenu(player, networkName, username, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
