@@ -193,6 +193,25 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("list")
+    @Description("Prints a list of all networks you are in")
+    public void onList(Player player, @Optional String username) {
+        if (username != null && !player.hasPermission("arescore.admin")) {
+            player.sendMessage(ChatColor.RED + "You do not have permission to perform this action");
+            return;
+        }
+
+        plugin.getNetworkManager().getHandler().getDisplayHandler().printList(player, username, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();

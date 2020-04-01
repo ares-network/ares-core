@@ -11,6 +11,7 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -61,5 +62,28 @@ public final class NetworkDisplayHandler {
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");
             }
         });
+    }
+
+    /**
+     * Handles printing a list of all networks the provided player is in
+     * @param player Bukkit Player
+     * @param promise Promise
+     */
+    public void printList(Player player, String username, SimplePromise promise) {
+        final Collection<Network> networks = (username != null) ? handler.getManager().getNetworksByPlayer(username) : handler.getManager().getNetworksByPlayer(player);
+
+        if (networks.isEmpty()) {
+            promise.fail("You are not in any networks");
+            return;
+        }
+
+        if (username != null) {
+            player.sendMessage(ChatColor.GOLD + username + "'s Networks");
+        } else {
+            player.sendMessage(ChatColor.GOLD + "Your Networks");
+        }
+
+        networks.forEach(network -> player.sendMessage(ChatColor.GRAY + " - " + ChatColor.GOLD + network.getName() + ChatColor.DARK_AQUA + " (" + ChatColor.AQUA + network.getOnlineMembers().size() + "/" + network.getMembers().size() + " online" + ChatColor.DARK_AQUA + ")"));
+        promise.success();
     }
 }
