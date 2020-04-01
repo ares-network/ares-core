@@ -76,7 +76,7 @@ public final class ClaimCreatorListener implements Listener {
                     item.setAmount(item.getAmount() - 1);
                 }
             } else {
-                item.setType(Material.AIR);
+                player.getInventory().removeItem(item);
             }
 
             player.updateInventory();
