@@ -126,8 +126,50 @@ public final class NetworkManageHandler {
         promise.success();
     }
 
-    public void kickFromNetwork(Player player, String network, String username, SimplePromise promise) {
+    /**
+     * Handles kicking a player from a network
+     * @param player Player
+     * @param networkName Network Name
+     * @param username Kicked username
+     * @param promise Promise
+     */
+    public void kickFromNetwork(Player player, String networkName, String username, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember networkMember = network.getMember(player);
+
+        if (networkMember == null && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (networkMember != null && !networkMember.hasPermission(NetworkPermission.KICK_MEMBERS) && !networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        final NetworkMember kickedMember = network.getMember(username);
+
+        if (kickedMember == null) {
+            promise.fail("Player not found");
+            return;
+        }
+
+        if (kickedMember.hasPermission(NetworkPermission.ADMIN) && networkMember != null && !networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
+            promise.fail("You can not kick a player with admin permissions");
+            return;
+        }
+
+        network.removeMember(kickedMember.getUniqueId());
+        network.sendMessage(ChatColor.YELLOW + player.getName() + " kicked " + kickedMember.getUsername() + " from " + network.getName());
+        Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") kicked " + kickedMember.getUsername() + "(" + kickedMember.getUniqueId().toString() + ") from " + network.getName() + "(" + network.getName() + ")");
+        promise.success();
     }
 
     /**
