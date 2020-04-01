@@ -13,6 +13,7 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,6 +53,11 @@ public final class ClaimCreatorListener implements Listener {
 
         if (manager.getPlugin().getConfigManager().getClaimsConfig().getNonReinforceables().contains(block.getType())) {
             player.sendMessage(ChatColor.RED + "This type of block can not be fortified");
+            return;
+        }
+
+        if (block.getWorld().getEnvironment().equals(World.Environment.THE_END)) {
+            player.sendMessage(ChatColor.RED + "Blocks in The End can not be fortified");
             return;
         }
 
@@ -138,6 +144,11 @@ public final class ClaimCreatorListener implements Listener {
 
         if (manager.getPlugin().getConfigManager().getClaimsConfig().getNonReinforceables().contains(block.getType())) {
             player.sendMessage(ChatColor.RED + "This type of block can not be reinforced");
+            return;
+        }
+
+        if (block.getWorld().getEnvironment().equals(World.Environment.THE_END)) {
+            player.sendMessage(ChatColor.RED + "Blocks in The End can not be fortified");
             return;
         }
 
