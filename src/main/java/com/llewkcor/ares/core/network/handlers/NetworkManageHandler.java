@@ -7,6 +7,8 @@ import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.claim.data.ClaimDAO;
+import com.llewkcor.ares.core.factory.data.Factory;
+import com.llewkcor.ares.core.factory.data.FactoryDAO;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkDAO;
@@ -20,6 +22,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class NetworkManageHandler {
@@ -60,9 +63,11 @@ public final class NetworkManageHandler {
 
         final List<Snitch> snitches = handler.getManager().getPlugin().getSnitchManager().getSnitchByOwner(network);
         final List<Claim> claims = handler.getManager().getPlugin().getClaimManager().getClaimByOwner(network);
+        final Set<Factory> factories = handler.getManager().getPlugin().getFactoryManager().getFactoryByOwner(network);
 
         handler.getManager().getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
         handler.getManager().getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
+        handler.getManager().getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
 
         network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
         network.getMembers().clear();
@@ -78,6 +83,10 @@ public final class NetworkManageHandler {
 
             for (Claim claim : claims) {
                 ClaimDAO.deleteClaim(handler.getManager().getPlugin().getDatabaseInstance(), claim);
+            }
+
+            for (Factory factory : factories) {
+                FactoryDAO.deleteFactory(handler.getManager().getPlugin().getDatabaseInstance(), factory);
             }
         }).run();
 
