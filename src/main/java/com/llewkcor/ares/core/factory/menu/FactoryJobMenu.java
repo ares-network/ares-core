@@ -19,7 +19,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -51,10 +50,7 @@ public final class FactoryJobMenu extends Menu {
         }
 
         final List<FactoryJob> jobs = Lists.newArrayList(factory.getActiveJobs());
-
-        // Sort and flip
         jobs.sort(Comparator.comparing(FactoryJob::getReadyTime));
-        Collections.reverse(jobs);
 
         int pos = 0;
 
