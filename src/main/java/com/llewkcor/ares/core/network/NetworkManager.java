@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.network.listener.NetworkListener;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -21,6 +23,8 @@ public final class NetworkManager {
         this.plugin = plugin;
         this.handler = new NetworkHandler(this);
         this.networkRepository = Sets.newConcurrentHashSet();
+
+        Bukkit.getPluginManager().registerEvents(new NetworkListener(this), plugin);
     }
 
     /**
