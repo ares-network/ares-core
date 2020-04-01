@@ -203,7 +203,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        if (network.getMembers().stream().anyMatch(member -> member.getUniqueId().equals(player.getUniqueId())) && !admin) {
+        if (network.getMembers().stream().anyMatch(member -> member.getUniqueId().equals(player.getUniqueId()))) {
             promise.fail("You are already a member of this network");
             return;
         }
