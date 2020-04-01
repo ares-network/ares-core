@@ -19,6 +19,11 @@ public final class LoginListener implements Listener {
 
     @EventHandler
     public void onLoginAttempt(AsyncPlayerPreLoginEvent event) {
+        if (plugin.getDatabaseInstance() == null || !plugin.getDatabaseInstance().isConnected()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is still loading");
+            return;
+        }
+
         final UUID uniqueId = event.getUniqueId();
         final long address = IPS.toLong(event.getAddress().getHostAddress());
         final AltEntry existingMatch = AltDAO.getAlt(plugin.getDatabaseInstance(), uniqueId, address);
