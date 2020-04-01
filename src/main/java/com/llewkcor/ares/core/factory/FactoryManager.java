@@ -11,6 +11,7 @@ import com.llewkcor.ares.core.factory.data.FactoryJob;
 import com.llewkcor.ares.core.factory.data.FactoryRecipe;
 import com.llewkcor.ares.core.factory.listener.FactoryListener;
 import com.llewkcor.ares.core.factory.menu.FactoryMenuHandler;
+import com.llewkcor.ares.core.network.data.Network;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -67,6 +68,15 @@ public final class FactoryManager {
      */
     public Factory getFactoryByID(UUID uniqueId) {
         return factoryRepository.stream().filter(factory -> factory.getUniqueId().equals(uniqueId)).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns an Immutable Set of Factories for the provided Network
+     * @param network Network
+     * @return Immutable Set of Factories
+     */
+    public ImmutableSet<Factory> getFactoryByOwner(Network network) {
+        return ImmutableSet.copyOf(factoryRepository.stream().filter(factory -> factory.getOwnerId().equals(network.getUniqueId())).collect(Collectors.toSet()));
     }
 
     /**
