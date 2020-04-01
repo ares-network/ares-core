@@ -21,7 +21,7 @@ network-settings:
     min-length: 3
     max-length: 16
   max-members: 100
-  max-joined-networks: 10
+  max-joined-networks: 15
   cooldowns:
     rename: 30
     create: 1800
