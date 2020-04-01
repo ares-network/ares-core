@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDocument;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.util.general.Time;
-import com.llewkcor.ares.core.network.data.NetworkMember;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -111,7 +110,7 @@ public final class Snitch implements MongoDocument<Snitch> {
      * @return True if within radius
      */
     public boolean inRadius(BLocatable location, double radius) {
-        return this.location.distance(location) <= radius;
+        return this.location.distance(location) <= radius && this.location.getWorldName().equals(location.getWorldName());
     }
 
     @SuppressWarnings("unchecked") @Override
