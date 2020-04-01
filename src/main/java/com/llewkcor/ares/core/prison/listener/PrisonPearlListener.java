@@ -1,9 +1,9 @@
 package com.llewkcor.ares.core.prison.listener;
 
 import com.google.common.collect.ImmutableCollection;
-import com.llewkcor.ares.accman.data.AccountEntry;
 import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.alts.data.AltEntry;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
@@ -34,10 +34,10 @@ public final class PrisonPearlListener implements Listener {
     public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
         final UUID uniqueId = event.getUniqueId();
         final long address = IPS.toLong(event.getAddress().getHostAddress());
-        final ImmutableCollection<AccountEntry> accountEntries = manager.getPlugin().getAccountManager().getAccounts(uniqueId, address);
+        final ImmutableCollection<AltEntry> accountEntries = manager.getPlugin().getAltManager().getAlts(uniqueId, address);
         int activePrisonPearls = 0;
 
-        for (AccountEntry entry : accountEntries) {
+        for (AltEntry entry : accountEntries) {
             final PrisonPearl pearl = manager.getPrisonPearlByPlayer(entry.getUniqueId());
 
             if (pearl == null) {

@@ -3,8 +3,8 @@ package com.llewkcor.ares.core;
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.llewkcor.ares.accman.AccountManager;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
+import com.llewkcor.ares.core.alts.AltManager;
 import com.llewkcor.ares.core.bridge.BridgeManager;
 import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.claim.ClaimManager;
@@ -25,8 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public final class Ares extends JavaPlugin {
-    @Getter public AccountManager accountManager;
-
     @Getter public ConfigManager configManager;
     @Getter public NetworkManager networkManager;
     @Getter public SnitchManager snitchManager;
@@ -34,6 +32,7 @@ public final class Ares extends JavaPlugin {
     @Getter public PrisonPearlManager prisonPearlManager;
     @Getter public SpawnManager spawnManager;
     @Getter public FactoryManager factoryManager;
+    @Getter public AltManager altManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -42,8 +41,6 @@ public final class Ares extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.accountManager = (AccountManager) Bukkit.getPluginManager().getPlugin("ares-account-manager");
-
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
         this.bridgeManager = new BridgeManager(this);
@@ -54,6 +51,7 @@ public final class Ares extends JavaPlugin {
         this.chatManager = new ChatManager(this);
         this.spawnManager = new SpawnManager(this);
         this.factoryManager = new FactoryManager(this);
+        this.altManager = new AltManager(this);
 
         configManager.load();
 
