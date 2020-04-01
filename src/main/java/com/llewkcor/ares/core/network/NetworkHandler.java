@@ -2,9 +2,21 @@ package com.llewkcor.ares.core.network;
 
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.claim.data.Claim;
+import com.llewkcor.ares.core.claim.data.ClaimDAO;
+import com.llewkcor.ares.core.factory.data.Factory;
+import com.llewkcor.ares.core.factory.data.FactoryDAO;
+import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkDAO;
 import com.llewkcor.ares.core.network.handlers.*;
+import com.llewkcor.ares.core.snitch.data.Snitch;
+import com.llewkcor.ares.core.snitch.data.SnitchDAO;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class NetworkHandler {
     @Getter public final NetworkManager manager;
@@ -57,6 +69,49 @@ public final class NetworkHandler {
         new Scheduler(manager.getPlugin()).async(() -> {
             NetworkDAO.saveNetworks(manager.getPlugin().getDatabaseInstance(), manager.getNetworkRepository());
             new Scheduler(manager.getPlugin()).sync(() -> Logger.print("Saved " + manager.getNetworkRepository().size() + " Networks")).run();
+        }).run();
+    }
+
+    /**
+     * Performs a scrub of the database to remove any network that is now considered inactive
+     */
+    public void performNetworkCleanup() {
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final List<Network> expired = manager.getNetworkRepository().stream().filter(network -> network.getLastSeen() < (Time.now() - (manager.getPlugin().getConfigManager().getGeneralConfig().getNetworkInactiveExpireSeconds() * 1000L))).collect(Collectors.toList());
+
+            if (expired.isEmpty()) {
+                return;
+            }
+
+            expired.forEach(network -> {
+                final List<Snitch> snitches = manager.getPlugin().getSnitchManager().getSnitchByOwner(network);
+                final List<Claim> claims = manager.getPlugin().getClaimManager().getClaimByOwner(network);
+                final Set<Factory> factories = manager.getPlugin().getFactoryManager().getFactoryByOwner(network);
+
+                manager.getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
+                manager.getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
+                manager.getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
+
+                network.getMembers().clear();
+                network.getPendingMembers().clear();
+                manager.getNetworkRepository().remove(network);
+
+                NetworkDAO.deleteNetwork(manager.getPlugin().getDatabaseInstance(), network);
+
+                for (Snitch snitch : snitches) {
+                    SnitchDAO.deleteSnitch(manager.getPlugin().getDatabaseInstance(), snitch);
+                }
+
+                for (Claim claim : claims) {
+                    ClaimDAO.deleteClaim(manager.getPlugin().getDatabaseInstance(), claim);
+                }
+
+                for (Factory factory : factories) {
+                    FactoryDAO.deleteFactory(manager.getPlugin().getDatabaseInstance(), factory);
+                }
+
+                Logger.warn(network.getName() + "(" + network.getUniqueId().toString() + ") has been deleted due to inactivity");
+            });
         }).run();
     }
 }

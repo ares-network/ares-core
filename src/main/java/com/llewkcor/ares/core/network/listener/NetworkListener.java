@@ -1,5 +1,6 @@
 package com.llewkcor.ares.core.network.listener;
 
+import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.network.NetworkManager;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
@@ -27,6 +28,8 @@ public final class NetworkListener implements Listener {
             if (!member.getUsername().equals(player.getName())) {
                 member.setUsername(player.getName());
             }
+
+            network.setLastSeen(Time.now());
         });
     }
 }

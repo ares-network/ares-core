@@ -22,6 +22,7 @@ public final class Network implements MongoDocument<Network> {
     @Getter @Setter public String name;
     @Getter public UUID creatorId;
     @Getter public long createDate;
+    @Getter @Setter public long lastSeen;
     @Getter public Set<NetworkMember> members;
     @Getter public List<UUID> pendingMembers;
     @Getter public NetworkConfig configuration;
@@ -31,6 +32,7 @@ public final class Network implements MongoDocument<Network> {
         this.name = null;
         this.creatorId = null;
         this.createDate = Time.now();
+        this.lastSeen = Time.now();
         this.members = Sets.newConcurrentHashSet();
         this.pendingMembers = Collections.synchronizedList(Lists.newArrayList());
         this.configuration = new NetworkConfig();
@@ -46,6 +48,7 @@ public final class Network implements MongoDocument<Network> {
         this.name = name;
         this.creatorId = creator.getUniqueId();
         this.createDate = Time.now();
+        this.lastSeen = Time.now();
         this.members = Sets.newConcurrentHashSet();
         this.pendingMembers = Collections.synchronizedList(Lists.newArrayList());
         this.configuration = new NetworkConfig();
@@ -192,6 +195,7 @@ public final class Network implements MongoDocument<Network> {
         this.name = document.getString("name");
         this.creatorId = (UUID)document.get("creator_id");
         this.createDate = document.getLong("create_date");
+        this.lastSeen = document.getLong("last_seen");
         this.members = Sets.newConcurrentHashSet();
         this.pendingMembers = Collections.synchronizedList((List<UUID>)document.get("pending_members"));
         this.configuration = new NetworkConfig().fromDocument(document.get("config", Document.class));
@@ -212,6 +216,7 @@ public final class Network implements MongoDocument<Network> {
                 .append("name", name)
                 .append("creator_id", creatorId)
                 .append("create_date", createDate)
+                .append("last_seen", lastSeen)
                 .append("members", membersDocuments)
                 .append("pending_members", pendingMembers)
                 .append("config", configuration.toDocument());

@@ -25,6 +25,7 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int maxPasswordLength;
     @Getter public int maxNetworkMembers;
     @Getter public int maxJoinedNetworks;
+    @Getter public int networkInactiveExpireSeconds;
     @Getter public int networkCreateCooldown;
     @Getter public int networkRenameCooldown;
     @Getter public boolean rangedChatEnabled;
@@ -47,6 +48,7 @@ public final class GeneralConfig implements AresConfig {
         maxPasswordLength = config.getInt("network-settings.password.max-length");
         maxNetworkMembers = config.getInt("network-settings.max-members");
         maxJoinedNetworks = config.getInt("network-settings.max-joined-networks");
+        networkInactiveExpireSeconds = config.getInt("network-settings.inactive-delete-time");
         networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
         networkRenameCooldown = config.getInt("network-settings.cooldowns.rename");
 

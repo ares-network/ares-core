@@ -22,6 +22,7 @@ network-settings:
     max-length: 16
   max-members: 100
   max-joined-networks: 15
+  inactive-delete-time: 25200
   cooldowns:
     rename: 30
     create: 1800
