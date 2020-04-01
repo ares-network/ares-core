@@ -54,6 +54,26 @@ public final class NetworkMember implements MongoDocument<NetworkMember> {
     }
 
     /**
+     * Adds the provided Network Permission to this players granted permissions
+     * @param permission Network Permission
+     */
+    public void grantPermission(NetworkPermission permission) {
+        if (!grantedPermissions.contains(permission)) {
+            grantedPermissions.add(permission);
+        }
+    }
+
+    /**
+     * Removes the provided Network Permission from this players granted permissions
+     * @param permission Network Permission
+     */
+    public void revokePermission(NetworkPermission permission) {
+        if (grantedPermissions.contains(permission)) {
+            grantedPermissions.remove(permission);
+        }
+    }
+
+    /**
      * Returns true if this member has access to the provided permission
      * @param permission Network Permission
      * @return True if granted
