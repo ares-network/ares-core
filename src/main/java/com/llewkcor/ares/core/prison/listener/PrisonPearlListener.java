@@ -32,6 +32,11 @@ public final class PrisonPearlListener implements Listener {
     // TODO: Test this
     @EventHandler
     public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
+        if (!manager.getPlugin().getDatabaseInstance().isConnected()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "The server is still starting");
+            return;
+        }
+
         final UUID uniqueId = event.getUniqueId();
         final long address = IPS.toLong(event.getAddress().getHostAddress());
         final ImmutableCollection<AltEntry> accountEntries = manager.getPlugin().getAltManager().getAlts(uniqueId, address);
