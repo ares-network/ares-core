@@ -17,6 +17,7 @@ import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.snitch.SnitchManager;
 import com.llewkcor.ares.core.spawn.SpawnManager;
+import com.llewkcor.ares.core.timers.TimerManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -33,6 +34,7 @@ public final class Ares extends JavaPlugin {
     @Getter public SpawnManager spawnManager;
     @Getter public FactoryManager factoryManager;
     @Getter public AltManager altManager;
+    @Getter public TimerManager timerManager;
 
     @Getter protected MongoDB databaseInstance;
     @Getter protected BridgeManager bridgeManager;
@@ -52,6 +54,7 @@ public final class Ares extends JavaPlugin {
         this.spawnManager = new SpawnManager(this);
         this.factoryManager = new FactoryManager(this);
         this.altManager = new AltManager(this);
+        this.timerManager = new TimerManager(this);
 
         configManager.load();
 
