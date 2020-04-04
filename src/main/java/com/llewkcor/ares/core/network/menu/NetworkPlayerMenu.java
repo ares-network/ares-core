@@ -27,7 +27,7 @@ public final class NetworkPlayerMenu extends Menu {
     @Getter public BukkitTask updateTask;
 
     public NetworkPlayerMenu(Ares plugin, Network network, NetworkMember member, Player player) {
-        super(plugin, player, member.getUsername() + "'s Permissions", 1);
+        super(plugin, player, member.getUsername() + "'s Permissions", 2);
         this.network = network;
         this.member = member;
         this.updateScheduler = new Scheduler(plugin).sync(this::update).repeat(0L, 20L);

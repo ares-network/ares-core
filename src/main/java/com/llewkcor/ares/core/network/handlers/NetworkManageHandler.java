@@ -5,6 +5,8 @@ import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.bastion.data.Bastion;
+import com.llewkcor.ares.core.bastion.data.BastionDAO;
 import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.claim.data.ClaimDAO;
 import com.llewkcor.ares.core.factory.data.Factory;
@@ -64,10 +66,12 @@ public final class NetworkManageHandler {
         final List<Snitch> snitches = handler.getManager().getPlugin().getSnitchManager().getSnitchByOwner(network);
         final List<Claim> claims = handler.getManager().getPlugin().getClaimManager().getClaimByOwner(network);
         final Set<Factory> factories = handler.getManager().getPlugin().getFactoryManager().getFactoryByOwner(network);
+        final Set<Bastion> bastions = handler.getManager().getPlugin().getBastionManager().getBastionByOwner(network);
 
         handler.getManager().getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
         handler.getManager().getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
         handler.getManager().getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
+        handler.getManager().getPlugin().getBastionManager().getBastionRepository().removeAll(bastions);
 
         network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
         network.getMembers().clear();
@@ -87,6 +91,10 @@ public final class NetworkManageHandler {
 
             for (Factory factory : factories) {
                 FactoryDAO.deleteFactory(handler.getManager().getPlugin().getDatabaseInstance(), factory);
+            }
+
+            for (Bastion bastion : bastions) {
+                BastionDAO.deleteBastion(handler.getManager().getPlugin().getDatabaseInstance(), bastion);
             }
         }).run();
 

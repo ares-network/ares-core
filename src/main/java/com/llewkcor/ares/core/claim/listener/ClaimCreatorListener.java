@@ -4,16 +4,14 @@ import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.claim.data.Claim;
+import com.llewkcor.ares.core.claim.event.BlockReinforceEvent;
 import com.llewkcor.ares.core.claim.session.ClaimSession;
 import com.llewkcor.ares.core.claim.session.ClaimSessionType;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,6 +56,13 @@ public final class ClaimCreatorListener implements Listener {
 
         if (block.getWorld().getEnvironment().equals(World.Environment.THE_END)) {
             player.sendMessage(ChatColor.RED + "Blocks in The End can not be fortified");
+            return;
+        }
+
+        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, block);
+        Bukkit.getPluginManager().callEvent(reinforceEvent);
+
+        if (reinforceEvent.isCancelled()) {
             return;
         }
 
@@ -149,6 +154,13 @@ public final class ClaimCreatorListener implements Listener {
 
         if (block.getWorld().getEnvironment().equals(World.Environment.THE_END)) {
             player.sendMessage(ChatColor.RED + "Blocks in The End can not be fortified");
+            return;
+        }
+
+        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, block);
+        Bukkit.getPluginManager().callEvent(reinforceEvent);
+
+        if (reinforceEvent.isCancelled()) {
             return;
         }
 

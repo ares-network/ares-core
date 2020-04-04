@@ -1,0 +1,3 @@
+settings:
+  bastion-radius: 16
+  bastion-mature: 600

@@ -3,6 +3,8 @@ package com.llewkcor.ares.core.network;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.bastion.data.Bastion;
+import com.llewkcor.ares.core.bastion.data.BastionDAO;
 import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.claim.data.ClaimDAO;
 import com.llewkcor.ares.core.factory.data.Factory;
@@ -87,10 +89,12 @@ public final class NetworkHandler {
                 final List<Snitch> snitches = manager.getPlugin().getSnitchManager().getSnitchByOwner(network);
                 final List<Claim> claims = manager.getPlugin().getClaimManager().getClaimByOwner(network);
                 final Set<Factory> factories = manager.getPlugin().getFactoryManager().getFactoryByOwner(network);
+                final Set<Bastion> bastions = manager.getPlugin().getBastionManager().getBastionByOwner(network);
 
                 manager.getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
                 manager.getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
                 manager.getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
+                manager.getPlugin().getBastionManager().getBastionRepository().removeAll(bastions);
 
                 network.getMembers().clear();
                 network.getPendingMembers().clear();
@@ -108,6 +112,10 @@ public final class NetworkHandler {
 
                 for (Factory factory : factories) {
                     FactoryDAO.deleteFactory(manager.getPlugin().getDatabaseInstance(), factory);
+                }
+
+                for (Bastion bastion : bastions) {
+                    BastionDAO.deleteBastion(manager.getPlugin().getDatabaseInstance(), bastion);
                 }
 
                 Logger.warn(network.getName() + "(" + network.getUniqueId().toString() + ") has been deleted due to inactivity");
