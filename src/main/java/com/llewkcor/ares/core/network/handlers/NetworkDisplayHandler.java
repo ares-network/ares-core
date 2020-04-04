@@ -3,9 +3,9 @@ package com.llewkcor.ares.core.network.handlers;
 import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.general.Time;
-import com.llewkcor.ares.core.bridge.data.account.AresAccount;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -39,7 +39,7 @@ public final class NetworkDisplayHandler {
         final int onlineMembers = network.getOnlineMembers().size();
         final boolean passwordEnabled = network.getConfiguration().isPasswordEnabled();
 
-        handler.getManager().getPlugin().getBridgeManager().getDataManager().getAccountByBukkitID(foundID, new FailablePromise<AresAccount>() {
+        handler.getManager().getPlugin().getPlayerManager().getAccountByBukkitID(foundID, new FailablePromise<AresAccount>() {
             @Override
             public void success(AresAccount aresAccount) {
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");

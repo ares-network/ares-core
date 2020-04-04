@@ -1,4 +1,4 @@
-package com.llewkcor.ares.core.bridge.data.session;
+package com.llewkcor.ares.core.player.data.session;
 
 import com.llewkcor.ares.commons.util.general.Time;
 

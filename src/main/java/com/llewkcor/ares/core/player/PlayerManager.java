@@ -1,16 +1,17 @@
-package com.llewkcor.ares.core.bridge.data;
+package com.llewkcor.ares.core.player;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
-import com.llewkcor.ares.core.bridge.BridgeManager;
-import com.llewkcor.ares.core.bridge.data.account.AccountDAO;
-import com.llewkcor.ares.core.bridge.data.account.AresAccount;
-import com.llewkcor.ares.core.bridge.data.listener.AccountListener;
-import com.llewkcor.ares.core.bridge.data.session.AccountCreateSession;
-import com.llewkcor.ares.core.bridge.data.session.AccountResetSession;
-import com.llewkcor.ares.core.bridge.data.session.AccountSession;
+import com.llewkcor.ares.core.Ares;
+import com.llewkcor.ares.core.player.data.DataHandler;
+import com.llewkcor.ares.core.player.data.account.AccountDAO;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
+import com.llewkcor.ares.core.player.data.listener.AccountListener;
+import com.llewkcor.ares.core.player.data.session.AccountCreateSession;
+import com.llewkcor.ares.core.player.data.session.AccountResetSession;
+import com.llewkcor.ares.core.player.data.session.AccountSession;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
@@ -18,19 +19,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public final class DataManager {
-    @Getter public final BridgeManager bridgeManager;
+public final class PlayerManager {
+    @Getter public final Ares plugin;
     @Getter public final DataHandler dataHandler;
     @Getter public final Set<AresAccount> accountRepository;
     @Getter public final Set<AccountSession> accountSessionRepository;
 
-    public DataManager(BridgeManager bridgeManager) {
-        this.bridgeManager = bridgeManager;
+    public PlayerManager(Ares plugin) {
+        this.plugin = plugin;
         this.dataHandler = new DataHandler(this);
         this.accountRepository = Sets.newConcurrentHashSet();
         this.accountSessionRepository = Sets.newConcurrentHashSet();
 
-        Bukkit.getPluginManager().registerEvents(new AccountListener(this), bridgeManager.getPlugin());
+        Bukkit.getPluginManager().registerEvents(new AccountListener(this), plugin);
     }
 
     /**
@@ -64,10 +65,10 @@ public final class DataManager {
             return;
         }
 
-        new Scheduler(bridgeManager.getPlugin()).async(() -> {
-            final AresAccount result = AccountDAO.getAccountByAresID(bridgeManager.getPlugin().getDatabaseInstance(), uniqueId);
+        new Scheduler(plugin).async(() -> {
+            final AresAccount result = AccountDAO.getAccountByAresID(plugin.getDatabaseInstance(), uniqueId);
 
-            new Scheduler(bridgeManager.getPlugin()).sync(() -> {
+            new Scheduler(plugin).sync(() -> {
                 if (result != null) {
                     promise.success(result);
                     return;
@@ -91,10 +92,10 @@ public final class DataManager {
             return;
         }
 
-        new Scheduler(bridgeManager.getPlugin()).async(() -> {
-            final AresAccount result = AccountDAO.getAccountByBukkitID(bridgeManager.getPlugin().getDatabaseInstance(), uniqueId);
+        new Scheduler(plugin).async(() -> {
+            final AresAccount result = AccountDAO.getAccountByBukkitID(plugin.getDatabaseInstance(), uniqueId);
 
-            new Scheduler(bridgeManager.getPlugin()).sync(() -> {
+            new Scheduler(plugin).sync(() -> {
                 if (result != null) {
                     promise.success(result);
                     return;
@@ -118,10 +119,10 @@ public final class DataManager {
             return;
         }
 
-        new Scheduler(bridgeManager.getPlugin()).async(() -> {
-            final AresAccount result = AccountDAO.getAccountByUsername(bridgeManager.getPlugin().getDatabaseInstance(), username);
+        new Scheduler(plugin).async(() -> {
+            final AresAccount result = AccountDAO.getAccountByUsername(plugin.getDatabaseInstance(), username);
 
-            new Scheduler(bridgeManager.getPlugin()).sync(() -> {
+            new Scheduler(plugin).sync(() -> {
                 if (result != null) {
                     promise.success(result);
                     return;

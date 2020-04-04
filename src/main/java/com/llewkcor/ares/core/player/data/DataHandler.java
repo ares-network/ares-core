@@ -1,13 +1,14 @@
-package com.llewkcor.ares.core.bridge.data;
+package com.llewkcor.ares.core.player.data;
 
+import com.llewkcor.ares.core.player.PlayerManager;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
 public final class DataHandler {
-    @Getter public final DataManager dataManager;
+    @Getter public final PlayerManager playerManager;
 
-    public DataHandler(DataManager dataManager) {
-        this.dataManager = dataManager;
+    public DataHandler(PlayerManager playerManager) {
+        this.playerManager = playerManager;
     }
 
     public void createAccountCreateSession(Player player) {

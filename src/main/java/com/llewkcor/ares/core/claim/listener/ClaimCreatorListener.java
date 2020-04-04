@@ -72,11 +72,11 @@ public final class ClaimCreatorListener implements Listener {
             // FUCKING MESS AHHHHHH FAHGET UHBOUT IT
             if (item.getAmount() > 1) {
                 // Player is using Stone reinforcement to reinforce stone, game overrides the subtraction meaning we need to double it
-                if (block.getType().equals(materialToSubtract)) {
+                if (block.getType().equals(materialToSubtract) && block.getTypeId() == (short)0) {
                     if (item.getAmount() > 2) {
                         item.setAmount(item.getAmount() - 2);
                     } else {
-                        item.setType(Material.AIR);
+                        player.getInventory().remove(item);
                     }
                 } else {
                     item.setAmount(item.getAmount() - 1);
@@ -163,7 +163,7 @@ public final class ClaimCreatorListener implements Listener {
         if (hand.getAmount() > 1) {
             hand.setAmount(hand.getAmount() - 1);
         } else {
-            hand.setType(Material.AIR);
+            player.getInventory().removeItem(hand);
         }
 
         final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(block), session.getClaimType());

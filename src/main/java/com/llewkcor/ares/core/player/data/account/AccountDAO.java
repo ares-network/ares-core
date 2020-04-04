@@ -1,4 +1,4 @@
-package com.llewkcor.ares.core.bridge.data.account;
+package com.llewkcor.ares.core.player.data.account;
 
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.mongodb.client.MongoCollection;

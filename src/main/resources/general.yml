@@ -7,6 +7,9 @@ auto-save:
 spawn-settings:
   random-spawn-radius: 3000
 
+combat-logger-settings:
+  enemy-radius: 16
+
 network-settings:
   name:
     min-length: 3
@@ -30,12 +33,12 @@ network-settings:
 timer-settings:
   fresh-spawn-pearl-protection: 300
   enderpearl: 30
+  crapple: 10
+  gapple: 10800
   combat-tag:
     attacker: 60
     attacked: 30
     logger-keep-alive: 30
-    crapple: 10
-    gapple: 10800
 
 message-settings:
   range-chat: true

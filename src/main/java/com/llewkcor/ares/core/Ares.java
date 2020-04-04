@@ -5,25 +5,31 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
 import com.llewkcor.ares.core.alts.AltManager;
-import com.llewkcor.ares.core.bridge.BridgeManager;
 import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.command.*;
 import com.llewkcor.ares.core.configs.ConfigManager;
 import com.llewkcor.ares.core.factory.FactoryManager;
 import com.llewkcor.ares.core.listener.AresEventListener;
+import com.llewkcor.ares.core.loggers.LoggerManager;
 import com.llewkcor.ares.core.network.NetworkManager;
 import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.player.PlayerManager;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.snitch.SnitchManager;
 import com.llewkcor.ares.core.spawn.SpawnManager;
 import com.llewkcor.ares.core.timers.TimerManager;
 import lombok.Getter;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.EntityTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 public final class Ares extends JavaPlugin {
     @Getter public ConfigManager configManager;
@@ -35,9 +41,10 @@ public final class Ares extends JavaPlugin {
     @Getter public FactoryManager factoryManager;
     @Getter public AltManager altManager;
     @Getter public TimerManager timerManager;
+    @Getter public LoggerManager loggerManager;
 
     @Getter protected MongoDB databaseInstance;
-    @Getter protected BridgeManager bridgeManager;
+    @Getter protected PlayerManager playerManager;
     @Getter protected PaperCommandManager commandManager;
     @Getter protected ChatManager chatManager;
 
@@ -45,7 +52,7 @@ public final class Ares extends JavaPlugin {
     public void onEnable() {
         this.configManager = new ConfigManager(this);
         this.networkManager = new NetworkManager(this);
-        this.bridgeManager = new BridgeManager(this);
+        this.playerManager = new PlayerManager(this);
         this.snitchManager = new SnitchManager(this);
         this.claimManager = new ClaimManager(this);
         this.prisonPearlManager = new PrisonPearlManager(this);
@@ -55,6 +62,7 @@ public final class Ares extends JavaPlugin {
         this.factoryManager = new FactoryManager(this);
         this.altManager = new AltManager(this);
         this.timerManager = new TimerManager(this);
+        this.loggerManager = new LoggerManager(this);
 
         configManager.load();
 
@@ -105,9 +113,41 @@ public final class Ares extends JavaPlugin {
         networkManager.getHandler().saveAll(true);
         snitchManager.getHandler().saveAll(true);
         prisonPearlManager.getHandler().saveAll(true);
-        spawnManager.getHandler().saveAll(true);
         factoryManager.getHandler().saveAll(true);
 
         databaseInstance.closeConnection();
+    }
+
+    /**
+     * Handles registering a custom entity
+     * @param entityName Entity Name
+     * @param entityId Entity ID
+     * @param nms NMS Class
+     * @param custom Custom Entity Class
+     */
+    public void registerCustomEntity(String entityName, int entityId, Class<? extends EntityInsentient> nms, Class<? extends EntityInsentient> custom) {
+        try {
+            final List<Map<?, ?>> dataMap = Lists.newArrayList();
+
+            for (Field f : EntityTypes.class.getDeclaredFields()){
+                if (f.getType().getSimpleName().equals(Map.class.getSimpleName())){
+                    f.setAccessible(true);
+                    dataMap.add((Map<?, ?>) f.get(null));
+                }
+            }
+
+            if (dataMap.get(2).containsKey(entityId)){
+                dataMap.get(0).remove(entityName);
+                dataMap.get(2).remove(entityId);
+            }
+
+            final Method method = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, int.class);
+
+            method.setAccessible(true);
+            method.invoke(null, custom, entityName, entityId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

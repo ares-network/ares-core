@@ -3,12 +3,9 @@ package com.llewkcor.ares.core.spawn;
 import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.location.PLocatable;
-import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
-import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Configs;
-import com.llewkcor.ares.core.spawn.data.SpawnDAO;
-import com.llewkcor.ares.core.spawn.data.SpawnData;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -29,37 +26,19 @@ public final class SpawnHandler {
     @Getter public final SpawnManager manager;
 
     /**
-     * Save all spawn data in memory to the MongoDB instance
-     * @param blocking Block the thread
-     */
-    public void saveAll(boolean blocking) {
-        if (blocking) {
-            Logger.warn("Blocking the thread while attempting to save all Spawn Data to the database");
-            SpawnDAO.saveSpawnData(manager.getPlugin().getDatabaseInstance(), manager.getSpawnData());
-            Logger.print("Saved " + manager.getSpawnData().size() + " Spawn Data Instances to the database");
-            return;
-        }
-
-        new Scheduler(manager.getPlugin()).async(() -> {
-            SpawnDAO.saveSpawnData(manager.getPlugin().getDatabaseInstance(), manager.getSpawnData());
-            new Scheduler(manager.getPlugin()).sync(() -> Logger.print("Saved " + manager.getSpawnData().size() + " Spawn Data Instances")).run();
-        }).run();
-    }
-
-    /**
      * Randomly place a player on the map
      * @param player Player
      * @param promise Promise
      */
     public void randomlySpawn(Player player, SimplePromise promise) {
-        final SpawnData spawnData = manager.getSpawnData(player);
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
 
-        if (spawnData == null) {
-            promise.fail("Failed to obtain your spawn data");
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
             return;
         }
 
-        if (spawnData.isSpawned()) {
+        if (account.isSpawned()) {
             promise.fail("You have already randomly spawned");
             return;
         }
@@ -77,7 +56,7 @@ public final class SpawnHandler {
 
         player.teleport(manager.getRandomSpawnLocation().getBukkit().getLocation());
 
-        spawnData.setSpawned(true);
+        account.setSpawned(true);
 
         promise.success();
     }
@@ -89,7 +68,7 @@ public final class SpawnHandler {
      * @param promise Promise
      */
     public void sendTeleportRequest(Player player, String username, SimplePromise promise) {
-        final SpawnData spawnData = manager.getSpawnData(player);
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final UUID existing = manager.getTeleportRequest(player);
 
         if (!player.hasPermission("arescore.spawn.ott")) {
@@ -98,12 +77,12 @@ public final class SpawnHandler {
             return;
         }
 
-        if (spawnData == null) {
-            promise.fail("Failed to obtain your spawn data");
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
             return;
         }
 
-        if (spawnData.isSpawned()) {
+        if (account.isSpawned()) {
             promise.fail("You have already randomly spawned");
             return;
         }
@@ -145,16 +124,16 @@ public final class SpawnHandler {
             return;
         }
 
-        final SpawnData spawnData = manager.getSpawnData(player);
-        final SpawnData summonData = manager.getSpawnData(summonPlayer);
+        final AresAccount playerAccount = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+        final AresAccount summonAccount = manager.getPlugin().getPlayerManager().getAccountByBukkitID(summonPlayer.getUniqueId());
 
-        if (spawnData == null) {
-            promise.fail("Failed to obtain your spawn data");
+        if (playerAccount == null) {
+            promise.fail("Failed to obtain your account");
             return;
         }
 
-        if (summonData == null) {
-            promise.fail("Failed to obtain the summoning player's spawn data");
+        if (summonAccount == null) {
+            promise.fail("Failed to obtain the summoning player's account");
             return;
         }
 
@@ -165,12 +144,12 @@ public final class SpawnHandler {
             return;
         }
 
-        if (!spawnData.isSpawned()) {
+        if (!summonAccount.isSpawned()) {
             promise.fail("You need to leave spawn to accept this players summon request");
             return;
         }
 
-        if (summonData.isSpawned()) {
+        if (playerAccount.isSpawned()) {
             promise.fail(summonPlayer.getName() + " has already randomly spawned");
             return;
         }
@@ -182,7 +161,7 @@ public final class SpawnHandler {
         summonPlayer.teleport(player);
         summonPlayer.sendMessage(ChatColor.GREEN + "Your teleport request has been accepted");
 
-        summonData.setSpawned(true);
+        playerAccount.setSpawned(true);
 
         promise.success();
     }

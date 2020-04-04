@@ -5,6 +5,8 @@ import com.llewkcor.ares.commons.event.ProcessedChatEvent;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.chat.data.ChatMessageType;
+import com.llewkcor.ares.core.loggers.entity.CombatLogger;
+import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
@@ -53,6 +55,21 @@ public final class ChatListener implements Listener {
         event.setDeathMessage(null);
 
         inRange.forEach(p -> p.sendMessage(deathMessage));
+    }
+
+    @EventHandler
+    public void onLoggerDeath(LoggerDeathEvent event) {
+        final CombatLogger logger = event.getLogger();
+        final List<Player> inRange = manager.getPlugin().getChatManager().getRecipientsInRange(logger.getBukkitEntity().getLocation(), ChatMessageType.DEATH_MESSAGE);
+        String deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " died";
+
+        if (event.getKiller() != null) {
+            deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " was slain by " + event.getKiller().getName();
+        }
+
+        for (Player p : inRange) {
+            p.sendMessage(deathMessage);
+        }
     }
 
     @EventHandler

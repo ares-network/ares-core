@@ -1,16 +1,19 @@
 package com.llewkcor.ares.core.timers;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.llewkcor.ares.commons.timer.Timer;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.Ares;
+import com.llewkcor.ares.core.loggers.entity.CombatLogger;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.timers.data.PlayerTimer;
 import com.llewkcor.ares.core.timers.data.type.PlayerTimerType;
 import com.llewkcor.ares.core.timers.listener.TimerListener;
 import lombok.Getter;
+import net.minecraft.server.v1_8_R3.EntityVillager;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.Bukkit;
@@ -26,60 +29,75 @@ import java.util.stream.Collectors;
 public final class TimerManager {
     @Getter public final Ares plugin;
     @Getter public final TimerHandler handler;
-    @Getter public final Set<PlayerTimer> activePlayerTimers;
     @Getter public final BukkitTask timerTask;
 
     public TimerManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new TimerHandler(this);
-        this.activePlayerTimers = Sets.newConcurrentHashSet();
         this.timerTask = new Scheduler(plugin).async(() -> {
-            final List<PlayerTimer> expiredTimers = getExpiredTimers();
+            for (AresAccount account : plugin.getPlayerManager().getAccountRepository()) {
+                final Set<PlayerTimer> expired = account.getTimers().stream().filter(Timer::isExpired).collect(Collectors.toSet());
+                final Set<PlayerTimer> timers = account.getTimers().stream().filter(timer -> !timer.isExpired()).collect(Collectors.toSet());
 
-            // Finishes expired times
-            expiredTimers.forEach(timer -> new Scheduler(plugin).sync(() -> handler.finishTimer(timer)).run());
+                expired.forEach(timer -> new Scheduler(plugin).sync(() -> handler.finishTimer(timer)).run());
 
-            // Renders HUD
-            new Scheduler(plugin).sync(() -> {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    final List<PlayerTimer> timers = getActiveTimers(player);
+                new Scheduler(plugin).sync(() -> {
+                    final Player player = Bukkit.getPlayer(account.getBukkitId());
                     final List<String> entries = Lists.newArrayList();
 
-                    if (timers.isEmpty()) {
-                        continue;
+                    if (player != null && !timers.isEmpty()) {
+                        timers.stream().filter(activeTimer -> activeTimer.getType().isRender()).forEach(renderedTimer -> {
+                            if (renderedTimer.getType().isDecimal()) {
+                                entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToDecimal(renderedTimer.getExpire() - Time.now()) + "s");
+                            } else {
+                                entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToHHMMSS(renderedTimer.getExpire() - Time.now()));
+                            }
+                        });
+
+                        final String hud = Joiner.on(ChatColor.RESET + " " + ChatColor.RESET + " ").join(entries);
+                        final PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + hud + "\"}"), (byte) 2);
+
+                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
                     }
-
-                    timers.stream().filter(activeTimer -> activeTimer.getType().isRender()).forEach(renderedTimer -> {
-                        if (renderedTimer.getType().isDecimal()) {
-                            entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToDecimal(renderedTimer.getExpire() - Time.now()) + "s");
-                        } else {
-                            entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToHHMMSS(renderedTimer.getExpire() - Time.now()));
-                        }
-                    });
-
-                    final String hud = Joiner.on(ChatColor.RESET + " " + ChatColor.RESET + " ").join(entries);
-                    final PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + hud + "\"}"), (byte) 2);
-
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-                }
-            }).run();
+                }).run();
+            }
         }).repeat(0L, 1L).run();
 
         Bukkit.getPluginManager().registerEvents(new TimerListener(this), plugin);
+        plugin.registerCustomEntity("Villager", 120, EntityVillager.class, CombatLogger.class);
     }
 
+    /**
+     * Returns a Player Timer matching the provided Bukkit Player and Timer Type
+     * @param player Player
+     * @param type Timer Type
+     * @return PlayerTimer
+     */
     public PlayerTimer getTimer(Player player, PlayerTimerType type) {
         return getActiveTimers(player).stream().filter(timer -> timer.getType().equals(type)).findFirst().orElse(null);
     }
 
-    public ImmutableList<PlayerTimer> getActiveTimers(Player player) {
-        return ImmutableList.copyOf(activePlayerTimers.stream().filter(timer -> timer.getOwner().equals(player.getUniqueId())).collect(Collectors.toList()));
+    /**
+     * Returns all active timers for the provided player
+     * @param player Player
+     * @return Set of PlayerTimer
+     */
+    public Set<PlayerTimer> getActiveTimers(Player player) {
+        final AresAccount account = plugin.getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null) {
+            return Sets.newConcurrentHashSet();
+        }
+
+        return account.getTimers().stream().filter(timer -> !timer.isExpired()).collect(Collectors.toSet());
     }
 
-    public ImmutableList<PlayerTimer> getExpiredTimers() {
-        return ImmutableList.copyOf(activePlayerTimers.stream().filter(timer -> timer.isExpired()).collect(Collectors.toList()));
-    }
-
+    /**
+     * Returns true if the provided player has the provided timer
+     * @param player Player
+     * @param type Timer Type
+     * @return True if timer is active
+     */
     public boolean hasTimer(Player player, PlayerTimerType type) {
         return getActiveTimers(player).stream().anyMatch(timer -> timer.getType().equals(type));
     }

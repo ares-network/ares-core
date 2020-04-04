@@ -1,9 +1,12 @@
-package com.llewkcor.ares.core.bridge.data.account;
+package com.llewkcor.ares.core.player.data.account;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDocument;
 import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.timers.data.PlayerTimer;
+import com.llewkcor.ares.core.timers.data.type.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -11,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public final class AresAccount implements MongoDocument<AresAccount> {
@@ -21,6 +25,9 @@ public final class AresAccount implements MongoDocument<AresAccount> {
     @Getter @Setter public long lastLogin;
     @Getter @Setter public boolean webConnected;
     @Getter @Setter public long address;
+    @Getter @Setter public boolean resetOnJoin;
+    @Getter @Setter public boolean spawned;
+    @Getter public Set<PlayerTimer> timers;
     @Getter public AresAccountSettings settings;
 
     /**
@@ -34,6 +41,9 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.lastLogin = Time.now();
         this.webConnected = false;
         this.address = 0L;
+        this.resetOnJoin = false;
+        this.spawned = false;
+        this.timers = Sets.newConcurrentHashSet();
         this.settings = new AresAccountSettings();
     }
 
@@ -49,6 +59,9 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.lastLogin = Time.now();
         this.webConnected = false;
         this.address = IPS.toLong(player.getAddress().getHostString());
+        this.resetOnJoin = false;
+        this.spawned = false;
+        this.timers = Sets.newConcurrentHashSet();
         this.settings = new AresAccountSettings();
     }
 
@@ -65,10 +78,13 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.lastLogin = Time.now();
         this.webConnected = false;
         this.address = 0L;
+        this.resetOnJoin = false;
+        this.spawned = false;
+        this.timers = Sets.newConcurrentHashSet();
         this.settings = new AresAccountSettings();
     }
 
-    @Override
+    @SuppressWarnings("unchecked") @Override
     public AresAccount fromDocument(Document document) {
         this.uniqueId = (UUID)document.get("ares_id");
         this.bukkitId = (UUID)document.get("bukkit_id");
@@ -77,13 +93,43 @@ public final class AresAccount implements MongoDocument<AresAccount> {
         this.lastLogin = document.getLong("last_login");
         this.webConnected = document.getBoolean("web_connected");
         this.address = document.getLong("address");
+        this.resetOnJoin = document.getBoolean("reset_on_join");
+        this.spawned = document.getBoolean("spawned");
         this.settings = new AresAccountSettings().fromDocument(document.get("settings", Document.class));
+
+        final List<Document> timerDocuments = (List<Document>)document.get("timers", List.class);
+
+        for (Document timerDocument : timerDocuments) {
+            final PlayerTimerType type = PlayerTimerType.valueOf(timerDocument.getString("type"));
+
+            if (type.equals(PlayerTimerType.ENDERPEARL)) {
+                timers.add(new EnderpearlTimer().fromDocument(timerDocument));
+                continue;
+            }
+
+            if (type.equals(PlayerTimerType.COMBAT)) {
+                timers.add(new CombatTagTimer().fromDocument(timerDocument));
+                continue;
+            }
+
+            if (type.equals(PlayerTimerType.CRAPPLE)) {
+                timers.add(new CrappleTimer().fromDocument(timerDocument));
+                continue;
+            }
+
+            if (type.equals(PlayerTimerType.GAPPLE)) {
+                timers.add(new GappleTimer().fromDocument(timerDocument));
+            }
+        }
 
         return this;
     }
 
     @Override
     public Document toDocument() {
+        final List<Document> timerDocuments = Lists.newArrayList();
+        getTimers().forEach(timer -> timerDocuments.add(timer.toDocument()));
+
         return new Document()
                 .append("ares_id", uniqueId)
                 .append("bukkit_id", bukkitId)
@@ -92,6 +138,9 @@ public final class AresAccount implements MongoDocument<AresAccount> {
                 .append("last_login", lastLogin)
                 .append("web_connected", webConnected)
                 .append("address", address)
+                .append("reset_on_join", resetOnJoin)
+                .append("spawned", spawned)
+                .append("timers", timerDocuments)
                 .append("settings", settings.toDocument());
     }
 

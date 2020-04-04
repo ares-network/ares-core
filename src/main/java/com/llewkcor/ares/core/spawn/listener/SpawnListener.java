@@ -1,71 +1,57 @@
 package com.llewkcor.ares.core.spawn.listener;
 
+import com.llewkcor.ares.commons.logger.Logger;
+import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.core.loggers.entity.CombatLogger;
+import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
+import com.llewkcor.ares.core.player.data.account.AccountDAO;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.spawn.SpawnManager;
-import com.llewkcor.ares.core.spawn.data.SpawnDAO;
-import com.llewkcor.ares.core.spawn.data.SpawnData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 public final class SpawnListener implements Listener {
     @Getter public final SpawnManager manager;
 
     @EventHandler
-    public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
-        final UUID uniqueId = event.getUniqueId();
-        final SpawnData spawnData = SpawnDAO.getSpawnData(manager.getPlugin().getDatabaseInstance(), uniqueId);
-
-        if (spawnData != null) {
-            manager.getSpawnData().add(spawnData);
-        }
-    }
-
-    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
-        SpawnData spawnData = manager.getSpawnData(player);
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
 
-        if (spawnData == null) {
-            spawnData = new SpawnData(player);
-            manager.getSpawnData().add(spawnData);
-
-            final SpawnData finalizedSpawnData = spawnData;
-
-            new Scheduler(manager.getPlugin()).async(() -> SpawnDAO.saveSpawnData(manager.getPlugin().getDatabaseInstance(), finalizedSpawnData)).run();
+        if (account == null) {
+            Logger.error("Failed to obtain account for " + player.getName());
+            return;
         }
 
-        if (!spawnData.isSpawned() || spawnData.isSendToSpawnOnJoin() && prisonPearl == null) {
-            spawnData.setSendToSpawnOnJoin(false);
-            spawnData.setSpawned(false);
+        if (!account.isSpawned() || account.isResetOnJoin() && prisonPearl == null) {
+            account.setResetOnJoin(false);
+            account.setSpawned(false);
 
-            new Scheduler(manager.getPlugin()).sync(() -> {
-                player.teleport(manager.getSpawnLocation().getBukkit());
-            }).delay(3L).run();
+            player.teleport(manager.getSpawnLocation().getBukkit());
+            player.getInventory().clear();
+            player.getInventory().setArmorContents(null);
         }
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         final Player player = event.getPlayer();
-        final SpawnData spawnData = manager.getSpawnData(player);
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
 
-        if (spawnData == null) {
-            player.sendMessage(ChatColor.RED + "Failed to obtain your spawn data");
+        if (account == null) {
+            player.sendMessage(ChatColor.RED + "Failed to obtain your account");
             return;
         }
 
@@ -73,8 +59,8 @@ public final class SpawnListener implements Listener {
             return;
         }
 
-        spawnData.setSpawned(false);
-        spawnData.setSendToSpawnOnJoin(false);
+        account.setSpawned(false);
+        account.setResetOnJoin(false);
 
         event.setRespawnLocation(manager.getSpawnLocation().getBukkit());
     }
@@ -82,17 +68,30 @@ public final class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        final SpawnData spawnData = manager.getSpawnData(player);
-
         manager.getTeleportRequests().remove(player.getUniqueId());
+    }
 
-        if (spawnData == null) {
-            return;
-        }
+    @EventHandler
+    public void onLoggerDeath(LoggerDeathEvent event) {
+        final CombatLogger logger = event.getLogger();
 
-        new Scheduler(manager.getPlugin()).async(() -> {
-            SpawnDAO.saveSpawnData(manager.getPlugin().getDatabaseInstance(), spawnData);
-            manager.getSpawnData().remove(spawnData);
-        }).run();
+        manager.getPlugin().getPlayerManager().getAccountByBukkitID(logger.getOwnerId(), new FailablePromise<AresAccount>() {
+            @Override
+            public void success(AresAccount aresAccount) {
+                if (aresAccount == null) {
+                    Logger.print("Failed to update resetOnJoin for " + logger.getOwnerUsername() + ", Reason: AresAccount null");
+                    return;
+                }
+
+                aresAccount.setResetOnJoin(true);
+
+                new Scheduler(manager.getPlugin()).async(() -> AccountDAO.saveAccount(manager.getPlugin().getDatabaseInstance(), aresAccount)).run();
+            }
+
+            @Override
+            public void fail(String s) {
+                Logger.print("Failed to update resetOnJoin for " + logger.getOwnerUsername() + ", Reason: " + s);
+            }
+        });
     }
 }

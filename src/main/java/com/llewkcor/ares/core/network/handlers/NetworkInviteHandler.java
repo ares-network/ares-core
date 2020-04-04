@@ -3,11 +3,11 @@ package com.llewkcor.ares.core.network.handlers;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.promise.SimplePromise;
-import com.llewkcor.ares.core.bridge.data.account.AresAccount;
 import com.llewkcor.ares.core.network.NetworkHandler;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -50,7 +50,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        handler.getManager().getPlugin().getBridgeManager().getDataManager().getAccountByUsername(username, new FailablePromise<AresAccount>() {
+        handler.getManager().getPlugin().getPlayerManager().getAccountByUsername(username, new FailablePromise<AresAccount>() {
             @Override
             public void success(AresAccount aresAccount) {
                 if (network.getPendingMembers().contains(aresAccount.getBukkitId())) {
@@ -119,7 +119,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        handler.getManager().getPlugin().getBridgeManager().getDataManager().getAccountByUsername(username, new FailablePromise<AresAccount>() {
+        handler.getManager().getPlugin().getPlayerManager().getAccountByUsername(username, new FailablePromise<AresAccount>() {
             @Override
             public void success(AresAccount aresAccount) {
                 if (!network.getPendingMembers().contains(aresAccount.getBukkitId())) {

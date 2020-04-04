@@ -6,10 +6,10 @@ import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
-import com.llewkcor.ares.core.bridge.data.account.AresAccount;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.snitch.data.Snitch;
 import com.llewkcor.ares.core.snitch.data.SnitchDAO;
 import com.llewkcor.ares.core.snitch.data.SnitchEntry;
@@ -182,7 +182,7 @@ public final class SnitchHandler {
                     .collect(Collectors.toList()));
 
             receivers.stream().filter(receiver -> receiver.getBukkitPlayer() != null).forEach(receiver -> {
-                final AresAccount receiverAccount = manager.getPlugin().getBridgeManager().getDataManager().getAccountByBukkitID(receiver.getUniqueId());
+                final AresAccount receiverAccount = manager.getPlugin().getPlayerManager().getAccountByBukkitID(receiver.getUniqueId());
 
                 if (receiverAccount != null && receiverAccount.getSettings().isSnitchNotificationsEnabled()) {
                     receiver.getBukkitPlayer().sendMessage(notification);

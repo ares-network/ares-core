@@ -6,13 +6,12 @@ import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.prison.data.PearlLocationType;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
-import com.llewkcor.ares.core.spawn.data.SpawnDAO;
-import com.llewkcor.ares.core.spawn.data.SpawnData;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -91,24 +90,30 @@ public final class PrisonPearlHandler {
         final Player freePlayer = pearl.getImprisoned();
 
         if (freePlayer != null) {
-            final SpawnData spawnData = manager.getPlugin().getSpawnManager().getSpawnData(freePlayer);
+            final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(freePlayer.getUniqueId());
 
             freePlayer.sendMessage(ChatColor.GREEN + "You have been set free! Reason: " + reason);
             freePlayer.teleport(manager.getPlugin().getSpawnManager().getSpawnLocation().getBukkit());
 
-            if (spawnData != null) {
-                spawnData.setSpawned(false);
-                spawnData.setSendToSpawnOnJoin(false);
+            if (account != null) {
+                account.setSpawned(false);
+                account.setResetOnJoin(false);
             }
         } else {
-            new Scheduler(manager.getPlugin()).async(() -> {
-                final SpawnData spawnData = SpawnDAO.getSpawnData(manager.getPlugin().getDatabaseInstance(), pearl.getImprisonedUUID());
-
-                if (spawnData != null) {
-                    spawnData.setSpawned(false);
-                    spawnData.setSendToSpawnOnJoin(true);
+            manager.getPlugin().getPlayerManager().getAccountByBukkitID(pearl.getImprisonedUUID(), new FailablePromise<AresAccount>() {
+                @Override
+                public void success(AresAccount aresAccount) {
+                    if (aresAccount != null) {
+                        aresAccount.setSpawned(false);
+                        aresAccount.setResetOnJoin(true);
+                    }
                 }
-            }).run();
+
+                @Override
+                public void fail(String s) {
+                    Logger.warn("Failed to release offline player's prison pearl. Reason: " + s);
+                }
+            });
         }
 
         pearl.setExpireTime(Time.now());

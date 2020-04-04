@@ -31,6 +31,14 @@ public final class GeneralConfig implements AresConfig {
     @Getter public boolean rangedChatEnabled;
     @Getter public Map<ChatMessageType, Double> chatRanges;
 
+    @Getter public int combatLoggerEnemyRadius;
+    @Getter public int combatTagAttackedDuration;
+    @Getter public int combatTagAttackerDuration;
+    @Getter public int combatLoggerDuration;
+    @Getter public int enderpearlDuration;
+    @Getter public int crappleDuration;
+    @Getter public int gappleDuration;
+
     public GeneralConfig(ConfigManager configManager) {
         this.configManager = configManager;
     }
@@ -51,6 +59,14 @@ public final class GeneralConfig implements AresConfig {
         networkInactiveExpireSeconds = config.getInt("network-settings.inactive-delete-time");
         networkCreateCooldown = config.getInt("network-settings.cooldowns.create");
         networkRenameCooldown = config.getInt("network-settings.cooldowns.rename");
+
+        combatLoggerDuration = config.getInt("combat-logger-settings.enemy-radius");
+        combatTagAttackedDuration = config.getInt("timer-settings.combat-tag.attacked");
+        combatTagAttackerDuration = config.getInt("timer-settings.combat-tag.attacker");
+        combatLoggerDuration = config.getInt("timer-settings.combat-tag.logger-keep-alive");
+        enderpearlDuration = config.getInt("timer-settings.enderpearl");
+        crappleDuration = config.getInt("timer-settings.crapple");
+        gappleDuration = config.getInt("timer-settings.gapple");
 
         rangedChatEnabled = config.getBoolean("message-settings.range-chat");
         chatRanges = Maps.newHashMap();

@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableCollection;
 import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.alts.data.AltEntry;
+import com.llewkcor.ares.core.loggers.entity.CombatLogger;
+import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
 import com.llewkcor.ares.core.prison.PrisonPearlManager;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
@@ -133,6 +135,42 @@ public final class PrisonPearlListener implements Listener {
             }
 
             manager.getHandler().imprisonPlayer(player.getName(), player.getUniqueId(), killer);
+            break;
+        }
+    }
+
+    @EventHandler
+    public void onLoggerDeath(LoggerDeathEvent event) {
+        final CombatLogger logger = event.getLogger();
+        final Player killer = event.getKiller();
+        final PrisonPearl existing = manager.getPrisonPearlByPlayer(logger.getOwnerId());
+
+        if (killer == null) {
+            return;
+        }
+
+        if (existing != null) {
+            return;
+        }
+
+        for (int i = 0; i < 8; i++) {
+            final ItemStack item = killer.getInventory().getItem(i);
+
+            if (item == null || !item.getType().equals(Material.ENDER_PEARL)) {
+                continue;
+            }
+
+            if (manager.getPrisonPearlByItem(item) != null) {
+                continue;
+            }
+
+            if (item.getAmount() > 1) {
+                item.setAmount(item.getAmount() - 1);
+            } else {
+                killer.getInventory().remove(item);
+            }
+
+            manager.getHandler().imprisonPlayer(logger.getOwnerUsername(), logger.getOwnerId(), killer);
             break;
         }
     }

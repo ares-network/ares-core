@@ -1,12 +1,10 @@
 package com.llewkcor.ares.core.spawn;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.location.PLocatable;
 import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.Ares;
-import com.llewkcor.ares.core.spawn.data.SpawnData;
 import com.llewkcor.ares.core.spawn.listener.SpawnListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,13 +14,11 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 
 public final class SpawnManager {
     @Getter public final Ares plugin;
     @Getter public final SpawnHandler handler;
-    @Getter public Set<SpawnData> spawnData;
     @Getter public Map<UUID, UUID> teleportRequests;
 
     @Getter @Setter public PLocatable spawnLocation;
@@ -31,7 +27,6 @@ public final class SpawnManager {
     public SpawnManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new SpawnHandler(this);
-        this.spawnData = Sets.newConcurrentHashSet();
         this.teleportRequests = Maps.newConcurrentMap();
 
         final YamlConfiguration spawnConfig = Configs.getConfig(plugin, "spawn");
@@ -61,15 +56,6 @@ public final class SpawnManager {
         final String worldName = getSpawnLocation().getWorldName();
 
         return new BLocatable(worldName, x, y, z);
-    }
-
-    /**
-     * Returns SpawnData for the provided Bukkit Player
-     * @param player Bukkit Player
-     * @return SpawnData
-     */
-    public SpawnData getSpawnData(Player player) {
-        return spawnData.stream().filter(data -> data.getUniqueId().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 
     /**
