@@ -13,6 +13,7 @@ public final class ConfigManager {
     @Getter public PrisonPearlConfig prisonPearlConfig;
     @Getter public SnitchesConfig snitchesConfig;
     @Getter public BastionsConfig bastionsConfig;
+    @Getter public AcidConfig acidConfig;
 
     public ConfigManager(Ares plugin) {
         this.plugin = plugin;
@@ -22,6 +23,7 @@ public final class ConfigManager {
         this.prisonPearlConfig = new PrisonPearlConfig(this);
         this.snitchesConfig = new SnitchesConfig(this);
         this.bastionsConfig = new BastionsConfig(this);
+        this.acidConfig = new AcidConfig(this);
     }
 
     /**
@@ -34,6 +36,7 @@ public final class ConfigManager {
         prisonPearlConfig.load();
         snitchesConfig.load();
         bastionsConfig.load();
+        acidConfig.load();
 
         Logger.print("Finished loading config files");
     }
@@ -48,6 +51,7 @@ public final class ConfigManager {
         prisonPearlConfig.reload();
         snitchesConfig.reload();
         bastionsConfig.reload();
+        acidConfig.reload();
 
         Logger.print("Finished reloading config files");
     }

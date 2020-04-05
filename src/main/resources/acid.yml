@@ -1,0 +1,5 @@
+settings:
+  damage_radius: 3
+  damage_tick_interval: 10
+  mature_time: 10800
+  expire_time: 259200

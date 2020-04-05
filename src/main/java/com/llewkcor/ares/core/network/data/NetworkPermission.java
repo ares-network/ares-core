@@ -14,7 +14,8 @@ public enum NetworkPermission {
     MODIFY_SNITCHES("Create Snitches", "Grants the ability to create snitches", false),
     ACCESS_FACTORY("Access Factories", "Grants access to all factories", false),
     MODIFY_FACTORY("Create Factories", "Grants the ability to create factories", false),
-    MODIFY_BASTION("Create Bastions", "Grants the ability to create bastions", false);
+    MODIFY_BASTION("Create Bastions", "Grants the ability to create bastions", false),
+    MODIFY_ACID("Create Acid", "Grants the ability to create acid blocks", false);
 
     @Getter public String displayName;
     @Getter public String description;
