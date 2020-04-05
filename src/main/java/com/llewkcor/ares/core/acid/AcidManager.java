@@ -101,6 +101,6 @@ public final class AcidManager {
      * @return Immutable Set of Acid Blocks
      */
     public ImmutableSet<AcidBlock> getExpiredAcidBlocks() {
-        return ImmutableSet.copyOf(acidRepository.stream().filter(acid -> acid.isExpired()).collect(Collectors.toSet()));
+        return ImmutableSet.copyOf(acidRepository.stream().filter(AcidBlock::isExpired).collect(Collectors.toSet()));
     }
 }
