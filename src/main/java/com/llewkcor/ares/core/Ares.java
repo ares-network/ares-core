@@ -54,7 +54,12 @@ public final class Ares extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Managers
         this.configManager = new ConfigManager(this);
+
+        // We load the config for any constructors that may take config values
+        configManager.load();
+
         this.networkManager = new NetworkManager(this);
         this.playerManager = new PlayerManager(this);
         this.snitchManager = new SnitchManager(this);
@@ -69,8 +74,6 @@ public final class Ares extends JavaPlugin {
         this.loggerManager = new LoggerManager(this);
         this.bastionManager = new BastionManager(this);
         this.acidManager = new AcidManager(this);
-
-        configManager.load();
 
         this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
         databaseInstance.openConnection();
