@@ -62,6 +62,46 @@ public final class SpawnHandler {
     }
 
     /**
+     * Handles spawning the provided player at their Bed spawn location
+     * @param player Player
+     * @param promise Promise
+     */
+    public void spawnBed(Player player, SimplePromise promise) {
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (account.isSpawned()) {
+            promise.fail("You have already randomly spawned");
+            return;
+        }
+
+        final Location location = player.getBedSpawnLocation();
+
+        if (location == null) {
+            promise.fail("You do not have a bed spawn location");
+            return;
+        }
+
+        if (!location.getChunk().isLoaded()) {
+            location.getChunk().load();
+        }
+
+        manager.getTeleportRequests().remove(player.getUniqueId());
+
+        preparePlayer(player);
+
+        player.teleport(location);
+
+        account.setSpawned(true);
+
+        promise.success();
+    }
+
+    /**
      * Handles sending a teleport request
      * @param player Sending Player
      * @param username Receiving Username

@@ -56,6 +56,22 @@ public final class SpawnCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("bed")
+    @Description("Spawn at the last location you slept")
+    public void onSpawnBed(Player player) {
+        plugin.getSpawnManager().getHandler().spawnBed(player, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + "NI " + ChatColor.GRAY + "You awake in your bed..." + ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + " GR");
+            }
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @Subcommand("accept")
     @Syntax("<username>")
     @Description("Accept a teleport request that has been sent to you")
