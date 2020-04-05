@@ -58,7 +58,7 @@ public final class BastionCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("info")
+    @Subcommand("info|i")
     @Description("View maturity information for the Bastion block you are looking at")
     public void onInfo(Player player) {
         final Block target = player.getTargetBlock((Set<Material>)null, 4);
