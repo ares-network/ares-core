@@ -35,6 +35,11 @@ public final class AccountListener implements Listener {
      */
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
+        if (!playerManager.getPlugin().getDatabaseInstance().isConnected()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is still starting up");
+            return;
+        }
+
         final UUID uniqueId = event.getUniqueId();
         final String username = event.getName();
         final String address = event.getAddress().getHostAddress();
