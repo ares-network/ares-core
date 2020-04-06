@@ -77,6 +77,10 @@ public final class TimerHandler {
             return;
         }
 
+        if (!account.getTimers().contains(timer)) {
+            return;
+        }
+
         timer.onFinish();
         account.getTimers().remove(timer);
     }
