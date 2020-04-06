@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -24,28 +25,31 @@ public final class BastionListener implements Listener {
     @EventHandler
     public void onReinforce(BlockReinforceEvent event) {
         final Player player = event.getPlayer();
-        final Block block = event.getBlock();
-        final Set<Bastion> bastions = manager.getBastionInRange(new BLocatable(block), 16);
+        final List<Block> blocks = event.getBlocks();
 
-        if (player.hasPermission("arescore.admin")) {
-            return;
-        }
+        for (Block block : blocks) {
+            final Set<Bastion> bastions = manager.getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
 
-        if (bastions.isEmpty()) {
-            return;
-        }
-
-        for (Bastion bastion : bastions) {
-            if (!bastion.isMature()) {
+            if (player.hasPermission("arescore.admin")) {
                 continue;
             }
 
-            final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+            if (bastions.isEmpty()) {
+                continue;
+            }
 
-            if (!network.isMember(player)) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "Claim not allowed near bastion at " + bastion.getLocation().toString());
-                return;
+            for (Bastion bastion : bastions) {
+                if (!bastion.isMature()) {
+                    continue;
+                }
+
+                final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+
+                if (!network.isMember(player)) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "Claim not allowed near bastion at " + bastion.getLocation().toString());
+                    return;
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.llewkcor.ares.core.claim.listener;
 
+import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.claim.ClaimManager;
@@ -9,6 +10,7 @@ import com.llewkcor.ares.core.claim.session.ClaimSession;
 import com.llewkcor.ares.core.claim.session.ClaimSessionType;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
+import com.llewkcor.ares.core.utils.BlockUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.*;
@@ -22,6 +24,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 @AllArgsConstructor
 public final class ClaimCreatorListener implements Listener {
@@ -42,6 +46,8 @@ public final class ClaimCreatorListener implements Listener {
         }
 
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(session.getNetworkId());
+        final List<Block> blocks = BlockUtil.getMultiblockLocations(block);
+        boolean merge = false;
 
         if (network == null || !network.isMember(player) || !(network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.MODIFY_CLAIMS))) {
             player.sendMessage(ChatColor.RED + "The network or your status in the network has been modified and you are no longer able to claim");
@@ -60,7 +66,18 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, block);
+        if (blocks.size() > 1 && (block.getType().equals(Material.CHEST) || block.getType().equals(Material.TRAPPED_CHEST))) {
+            for (Block  multiBlock : blocks) {
+                final Claim claim = manager.getClaimByBlock(multiBlock);
+
+                if (claim != null && claim.getOwnerId().equals(session.getNetworkId())) {
+                    merge = true;
+                    break;
+                }
+            }
+        }
+
+        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, blocks);
         Bukkit.getPluginManager().callEvent(reinforceEvent);
 
         if (reinforceEvent.isCancelled()) {
@@ -68,6 +85,7 @@ public final class ClaimCreatorListener implements Listener {
         }
 
         final Material materialToSubtract = session.getClaimType().getMaterial();
+        final int cost = (merge ? blocks.size() - 1 : blocks.size());
         boolean paid = false;
 
         for (ItemStack item : player.getInventory()) {
@@ -75,25 +93,44 @@ public final class ClaimCreatorListener implements Listener {
                 continue;
             }
 
-            // FUCKING MESS AHHHHHH FAHGET UHBOUT IT
-            if (item.getAmount() > 1) {
-                // Player is using Stone reinforcement to reinforce stone, game overrides the subtraction meaning we need to double it
-                if (block.getType().equals(materialToSubtract) && block.getTypeId() == (short)0) {
-                    if (item.getAmount() > 2) {
-                        item.setAmount(item.getAmount() - 2);
-                    } else {
-                        player.getInventory().remove(item);
-                    }
-                } else {
-                    item.setAmount(item.getAmount() - 1);
-                }
-            } else {
-                player.getInventory().removeItem(item);
-            }
+            // Player has more reinforcement material than the total blocks being reinforced
+            if (item.getAmount() > cost) {
 
-            player.updateInventory();
-            paid = true;
-            break;
+                // Player is reinforcing with the same type as reinforcement material (stone)
+                if (item.getType().equals(materialToSubtract) && item.getDurability() == (short)0) {
+
+                    // Player now needs to have an additional reinforcement material since the game will override subtraction
+                    if (item.getAmount() >= (cost + 1)) {
+                        if (item.getAmount() > cost) {
+                            // Player still has more
+                            item.setAmount(item.getAmount() - cost);
+                        } else {
+                            // Player has the exact amount
+                            player.getInventory().removeItem(item);
+                        }
+
+                        paid = true;
+                        break;
+                    }
+
+                } else {
+                    // Not reinforcing with the reinforcement material, just subtract the actual cost
+                    item.setAmount(item.getAmount() - cost);
+                    paid = true;
+                    break;
+                }
+
+            } else if (item.getAmount() == cost) {
+
+                // Player is reinforcing with the same type as reinforcement material (stone)
+                if (block.getType().equals(materialToSubtract) && item.getDurability() == (short)0) {
+                    continue;
+                }
+
+                player.getInventory().removeItem(item);
+                paid = true;
+                break;
+            }
         }
 
         if (!paid) {
@@ -103,9 +140,13 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(block), session.getClaimType());
-        manager.getClaimRepository().add(claim);
-        block.getWorld().spigot().playEffect(block.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 15, 8);
+        player.updateInventory();
+
+        blocks.forEach(claimBlock -> {
+            final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(claimBlock), session.getClaimType());
+            manager.getClaimRepository().add(claim);
+            block.getWorld().spigot().playEffect(claimBlock.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 15, 8);
+        });
     }
 
     @EventHandler (priority = EventPriority.HIGH)
@@ -132,8 +173,17 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        final Claim existing = manager.getClaimByBlock(block);
+        final List<Claim> existing = Lists.newArrayList();
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(session.getNetworkId());
+        final List<Block> blocks = BlockUtil.getMultiblockLocations(block);
+
+        blocks.forEach(multiBlock -> {
+            final Claim existingClaim = manager.getClaimByBlock(multiBlock);
+
+            if (existingClaim != null) {
+                existing.add(existingClaim);
+            }
+        });
 
         if (network == null || !network.isMember(player) || !(network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.MODIFY_CLAIMS))) {
             player.sendMessage(ChatColor.RED + "The network or your status in the network has been modified and you are no longer able to claim");
@@ -142,7 +192,7 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        if (existing != null) {
+        if (!existing.isEmpty()) {
             player.sendMessage(ChatColor.RED + "This block is already claimed");
             event.setCancelled(true);
             return;
@@ -158,7 +208,7 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, block);
+        final BlockReinforceEvent reinforceEvent = new BlockReinforceEvent(player, blocks);
         Bukkit.getPluginManager().callEvent(reinforceEvent);
 
         if (reinforceEvent.isCancelled()) {
@@ -173,15 +223,20 @@ public final class ClaimCreatorListener implements Listener {
             return;
         }
 
-        if (hand.getAmount() > 1) {
-            hand.setAmount(hand.getAmount() - 1);
-        } else {
+        if (hand.getAmount() > blocks.size()) {
+            hand.setAmount(hand.getAmount() - blocks.size());
+        } else if (hand.getAmount() == blocks.size()) {
             player.getInventory().removeItem(hand);
+        } else {
+            player.sendMessage(ChatColor.RED + "You do not have enough materials to reinforce this block");
+            return;
         }
 
-        final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(block), session.getClaimType());
-        manager.getClaimRepository().add(claim);
-        block.getWorld().spigot().playEffect(block.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 15, 8);
+        blocks.forEach(claimBlock -> {
+            final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(claimBlock), session.getClaimType());
+            manager.getClaimRepository().add(claim);
+            block.getWorld().spigot().playEffect(claimBlock.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 20, 6);
+        });
     }
 
     @EventHandler (priority = EventPriority.HIGH)

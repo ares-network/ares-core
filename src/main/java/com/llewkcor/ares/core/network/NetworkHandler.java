@@ -3,6 +3,8 @@ package com.llewkcor.ares.core.network;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.acid.data.AcidBlock;
+import com.llewkcor.ares.core.acid.data.AcidDAO;
 import com.llewkcor.ares.core.bastion.data.Bastion;
 import com.llewkcor.ares.core.bastion.data.BastionDAO;
 import com.llewkcor.ares.core.claim.data.Claim;
@@ -90,11 +92,13 @@ public final class NetworkHandler {
                 final List<Claim> claims = manager.getPlugin().getClaimManager().getClaimByOwner(network);
                 final Set<Factory> factories = manager.getPlugin().getFactoryManager().getFactoryByOwner(network);
                 final Set<Bastion> bastions = manager.getPlugin().getBastionManager().getBastionByOwner(network);
+                final Set<AcidBlock> acids = manager.getPlugin().getAcidManager().getAcidBlockByOwner(network);
 
                 manager.getPlugin().getSnitchManager().getSnitchRepository().removeAll(snitches);
                 manager.getPlugin().getClaimManager().getClaimRepository().removeAll(claims);
                 manager.getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
                 manager.getPlugin().getBastionManager().getBastionRepository().removeAll(bastions);
+                manager.getPlugin().getAcidManager().getAcidRepository().removeAll(acids);
 
                 network.getMembers().clear();
                 network.getPendingMembers().clear();
@@ -116,6 +120,10 @@ public final class NetworkHandler {
 
                 for (Bastion bastion : bastions) {
                     BastionDAO.deleteBastion(manager.getPlugin().getDatabaseInstance(), bastion);
+                }
+
+                for (AcidBlock acid : acids) {
+                    AcidDAO.deleteAcidBlock(manager.getPlugin().getDatabaseInstance(), acid);
                 }
 
                 Logger.warn(network.getName() + "(" + network.getUniqueId().toString() + ") has been deleted due to inactivity");
