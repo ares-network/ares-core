@@ -79,7 +79,7 @@ public final class NetworkHandler {
      */
     public void performNetworkCleanup() {
         new Scheduler(manager.getPlugin()).async(() -> {
-            final List<Network> expired = manager.getNetworkRepository().stream().filter(network -> network.getLastSeen() < (Time.now() - (manager.getPlugin().getConfigManager().getGeneralConfig().getNetworkInactiveExpireSeconds() * 1000L))).collect(Collectors.toList());
+            final List<Network> expired = manager.getNetworkRepository().stream().filter(network -> (network.getLastSeen() - Time.now()) > (manager.getPlugin().getConfigManager().getGeneralConfig().getNetworkInactiveExpireSeconds() * 1000L)).collect(Collectors.toList());
 
             if (expired.isEmpty()) {
                 return;
