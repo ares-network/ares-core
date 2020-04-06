@@ -3,11 +3,13 @@ package com.llewkcor.ares.core.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
+import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.core.Ares;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @CommandAlias("ares")
 @AllArgsConstructor
@@ -26,6 +28,20 @@ public final class AresCommand extends BaseCommand {
     public void onReload(CommandSender sender) {
         plugin.getConfigManager().reload();
         sender.sendMessage(ChatColor.GREEN + "All Ares configuration files have been reloaded");
+    }
+
+    @Subcommand("settings")
+    @Description("Access your Ares Account settings")
+    public void onSettings(Player player) {
+        plugin.getPlayerManager().getHandler().openSettings(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @HelpCommand

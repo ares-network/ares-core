@@ -21,12 +21,14 @@ import java.util.stream.Collectors;
 
 public final class PlayerManager {
     @Getter public final Ares plugin;
+    @Getter public final PlayerHandler handler;
     @Getter public final DataHandler dataHandler;
     @Getter public final Set<AresAccount> accountRepository;
     @Getter public final Set<AccountSession> accountSessionRepository;
 
     public PlayerManager(Ares plugin) {
         this.plugin = plugin;
+        this.handler = new PlayerHandler(this);
         this.dataHandler = new DataHandler(this);
         this.accountRepository = Sets.newConcurrentHashSet();
         this.accountSessionRepository = Sets.newConcurrentHashSet();
