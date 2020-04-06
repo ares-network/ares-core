@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class AcidDAO {
     private static final String NAME = "ares";
-    private static final String COLL = "acidBlocks";
+    private static final String COLL = "acid_blocks";
 
     /**
      * Returns an Immutable Collection of all Acid Blocks in the database
