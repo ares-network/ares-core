@@ -13,6 +13,12 @@ import org.bukkit.entity.Player;
 public final class ChatHandler {
     @Getter public final ChatManager manager;
 
+    /**
+     * Handles creating a new Chat Session
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
     public void createSession(Player player, String networkName, SimplePromise promise) {
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
         final boolean admin = player.hasPermission("arescore.admin");
@@ -51,6 +57,10 @@ public final class ChatHandler {
         promise.success();
     }
 
+    /**
+     * Handles leaving a Chat Session for the provided Player
+     * @param player Player
+     */
     public void leaveSession(Player player) {
         final ChatSession session = manager.getChatSession(player);
 
