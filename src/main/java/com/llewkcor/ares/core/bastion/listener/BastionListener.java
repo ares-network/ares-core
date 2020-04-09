@@ -27,12 +27,12 @@ public final class BastionListener implements Listener {
         final Player player = event.getPlayer();
         final List<Block> blocks = event.getBlocks();
 
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
         for (Block block : blocks) {
             final Set<Bastion> bastions = manager.getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
-
-            if (player.hasPermission("arescore.admin")) {
-                continue;
-            }
 
             if (bastions.isEmpty()) {
                 continue;
@@ -47,7 +47,7 @@ public final class BastionListener implements Listener {
 
                 if (!network.isMember(player)) {
                     event.setCancelled(true);
-                    player.sendMessage(ChatColor.RED + "Claim not allowed near bastion at " + bastion.getLocation().toString());
+                    player.sendMessage(ChatColor.RED + "You can not claim blocks near bastion at " + bastion.getLocation().toString());
                     return;
                 }
             }
