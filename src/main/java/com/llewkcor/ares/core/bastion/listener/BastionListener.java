@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -68,5 +70,33 @@ public final class BastionListener implements Listener {
         }
 
         manager.getHandler().deleteBastion(bastion);
+    }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        final List<Block> blocks = event.getBlocks();
+
+        for (Block block : blocks) {
+            final Bastion bastion = manager.getBastionByBlock(new BLocatable(block));
+
+            if (bastion != null) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        final List<Block> blocks = event.getBlocks();
+
+        for (Block block : blocks) {
+            final Bastion bastion = manager.getBastionByBlock(new BLocatable(block));
+
+            if (bastion != null) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 }
