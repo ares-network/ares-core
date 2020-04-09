@@ -77,9 +77,11 @@ public final class BastionListener implements Listener {
         final List<Block> blocks = event.getBlocks();
 
         for (Block block : blocks) {
-            final Bastion bastion = manager.getBastionByBlock(new BLocatable(block));
+            final BLocatable location = new BLocatable(block);
+            final Bastion bastion = manager.getBastionByBlock(location);
+            final Set<Bastion> inRange = manager.getBastionInRange(location, manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
 
-            if (bastion != null) {
+            if (bastion != null || !inRange.isEmpty()) {
                 event.setCancelled(true);
                 return;
             }
@@ -91,9 +93,11 @@ public final class BastionListener implements Listener {
         final List<Block> blocks = event.getBlocks();
 
         for (Block block : blocks) {
-            final Bastion bastion = manager.getBastionByBlock(new BLocatable(block));
+            final BLocatable location = new BLocatable(block);
+            final Bastion bastion = manager.getBastionByBlock(location);
+            final Set<Bastion> inRange = manager.getBastionInRange(location, manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
 
-            if (bastion != null) {
+            if (bastion != null || !inRange.isEmpty()) {
                 event.setCancelled(true);
                 return;
             }
