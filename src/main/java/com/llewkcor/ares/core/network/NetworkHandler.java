@@ -30,6 +30,7 @@ public final class NetworkHandler {
     @Getter public final NetworkManageHandler manageHandler;
     @Getter public final NetworkDisplayHandler displayHandler;
     @Getter public final NetworkMenuHandler menuHandler;
+    @Getter public final NetworkChatHandler chatHandler;
 
     public NetworkHandler(NetworkManager manager) {
         this.manager = manager;
@@ -38,6 +39,7 @@ public final class NetworkHandler {
         this.manageHandler = new NetworkManageHandler(this);
         this.displayHandler = new NetworkDisplayHandler(this);
         this.menuHandler = new NetworkMenuHandler(this);
+        this.chatHandler = new NetworkChatHandler(this);
     }
 
     /**

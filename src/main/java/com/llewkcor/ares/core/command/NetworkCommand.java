@@ -236,6 +236,22 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("rally")
+    @Description("Ping your location to whichever Network you are actively speaking in")
+    public void onRally(Player player) {
+        plugin.getNetworkManager().getHandler().getChatHandler().rally(player, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.GREEN + "Your location has been broadcasted");
+            }
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
