@@ -50,6 +50,7 @@ public final class SnitchListener implements Listener {
             return;
         }
 
+        final BLocatable location = new BLocatable(player.getLocation().getBlock());
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -58,7 +59,7 @@ public final class SnitchListener implements Listener {
         }
 
         final Runnable task = () -> {
-            final List<Snitch> inRadius = manager.getSnitchByRadius(new BLocatable(block), manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
+            final List<Snitch> inRadius = manager.getSnitchByRadius(location, manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
 
             if (inRadius.isEmpty()) {
                 return;
@@ -89,6 +90,7 @@ public final class SnitchListener implements Listener {
             return;
         }
 
+        final BLocatable location = new BLocatable(block);
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -97,7 +99,7 @@ public final class SnitchListener implements Listener {
         }
 
         final Runnable task = () -> {
-            final List<Snitch> inRadius = manager.getSnitchByRadius(new BLocatable(block), manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
+            final List<Snitch> inRadius = manager.getSnitchByRadius(location, manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
 
             if (inRadius.isEmpty()) {
                 return;
@@ -145,6 +147,7 @@ public final class SnitchListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        final BLocatable location = new BLocatable(player.getLocation().getBlock());
 
         if (player.hasPermission("arescore.admin")) {
             return;
@@ -158,7 +161,7 @@ public final class SnitchListener implements Listener {
         }
 
         final Runnable task = () -> {
-            final List<Snitch> inRadius = manager.getSnitchByRadius(new BLocatable(player.getLocation().getBlock()), manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
+            final List<Snitch> inRadius = manager.getSnitchByRadius(location, manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
 
             if (inRadius.isEmpty()) {
                 return;
@@ -180,6 +183,7 @@ public final class SnitchListener implements Listener {
 
         final Player player = event.getPlayer();
         final Block block = event.getClickedBlock();
+        final BLocatable location = new BLocatable(player.getLocation().getBlock());
         final Action action = event.getAction();
 
         if (player.hasPermission("arescore.admin")) {
@@ -206,7 +210,7 @@ public final class SnitchListener implements Listener {
         }
 
         final Runnable task = () -> {
-            final List<Snitch> inRadius = manager.getSnitchByRadius(new BLocatable(player.getLocation().getBlock()), manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
+            final List<Snitch> inRadius = manager.getSnitchByRadius(location, manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
 
             if (inRadius.isEmpty()) {
                 return;
@@ -232,6 +236,7 @@ public final class SnitchListener implements Listener {
             return;
         }
 
+        final BLocatable location = new BLocatable(player.getLocation().getBlock());
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -240,7 +245,7 @@ public final class SnitchListener implements Listener {
         }
 
         final Runnable task = () -> {
-            final List<Snitch> inRadius = manager.getSnitchByRadius(new BLocatable(player.getLocation().getBlock()), manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
+            final List<Snitch> inRadius = manager.getSnitchByRadius(location, manager.getPlugin().getConfigManager().getSnitchesConfig().getSearchRadius());
 
             if (inRadius.isEmpty()) {
                 return;
