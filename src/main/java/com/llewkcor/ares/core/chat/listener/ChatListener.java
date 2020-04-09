@@ -2,11 +2,16 @@ package com.llewkcor.ares.core.chat.listener;
 
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.event.ProcessedChatEvent;
+import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.chat.data.ChatMessageType;
+import com.llewkcor.ares.core.chat.data.ChatSession;
 import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
+import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.network.data.NetworkMember;
+import com.llewkcor.ares.core.network.data.NetworkPermission;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
@@ -16,8 +21,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -27,8 +34,59 @@ public final class ChatListener implements Listener {
     @Getter public final Ares plugin;
     @Getter public ChatManager manager;
 
-
     @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        manager.getHandler().leaveSession(player);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onNetworkChat(ProcessedChatEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        final String message = event.getMessage();
+        final boolean admin = player.hasPermission("arescore.admin");
+        final ChatSession session = manager.getChatSession(player);
+
+        if (session == null) {
+            return;
+        }
+
+        if (message.startsWith("!")) {
+            final String trimmed = message.substring(1);
+            event.setMessage(trimmed);
+            return;
+        }
+
+        final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(session.getNetworkId());
+
+        if (network == null) {
+            return;
+        }
+
+        final NetworkMember member = network.getMember(player);
+
+        if (member == null && !admin) {
+            manager.getHandler().leaveSession(player);
+            player.sendMessage(ChatColor.RED + "You have been removed from this chat channel because you are no longer a member of " + network.getName());
+            return;
+        }
+
+        if (member != null && !admin && !(member.hasPermission(NetworkPermission.ADMIN) && member.hasPermission(NetworkPermission.ACCESS_CHAT))) {
+            manager.getHandler().leaveSession(player);
+            player.sendMessage(ChatColor.RED + "You have been removed from this chat channel because you no longer have permission to access it");
+            return;
+        }
+
+        event.setCancelled(true);
+        network.sendMessage(ChatColor.GREEN + "[" + network.getName() + "] " + event.getDisplayName() + ": " + message);
+        Logger.print("[" + network.getName() + "] " + player.getName() + ": " + message);
+    }
+
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onProcessedChat(ProcessedChatEvent event) {
         final Player player = event.getPlayer();
         final Set<Player> players = event.getRecipients();

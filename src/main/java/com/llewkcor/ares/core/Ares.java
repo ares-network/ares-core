@@ -103,6 +103,7 @@ public final class Ares extends JavaPlugin {
         commandManager.registerCommand(new BastionCommand(this));
         commandManager.registerCommand(new AcidCommand(this));
         commandManager.registerCommand(new AresCommand(this));
+        commandManager.registerCommand(new ChatCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();

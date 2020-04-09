@@ -1,7 +1,9 @@
 package com.llewkcor.ares.core.chat;
 
+import com.google.common.collect.Sets;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.chat.data.ChatMessageType;
+import com.llewkcor.ares.core.chat.data.ChatSession;
 import com.llewkcor.ares.core.chat.listener.ChatListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -9,17 +11,29 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class ChatManager {
     @Getter public Ares plugin;
     @Getter public final ChatHandler handler;
+    @Getter public final Set<ChatSession> chatSessions;
 
     public ChatManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new ChatHandler(this);
+        this.chatSessions = Sets.newConcurrentHashSet();
 
         Bukkit.getPluginManager().registerEvents(new ChatListener(plugin, this), plugin);
+    }
+
+    /**
+     * Returns a Chat Session matching the provided Player
+     * @param player Player
+     * @return ChatSession
+     */
+    public ChatSession getChatSession(Player player) {
+        return chatSessions.stream().filter(session -> session.getPlayerId().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 
     /**
