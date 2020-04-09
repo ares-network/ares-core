@@ -10,6 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+
+import java.util.List;
 
 @AllArgsConstructor
 public final class AcidListener implements Listener {
@@ -29,5 +33,41 @@ public final class AcidListener implements Listener {
         }
 
         manager.getHandler().deleteAcid(acid);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final List<Block> blocks = event.getBlocks();
+
+        for (Block block : blocks) {
+            final AcidBlock acidBlock = manager.getAcidBlockByBlock(new BLocatable(block));
+
+            if (acidBlock != null) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final List<Block> blocks = event.getBlocks();
+
+        for (Block block : blocks) {
+            final AcidBlock acidBlock = manager.getAcidBlockByBlock(new BLocatable(block));
+
+            if (acidBlock != null) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 }
