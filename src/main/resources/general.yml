@@ -47,3 +47,29 @@ message-settings:
     DEATH_MESSAGE: 500.0
     PLAYER_IMPRISONED: 250.0
     PLAYER_RELEASED: 250.0
+
+help-context:
+  - '&7&m------------------------------'
+  - '&4&lAres Help &f- Information & Commands'
+  - '&7&m------------------------------'
+  - '&cMap Information'
+  - '&6Current Map&e: Map 1, Started April 24th, 2020'
+  - '&6Map Size&e: 15,000 x 15,000'
+  - '&6Disabled Enchantments&e: Knockback & Thorns'
+  - '&6Disabled Potions&e: Instant Damage, Poison Extended, Slowness Extended & Weakness Extended'
+  - '&r '
+  - '&cAssistance Commands'
+  - '&6/report <player> <reason> &eReport a player to our team'
+  - '&6/request <reason> &eRequest assistance from our team'
+  - '&r '
+  - '&cGame-specific Help Commands'
+  - '&6/network help &eLearn how to create and join networks'
+  - '&6/claim help &eLearn how to claim land'
+  - '&6/bastion help &eLearn how to prevent raiders for griefing your land'
+  - '&6/snitch help &eLearn how to track enemy players on the map'
+  - '&6/acid help &eLearn how to automate claim destruction'
+  - '&6/factory help &eLearn how to create factories'
+  - '&r '
+  - '&cFor a more in-depth tutorial on how certain aspects of the server work, visit our tutorial page'
+  - '&6https://www.playares.com/tutorial'
+  - - '&7&m------------------------------'

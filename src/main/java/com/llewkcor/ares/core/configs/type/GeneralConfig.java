@@ -1,5 +1,6 @@
 package com.llewkcor.ares.core.configs.type;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.general.Configs;
@@ -7,6 +8,7 @@ import com.llewkcor.ares.core.chat.data.ChatMessageType;
 import com.llewkcor.ares.core.configs.AresConfig;
 import com.llewkcor.ares.core.configs.ConfigManager;
 import lombok.Getter;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
@@ -38,6 +40,8 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int enderpearlDuration;
     @Getter public int crappleDuration;
     @Getter public int gappleDuration;
+
+    @Getter public List<String> helpContext;
 
     public GeneralConfig(ConfigManager configManager) {
         this.configManager = configManager;
@@ -80,6 +84,12 @@ public final class GeneralConfig implements AresConfig {
 
             final double distance = config.getInt("message-settings.chat-ranges." + chatType);
             chatRanges.put(type, distance);
+        }
+
+        this.helpContext = Lists.newArrayList();
+
+        for (String line : config.getStringList("help-context")) {
+            helpContext.add(ChatColor.translateAlternateColorCodes('&', line));
         }
 
         Logger.print("General configuration loaded");
