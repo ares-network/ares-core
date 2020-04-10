@@ -67,6 +67,8 @@ public final class TimerManager {
         }).repeat(0L, 1L).run();
 
         Bukkit.getPluginManager().registerEvents(new TimerListener(this), plugin);
+
+        // Combat Logger
         plugin.registerCustomEntity("Villager", 120, EntityVillager.class, CombatLogger.class);
     }
 
