@@ -1,7 +1,6 @@
 package com.llewkcor.ares.core.timers;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.timer.Timer;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
@@ -11,6 +10,7 @@ import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.timers.data.PlayerTimer;
 import com.llewkcor.ares.core.timers.data.type.PlayerTimerType;
+import com.llewkcor.ares.core.timers.event.HUDUpdateEvent;
 import com.llewkcor.ares.core.timers.listener.TimerListener;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityVillager;
@@ -22,7 +22,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,18 +42,22 @@ public final class TimerManager {
 
                 new Scheduler(plugin).sync(() -> {
                     final Player player = Bukkit.getPlayer(account.getBukkitId());
-                    final List<String> entries = Lists.newArrayList();
+                    final HUDUpdateEvent hudUpdateEvent = new HUDUpdateEvent(player);
 
-                    if (player != null && !timers.isEmpty()) {
-                        timers.stream().filter(activeTimer -> activeTimer.getType().isRender()).forEach(renderedTimer -> {
-                            if (renderedTimer.getType().isDecimal()) {
-                                entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToDecimal(renderedTimer.getExpire() - Time.now()) + "s");
-                            } else {
-                                entries.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToHHMMSS(renderedTimer.getExpire() - Time.now()));
-                            }
-                        });
+                    if (player != null) {
+                        if (!timers.isEmpty()) {
+                            timers.stream().filter(activeTimer -> activeTimer.getType().isRender()).forEach(renderedTimer -> {
+                                if (renderedTimer.getType().isDecimal()) {
+                                    hudUpdateEvent.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToDecimal(renderedTimer.getExpire() - Time.now()) + "s");
+                                } else {
+                                    hudUpdateEvent.add(renderedTimer.getType().getDisplayName() + " " + ChatColor.RED + Time.convertToHHMMSS(renderedTimer.getExpire() - Time.now()));
+                                }
+                            });
+                        }
 
-                        final String hud = Joiner.on(ChatColor.RESET + " " + ChatColor.RESET + " ").join(entries);
+                        Bukkit.getPluginManager().callEvent(hudUpdateEvent);
+
+                        final String hud = Joiner.on(ChatColor.RESET + " " + ChatColor.RESET + " ").join(hudUpdateEvent.getEntries());
                         final PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + hud + "\"}"), (byte) 2);
 
                         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
