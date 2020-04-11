@@ -13,7 +13,7 @@ import com.llewkcor.ares.core.factory.data.FactoryDAO;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
-import com.llewkcor.ares.core.snitch.data.SnitchDAO;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -71,10 +71,21 @@ public final class FactoryHandler {
      * @param promise Promise
      */
     public void createFactory(Player player, Block block, String networkName, SimplePromise promise) {
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
         final boolean admin = player.hasPermission("arescore.admin");
         Block workbench = null;
         Block chest = null;
+
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (!account.isSpawned()) {
+            promise.fail("You have not spawned in yet");
+            return;
+        }
 
         if (network == null) {
             promise.fail("Network not found");

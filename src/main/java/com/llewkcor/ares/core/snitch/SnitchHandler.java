@@ -114,8 +114,19 @@ public final class SnitchHandler {
      * @param promise Promise
      */
     public void createSnitch(Player player, Block block, String networkName, String description, SimplePromise promise) {
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
         final boolean admin = player.hasPermission("arescore.admin");
+
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (!account.isSpawned()) {
+            promise.fail("You have not spawned in yet");
+            return;
+        }
 
         if (network == null) {
             promise.fail("Network not found");

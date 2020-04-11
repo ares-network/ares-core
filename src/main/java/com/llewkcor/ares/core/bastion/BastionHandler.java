@@ -11,6 +11,7 @@ import com.llewkcor.ares.core.bastion.data.BastionDAO;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -65,9 +66,20 @@ public final class BastionHandler {
      * @param promise Promise
      */
     public void createBastion(Player player, String networkName, Block block, SimplePromise promise) {
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final boolean admin = player.hasPermission("arescore.admin");
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
         final BLocatable location = new BLocatable(block);
+
+        if (account == null) {
+            promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (!account.isSpawned()) {
+            promise.fail("You have not spawned in yet");
+            return;
+        }
 
         if (network == null) {
             promise.fail("Network not found");
