@@ -3,12 +3,14 @@ package com.llewkcor.ares.core.spawn;
 import com.google.common.collect.Maps;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.location.PLocatable;
+import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.spawn.listener.SpawnListener;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -22,6 +24,7 @@ public final class SpawnManager {
     @Getter public Map<UUID, UUID> teleportRequests;
 
     @Getter @Setter public PLocatable spawnLocation;
+    @Getter public String mainWorldName;
     @Getter @Setter public int randomSpawnRadius;
 
     public SpawnManager(Ares plugin) {
@@ -41,6 +44,13 @@ public final class SpawnManager {
 
         this.randomSpawnRadius = spawnConfig.getInt("settings.random-spawn-radius");
 
+        this.mainWorldName = spawnConfig.getString("settings.main-world");
+
+        if (Bukkit.getWorld(mainWorldName) == null) {
+            Logger.error("Failed to find main world! This is about to be FUCKED");
+            return;
+        }
+
         Bukkit.getPluginManager().registerEvents(new SpawnListener(this), plugin);
     }
 
@@ -50,12 +60,12 @@ public final class SpawnManager {
      */
     public BLocatable getRandomSpawnLocation() {
         final Random random = new Random();
+        final World world = Bukkit.getWorld(mainWorldName);
         final int x = random.nextInt(randomSpawnRadius);
         final int z = random.nextInt(randomSpawnRadius);
-        final int y = getSpawnLocation().getBukkit().getWorld().getHighestBlockYAt(x, z);
-        final String worldName = getSpawnLocation().getWorldName();
+        final int y = world.getHighestBlockYAt(x, z);
 
-        return new BLocatable(worldName, x, y, z);
+        return new BLocatable(world.getName(), x, y, z);
     }
 
     /**

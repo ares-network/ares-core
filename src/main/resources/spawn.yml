@@ -8,3 +8,4 @@ spawn-location:
 
 settings:
   random-spawn-radius: 3500
+  main-world: 'world'
