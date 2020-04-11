@@ -18,6 +18,13 @@ public final class CombatLogger extends EntityVillager {
     @Getter public final String ownerUsername;
     @Getter public final List<ItemStack> inventory;
 
+    public CombatLogger(World world) {
+        super(world);
+        this.ownerId = null;
+        this.ownerUsername = null;
+        this.inventory = null;
+    }
+
     public CombatLogger(World world, Player player) {
         super(world);
         this.ownerId = player.getUniqueId();
