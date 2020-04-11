@@ -15,6 +15,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -22,6 +26,60 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 @AllArgsConstructor
 public final class SpawnListener implements Listener {
     @Getter public final SpawnManager manager;
+
+    @EventHandler
+    public void onHungerChange(FoodLevelChangeEvent event) {
+        final Player player = (Player)event.getEntity();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null || account.isSpawned()) {
+            return;
+        }
+
+        player.setFoodLevel(20);
+        player.setSaturation(20);
+        player.setExhaustion(0);
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        final Player player = (Player)event.getEntity();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null || account.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null || account.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        final Player player = event.getPlayer();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null || account.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
