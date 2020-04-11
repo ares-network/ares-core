@@ -75,7 +75,7 @@ public final class AccountListener implements Listener {
      * Handles issuing warning if player is not connected to the web
      * @param event Bukkit PlayerJoinEvent
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final AresAccount account = playerManager.getAccountByBukkitID(player.getUniqueId());
@@ -83,6 +83,8 @@ public final class AccountListener implements Listener {
         if (account == null) {
             return;
         }
+
+        account.setLastLogin(Time.now());
 
         if (!account.isWebConnected()) {
             player.sendMessage(ChatColor.RED + "Your account is not verified. Type '/account create' to get started.");
