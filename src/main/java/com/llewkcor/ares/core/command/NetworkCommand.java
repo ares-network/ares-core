@@ -220,6 +220,21 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("players|playerlist|pl|members")
+    @Description("Displays a menu of all members of the provided network")
+    @Syntax("<network name>")
+    public void onPlayerList(Player player, String networkName) {
+        plugin.getNetworkManager().getHandler().getMenuHandler().openPlayerListMenu(player, networkName, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @Subcommand("permission|p|perm|perms")
     @Description("Edit a players permissions for your network")
     @Syntax("<network name> <username>")

@@ -6,6 +6,7 @@ import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
 import com.llewkcor.ares.core.network.menu.NetworkConfigMenu;
+import com.llewkcor.ares.core.network.menu.NetworkPlayerListMenu;
 import com.llewkcor.ares.core.network.menu.NetworkPlayerMenu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,33 @@ import org.bukkit.entity.Player;
 @AllArgsConstructor
 public final class NetworkMenuHandler {
     @Getter public NetworkHandler handler;
+
+    /**
+     * Handles opening a player list menu for the provided network name
+     * @param player Player
+     * @param networkName Network name
+     * @param promise Promise
+     */
+    public void openPlayerListMenu(Player player, String networkName, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember member = network.getMember(player);
+
+        if (member == null && !admin) {
+            promise.fail("You are not a member of " + network.getName());
+            return;
+        }
+
+        final NetworkPlayerListMenu menu = new NetworkPlayerListMenu(handler.getManager().getPlugin(), player, network);
+        menu.open();
+        promise.success();
+    }
 
     /**
      * Handles opening the player menu for the provided network name
