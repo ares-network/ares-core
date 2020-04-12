@@ -32,6 +32,8 @@ public final class SpawnManager {
         this.handler = new SpawnHandler(this);
         this.teleportRequests = Maps.newConcurrentMap();
 
+        Bukkit.getPluginManager().registerEvents(new SpawnListener(this), plugin);
+
         final YamlConfiguration spawnConfig = Configs.getConfig(plugin, "spawn");
 
         final double x = spawnConfig.getDouble("spawn-location.x");
@@ -43,15 +45,12 @@ public final class SpawnManager {
         this.spawnLocation = new PLocatable(worldName, x, y, z, yaw, pitch);
 
         this.randomSpawnRadius = spawnConfig.getInt("settings.random-spawn-radius");
-
         this.mainWorldName = spawnConfig.getString("settings.main-world");
 
         if (Bukkit.getWorld(mainWorldName) == null) {
             Logger.error("Failed to find main world! This is about to be FUCKED");
             return;
         }
-
-        Bukkit.getPluginManager().registerEvents(new SpawnListener(this), plugin);
     }
 
     /**
