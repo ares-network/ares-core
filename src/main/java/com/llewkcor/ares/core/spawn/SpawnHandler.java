@@ -184,12 +184,12 @@ public final class SpawnHandler {
             return;
         }
 
-        if (!summonAccount.isSpawned()) {
+        if (!playerAccount.isSpawned()) {
             promise.fail("You need to leave spawn to accept this players summon request");
             return;
         }
 
-        if (playerAccount.isSpawned()) {
+        if (summonAccount.isSpawned()) {
             promise.fail(summonPlayer.getName() + " has already randomly spawned");
             return;
         }
