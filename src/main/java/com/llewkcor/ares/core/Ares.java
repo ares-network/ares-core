@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class Ares extends JavaPlugin {
+    @Getter public PlayerManager playerManager;
+    @Getter public ChatManager chatManager;
     @Getter public ConfigManager configManager;
     @Getter public NetworkManager networkManager;
     @Getter public SnitchManager snitchManager;
