@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,16 @@ public final class CompactHandler {
 
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null || !item.getType().equals(hand.getType())) {
+                continue;
+            }
+
+            final ItemMeta meta = item.getItemMeta();
+
+            if (meta != null && (meta.hasDisplayName() || meta.hasLore())) {
+                continue;
+            }
+
+            if (manager.isCompact(item)) {
                 continue;
             }
 
