@@ -10,6 +10,7 @@ import com.llewkcor.ares.core.bastion.BastionManager;
 import com.llewkcor.ares.core.chat.ChatManager;
 import com.llewkcor.ares.core.claim.ClaimManager;
 import com.llewkcor.ares.core.command.*;
+import com.llewkcor.ares.core.compactor.CompactManager;
 import com.llewkcor.ares.core.configs.ConfigManager;
 import com.llewkcor.ares.core.factory.FactoryManager;
 import com.llewkcor.ares.core.listener.AresEventListener;
@@ -46,11 +47,10 @@ public final class Ares extends JavaPlugin {
     @Getter public LoggerManager loggerManager;
     @Getter public BastionManager bastionManager;
     @Getter public AcidManager acidManager;
+    @Getter public CompactManager compactManager;
 
     @Getter protected MongoDB databaseInstance;
-    @Getter protected PlayerManager playerManager;
     @Getter protected PaperCommandManager commandManager;
-    @Getter protected ChatManager chatManager;
 
     @Override
     public void onEnable() {
@@ -74,6 +74,7 @@ public final class Ares extends JavaPlugin {
         this.loggerManager = new LoggerManager(this);
         this.bastionManager = new BastionManager(this);
         this.acidManager = new AcidManager(this);
+        this.compactManager = new CompactManager(this);
 
         this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
         databaseInstance.openConnection();
@@ -105,6 +106,7 @@ public final class Ares extends JavaPlugin {
         commandManager.registerCommand(new AresCommand(this));
         commandManager.registerCommand(new ChatCommand(this));
         commandManager.registerCommand(new AHelpCommand(this));
+        commandManager.registerCommand(new CompactorCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
