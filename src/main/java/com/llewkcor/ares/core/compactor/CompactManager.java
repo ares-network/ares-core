@@ -31,7 +31,7 @@ public final class CompactManager {
         final ItemMeta meta = item.getItemMeta();
         final List<String> lore = meta.getLore();
 
-        if (lore.isEmpty()) {
+        if (lore == null || lore.isEmpty()) {
             return false;
         }
 
