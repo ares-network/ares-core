@@ -1,6 +1,8 @@
 package com.llewkcor.ares.core.prison.listener;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.Lists;
+import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.general.IPS;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.alts.data.AltEntry;
@@ -11,10 +13,7 @@ import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +24,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -42,7 +42,7 @@ public final class PrisonPearlListener implements Listener {
         final UUID uniqueId = event.getUniqueId();
         final long address = IPS.toLong(event.getAddress().getHostAddress());
         final ImmutableCollection<AltEntry> accountEntries = manager.getPlugin().getAltManager().getAlts(uniqueId, address);
-        int activePrisonPearls = 0;
+        final List<AltEntry> pearledAlts = Lists.newArrayList();
 
         for (AltEntry entry : accountEntries) {
             final PrisonPearl pearl = manager.getPrisonPearlByPlayer(entry.getUniqueId());
@@ -51,11 +51,22 @@ public final class PrisonPearlListener implements Listener {
                 continue;
             }
 
-            activePrisonPearls += 1;
+            pearledAlts.add(entry);
         }
 
-        if (activePrisonPearls > manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have too many imprisoned accounts");
+        if (pearledAlts.size() > manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Prison Pearl Ban Evasion");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tempban " + event.getName() + " " + manager.getPlugin().getConfigManager().getPrisonPearlConfig().getAltBanDuration() + " Prison Pearl Ban Evasion");
+            Logger.print(event.getName() + " was banned for having " + pearledAlts.size() + " Prison Pearled alt accounts");
+            return;
+        }
+
+        if (pearledAlts.size() == 1) {
+            final AltEntry pearledAlt = pearledAlts.get(0);
+
+            if (!pearledAlt.getUniqueId().equals(uniqueId)) {
+                Bukkit.getOnlinePlayers().stream().filter(player -> player.hasPermission("arescore.admin")).forEach(staff -> staff.sendMessage(ChatColor.DARK_RED + "[Prison Evasion] " + ChatColor.DARK_AQUA + event.getName() + ChatColor.GRAY + " is evading a prison pearl on an alt account. If they are Prison Pearled again they will be banned."));
+            }
         }
     }
 
