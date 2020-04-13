@@ -53,7 +53,7 @@ public final class LoggerListener implements Listener {
 
         if (
                 !manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.COMBAT) &&
-                player.getNoDamageTicks() == 0 &&
+                player.getNoDamageTicks() == 0 && player.getFireTicks() == 0 && player.getFallDistance() <= 3.0 &&
                 !PlayerUtil.isNearbyEnemy(manager.getPlugin(), player.getNearbyEntities(manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius()), player)) {
 
             return;
