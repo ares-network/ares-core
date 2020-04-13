@@ -27,7 +27,7 @@ public final class BlockUtil {
             return blocks;
         }
 
-        if (block.getType().name().contains("_DOOR")) {
+        if (block.getType().name().contains("_DOOR") && !block.getType().equals(Material.TRAP_DOOR)) {
             final Door door = (Door)block.getState().getData();
 
             if (door.isTopHalf()) {
