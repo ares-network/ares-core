@@ -1,17 +1,23 @@
 package com.llewkcor.ares.core.factory;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.logger.Logger;
+import com.llewkcor.ares.commons.remap.RemappedEnchantment;
 import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.factory.data.FactoryRecipe;
 import lombok.Getter;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,37 +29,151 @@ public final class FactoryRecipeManager {
     public FactoryRecipeManager(FactoryManager factoryManager) {
         this.factoryManager = factoryManager;
         this.recipeRepository = Sets.newConcurrentHashSet();
+    }
 
+    /**
+     * Handles loading the Factory recipes from file to memory
+     */
+    public void loadRecipes() {
         final YamlConfiguration factoryConfig = Configs.getConfig(factoryManager.getPlugin(), "factories");
+
+        if (!recipeRepository.isEmpty()) {
+            recipeRepository.clear();
+        }
 
         for (String recipeIdentifier : factoryConfig.getConfigurationSection("recipes").getKeys(false)) {
             final String recipeName = factoryConfig.getString("recipes." + recipeIdentifier + ".name");
             final int jobTime = factoryConfig.getInt("recipes." + recipeIdentifier + ".job_time");
-            final Map<Material, Integer> inputMaterials = Maps.newHashMap();
-            final Map<Material, Integer> outputMaterials = Maps.newHashMap();
+            final List<ItemStack> inputMaterials = Lists.newArrayList();
+            final List<ItemStack> outputMaterials = Lists.newArrayList();
 
-            for (String materialName : factoryConfig.getConfigurationSection("recipes." + recipeIdentifier + ".input").getKeys(false)) {
-                final Material material = Material.getMaterial(materialName);
-                final int amount = factoryConfig.getInt("recipes." + recipeIdentifier + ".input." + materialName + ".amount");
+            for (String materialIdentifier : factoryConfig.getConfigurationSection("recipes." + recipeIdentifier + ".input").getKeys(false)) {
+                final String path = "recipes." + recipeIdentifier + ".input." + materialIdentifier + ".";
+                Material material = null;
+                String name = null;
+                int amount = 1;
+                int data = 0;
+                final Map<Enchantment, Integer> enchantments = Maps.newHashMap();
+
+                if (factoryConfig.get(path + "id") != null) {
+                    material = Material.getMaterial(factoryConfig.getInt(path + "id"));
+                }
+
+                if (factoryConfig.get(path + "name") != null) {
+                    name = ChatColor.translateAlternateColorCodes('&', factoryConfig.getString(path + "name"));
+                }
+
+                if (factoryConfig.get(path + "amount") != null) {
+                    amount = factoryConfig.getInt(path + "amount");
+                }
+
+                if (factoryConfig.get(path + "durability") != null) {
+                    data = factoryConfig.getInt(path + "durability");
+                }
+
+                if (factoryConfig.get(path + "enchantments") != null) {
+                    for (String enchantmentName : factoryConfig.getConfigurationSection(path + "enchantments").getKeys(false)) {
+                        final Enchantment enchantment = RemappedEnchantment.getEnchantmentByName(enchantmentName);
+                        final int level = factoryConfig.getInt(path + "enchantments." + enchantmentName);
+
+                        if (enchantment == null) {
+                            Logger.error("Invalid enchantment: " + enchantmentName);
+                            continue;
+                        }
+
+                        enchantments.put(enchantment, level);
+                    }
+                }
 
                 if (material == null) {
-                    Logger.error("Failed to load input material for Factory Recipe (" + recipeName + ")");
+                    Logger.error("Invalid material for " + recipeName + ": " + material);
                     continue;
                 }
 
-                inputMaterials.put(material, amount);
+                final ItemStack item;
+
+                if (name != null) {
+                    item = new ItemBuilder()
+                            .setMaterial(material)
+                            .setName(name)
+                            .setName(name)
+                            .setAmount(amount)
+                            .setData((short)data)
+                            .addEnchant(enchantments)
+                            .build();
+                } else {
+                    item = new ItemBuilder()
+                            .setMaterial(material)
+                            .setName(name)
+                            .setAmount(amount)
+                            .setData((short)data)
+                            .addEnchant(enchantments)
+                            .build();
+                }
+
+                inputMaterials.add(item);
             }
 
-            for (String materialName : factoryConfig.getConfigurationSection("recipes." + recipeIdentifier + ".output").getKeys(false)) {
-                final Material material = Material.getMaterial(materialName);
-                final int amount = factoryConfig.getInt("recipes." + recipeIdentifier + ".output." + materialName + ".amount");
+            for (String materialIdentifier : factoryConfig.getConfigurationSection("recipes." + recipeIdentifier + ".output").getKeys(false)) {
+                final String path = "recipes." + recipeIdentifier + ".output." + materialIdentifier + ".";
+                Material material = null;
+                String name = null;
+                int amount = 1;
+                int data = 0;
+                final Map<Enchantment, Integer> enchantments = Maps.newHashMap();
 
-                if (material == null) {
-                    Logger.error("Failed to load output material for Factory Recipe (" + recipeName + ")");
-                    continue;
+                if (factoryConfig.get(path + "id") != null) {
+                    material = Material.getMaterial(factoryConfig.getInt(path + "id"));
                 }
 
-                outputMaterials.put(material, amount);
+                if (factoryConfig.get(path + "name") != null) {
+                    name = ChatColor.translateAlternateColorCodes('&', factoryConfig.getString(path + "name"));
+                }
+
+                if (factoryConfig.get(path + "amount") != null) {
+                    amount = factoryConfig.getInt(path + "amount");
+                }
+
+                if (factoryConfig.get(path + "durability") != null) {
+                    data = factoryConfig.getInt(path + "durability");
+                }
+
+                if (factoryConfig.get(path + "enchantments") != null) {
+                    for (String enchantmentName : factoryConfig.getConfigurationSection(path + "enchantments").getKeys(false)) {
+                        final Enchantment enchantment = RemappedEnchantment.getEnchantmentByName(enchantmentName);
+                        final int level = factoryConfig.getInt(path + "enchantments." + enchantmentName);
+
+                        if (enchantment == null) {
+                            Logger.error("Invalid enchantment: " + enchantmentName);
+                            continue;
+                        }
+
+                        enchantments.put(enchantment, level);
+                    }
+                }
+
+                final ItemStack item;
+
+                if (name != null) {
+                    item = new ItemBuilder()
+                            .setMaterial(material)
+                            .setName(name)
+                            .setName(name)
+                            .setAmount(amount)
+                            .setData((short)data)
+                            .addEnchant(enchantments)
+                            .build();
+                } else {
+                    item = new ItemBuilder()
+                            .setMaterial(material)
+                            .setName(name)
+                            .setAmount(amount)
+                            .setData((short)data)
+                            .addEnchant(enchantments)
+                            .build();
+                }
+
+                outputMaterials.add(item);
             }
 
             final FactoryRecipe recipe = new FactoryRecipe(recipeName, jobTime, inputMaterials, outputMaterials);

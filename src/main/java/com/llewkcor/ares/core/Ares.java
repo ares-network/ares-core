@@ -87,6 +87,7 @@ public final class Ares extends JavaPlugin {
         claimManager.getHandler().loadAll(true);
         prisonPearlManager.getHandler().loadAll(true);
         factoryManager.getHandler().loadAll(true);
+        factoryManager.getRecipeManager().loadRecipes();
         bastionManager.getHandler().loadAll(true);
         acidManager.getHandler().loadAll(true);
 

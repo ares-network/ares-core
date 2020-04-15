@@ -3,22 +3,18 @@ package com.llewkcor.ares.core.factory.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDocument;
-import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import lombok.Getter;
 import org.bson.Document;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Furnace;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,7 +56,7 @@ public final class Factory implements MongoDocument<Factory> {
      * @param recipe Factory Recipe
      */
     public void finishJob(FactoryRecipe recipe) {
-        final Map<Material, Integer> output = recipe.getOutput();
+        final List<ItemStack> output = recipe.getOutput();
         final Block chestBlock = chestLocation.getBukkit();
         final BlockState blockState = chestBlock.getState();
 
@@ -72,10 +68,7 @@ public final class Factory implements MongoDocument<Factory> {
         final InventoryHolder holder = (InventoryHolder)blockState;
         final Inventory inventory = holder.getInventory();
 
-        for (Material material : output.keySet()) {
-            final int amount = output.get(material);
-            final ItemStack item = new ItemBuilder().setMaterial(material).setAmount(amount).build();
-
+        for (ItemStack item : output) {
             if (inventory.firstEmpty() != -1) {
                 inventory.addItem(item);
             } else {

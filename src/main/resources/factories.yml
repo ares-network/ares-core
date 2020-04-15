@@ -4,9 +4,20 @@ recipes:
     job_time: 30
     input:
       DIAMOND:
+        id: 264
         amount: 3
       STICK:
+        id: 280
         amount: 4
+      RED_DYE:
+        id: 351
+        durability: 1
+        name: 'Rose Red'
     output:
-      ENDER_PEARL:
-        amount: 4
+      DIAMOND_SWORD:
+        amount: 1
+        id: 276
+        name: '&6A very neat sword'
+        enchantments:
+          SHARPNESS: 1
+          UNBREAKING: 2

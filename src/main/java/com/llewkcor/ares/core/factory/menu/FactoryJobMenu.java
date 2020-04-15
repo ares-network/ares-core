@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.menu.ClickableItem;
 import com.llewkcor.ares.commons.menu.Menu;
+import com.llewkcor.ares.commons.remap.RemappedEnchantment;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.Ares;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
@@ -65,9 +67,20 @@ public final class FactoryJobMenu extends Menu {
 
             lore.add(org.bukkit.ChatColor.GOLD + "Output Resources:");
 
-            for (Material outputMaterial : recipe.getOutput().keySet()) {
-                final int amount = recipe.getOutput().get(outputMaterial);
-                lore.add(org.bukkit.ChatColor.GRAY + " - " + org.bukkit.ChatColor.AQUA + "x" + amount + " " + StringUtils.capitalize(outputMaterial.name().toLowerCase().replace("_", " ")));
+            for (ItemStack output : recipe.getOutput()) {
+                final String itemName = ((output.hasItemMeta() && output.getItemMeta().hasDisplayName()) ? output.getItemMeta().getDisplayName() : StringUtils.capitalize(output.getType().name().toLowerCase().replace("_", " ")));
+                lore.add(org.bukkit.ChatColor.GRAY + " - " + org.bukkit.ChatColor.AQUA + "x" + output.getAmount() + " " + itemName);
+
+                if (output.hasItemMeta() && !output.getItemMeta().getEnchants().isEmpty()) {
+                    lore.add(org.bukkit.ChatColor.RESET + " " + org.bukkit.ChatColor.RESET + " " + org.bukkit.ChatColor.GOLD + "Enchantments:");
+
+                    for (Enchantment enchantment : output.getItemMeta().getEnchants().keySet()) {
+                        final int level = output.getItemMeta().getEnchantLevel(enchantment);
+                        final RemappedEnchantment remapped = RemappedEnchantment.getRemappedEnchantmentByBukkit(enchantment);
+                        final String enchantmentName = StringUtils.capitalize(remapped.name().toLowerCase().replace("_", " "));
+                        lore.add(org.bukkit.ChatColor.RESET + " " + org.bukkit.ChatColor.RESET + " " + org.bukkit.ChatColor.GRAY + " - " + org.bukkit.ChatColor.AQUA + enchantmentName + " " + level);
+                    }
+                }
             }
 
             lore.add(ChatColor.RESET + " ");

@@ -2,6 +2,8 @@ package com.llewkcor.ares.core.factory;
 
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.HelpCommand;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.SimplePromise;
@@ -22,6 +24,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 @AllArgsConstructor
 public final class FactoryHandler {
@@ -101,56 +105,34 @@ public final class FactoryHandler {
 
         for (BlockFace direction : Blocks.getFlatDirections()) {
             final Block nextBlock = block.getRelative(direction);
+            final Block opposite = block.getRelative(direction.getOppositeFace());
 
-            if (nextBlock == null || !(nextBlock.getType().equals(Material.CHEST))) {
+            if (nextBlock == null || !(nextBlock.getType().equals(Material.CHEST) || nextBlock.getType().equals(Material.TRAPPED_CHEST))) {
                 continue;
             }
 
             chest = nextBlock;
 
             // Checking that the workbench exists
-            if (nextBlock.getType().equals(Material.CHEST)) {
-                if (direction.equals(BlockFace.NORTH)) {
-                    workbench = block.getRelative(BlockFace.SOUTH);
-
-                    if (workbench == null || !workbench.getType().equals(Material.WORKBENCH)) {
-                        promise.fail("Invalid factory configuration");
-                        return;
-                    }
-                }
-
-                else if (direction.equals(BlockFace.EAST)) {
-                    workbench = block.getRelative(BlockFace.WEST);
-
-                    if (workbench == null || !workbench.getType().equals(Material.WORKBENCH)) {
-                        promise.fail("Invalid factory configuration");
-                        return;
-                    }
-                }
-
-                else if (direction.equals(BlockFace.SOUTH)) {
-                    workbench = block.getRelative(BlockFace.NORTH);
-
-                    if (workbench == null || !workbench.getType().equals(Material.WORKBENCH)) {
-                        promise.fail("Invalid factory configuration");
-                        return;
-                    }
-                }
-
-                else if (direction.equals(BlockFace.WEST)) {
-                    workbench = block.getRelative(BlockFace.EAST);
-
-                    if (workbench == null || !workbench.getType().equals(Material.WORKBENCH)) {
-                        promise.fail("Invalid factory configuration");
-                        return;
-                    }
-                }
+            if (opposite != null && opposite.getType().equals(Material.WORKBENCH)) {
+                workbench = opposite;
+                break;
             }
         }
 
         // Chest or workbench did not exist
         if (chest == null || workbench == null) {
-            promise.fail("Invalid factory configuration");
+            final List<String> notFound = Lists.newArrayList();
+
+            if (chest == null) {
+                notFound.add("Chest");
+            }
+
+            if (workbench == null) {
+                notFound.add("Crafting Bench");
+            }
+
+            promise.fail("Invalid factory configuration: " + Joiner.on(" & ").join(notFound) + " not found");
             return;
         }
 
