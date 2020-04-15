@@ -169,6 +169,11 @@ public final class NetworkManageHandler {
             return;
         }
 
+        if (kickedMember.getUniqueId().equals(player.getUniqueId())) {
+            promise.fail("You can not kick yourself");
+            return;
+        }
+
         if (kickedMember.hasPermission(NetworkPermission.ADMIN) && networkMember != null && !networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
             promise.fail("You can not kick a player with admin permissions");
             return;
