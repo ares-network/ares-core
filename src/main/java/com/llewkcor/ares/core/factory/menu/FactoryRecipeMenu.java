@@ -17,6 +17,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public final class FactoryRecipeMenu extends Menu {
@@ -27,7 +29,11 @@ public final class FactoryRecipeMenu extends Menu {
         this.factory = factory;
         int pos = 0;
 
-        for (FactoryRecipe recipe : plugin.getFactoryManager().getRecipeManager().getRecipeRepository()) {
+        final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
+        sortedRecipes.sort(Comparator.comparingInt(FactoryRecipe::getJobTime));
+        Collections.reverse(sortedRecipes);
+
+        for (FactoryRecipe recipe : sortedRecipes) {
             final List<String> lore = Lists.newArrayList();
 
             lore.add(ChatColor.GOLD + "Input Resources:");
