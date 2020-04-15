@@ -50,7 +50,8 @@ public final class SnitchListener implements Listener {
             return;
         }
 
-        final BLocatable location = new BLocatable(player.getLocation().getBlock());
+        final BLocatable location = new BLocatable(block);
+        final Material material = block.getType();
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -67,7 +68,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, block, SnitchEntryType.BLOCK_BREAK))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, material, SnitchEntryType.BLOCK_BREAK))).run();
         };
 
         manager.searchQueue.add(task);
@@ -91,6 +92,7 @@ public final class SnitchListener implements Listener {
         }
 
         final BLocatable location = new BLocatable(block);
+        final Material material = block.getType();
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -107,7 +109,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, block, SnitchEntryType.BLOCK_PLACE))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, material, SnitchEntryType.BLOCK_PLACE))).run();
         };
 
         manager.searchQueue.add(task);
@@ -138,7 +140,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, player.getLocation().getBlock(), SnitchEntryType.LOGOUT))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, Material.AIR, SnitchEntryType.LOGOUT))).run();
         };
 
         manager.searchQueue.add(task);
@@ -169,7 +171,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, player.getLocation().getBlock(), SnitchEntryType.LOGIN))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, Material.AIR, SnitchEntryType.LOGIN))).run();
         };
 
         manager.searchQueue.add(task);
@@ -202,6 +204,7 @@ public final class SnitchListener implements Listener {
             return;
         }
 
+        final Material material = block.getType();
         final Collection<Network> networks = manager.getPlugin().getNetworkManager().getNetworksByPlayer(player);
         final Set<UUID> networkIds = Sets.newHashSet();
 
@@ -218,7 +221,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, block, SnitchEntryType.BLOCK_INTERACTION))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, material, SnitchEntryType.BLOCK_INTERACTION))).run();
         };
 
         manager.searchQueue.add(task);
@@ -253,7 +256,7 @@ public final class SnitchListener implements Listener {
 
             new Scheduler(getManager().getPlugin()).sync(() -> inRadius.stream()
                     .filter(snitch -> !networkIds.contains(snitch.getOwnerId()))
-                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, player.getLocation().getBlock(), SnitchEntryType.KILL))).run();
+                    .forEach(snitch -> manager.getHandler().triggerSnitch(snitch, player, location, Material.AIR, SnitchEntryType.KILL))).run();
         };
 
         manager.searchQueue.add(task);

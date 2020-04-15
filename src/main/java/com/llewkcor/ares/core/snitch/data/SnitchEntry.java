@@ -50,11 +50,26 @@ public final class SnitchEntry implements MongoDocument<SnitchEntry> {
     }
 
     @Override
+    public String toString() {
+        return "SnitchEntry {" +
+                "uniqueId=" + uniqueId.toString() +
+                ", type=" + type.name() +
+                ", entity='" + entity + '\'' +
+                ", block='" + block + '\'' +
+                ", description='" + description + '\'' +
+                ", blockLocation=" + blockLocation.toString() +
+                ", createdDate=" + createdDate +
+                ", expireDate=" + expireDate +
+                '}';
+    }
+
+    @Override
     public SnitchEntry fromDocument(Document document) {
         this.uniqueId = (UUID)document.get("id");
         this.type = SnitchEntryType.valueOf(document.getString("type"));
         this.entity = document.getString("entity_name");
         this.block = document.getString("block_name");
+        this.description = document.getString("description");
         this.blockLocation = new BLocatable().fromDocument(document.get("block_location", Document.class));
         this.createdDate = document.getLong("created");
         this.expireDate = document.getLong("expire");
@@ -69,6 +84,7 @@ public final class SnitchEntry implements MongoDocument<SnitchEntry> {
                 .append("type", type.name())
                 .append("entity_name", entity)
                 .append("block_name", block)
+                .append("description", description)
                 .append("block_location", blockLocation.toDocument())
                 .append("created", createdDate)
                 .append("expire", expireDate);

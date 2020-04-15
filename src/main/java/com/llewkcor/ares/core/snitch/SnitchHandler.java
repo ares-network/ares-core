@@ -14,13 +14,13 @@ import com.llewkcor.ares.core.snitch.data.Snitch;
 import com.llewkcor.ares.core.snitch.data.SnitchDAO;
 import com.llewkcor.ares.core.snitch.data.SnitchEntry;
 import com.llewkcor.ares.core.snitch.data.SnitchEntryType;
+import com.llewkcor.ares.core.snitch.menu.SnitchLogMenu;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,21 +163,22 @@ public final class SnitchHandler {
     }
 
     /**
-     * Trigger a snitch
-     * @param snitch Snitch
-     * @param player Player involved
-     * @param block Block
-     * @param type Snitch Entry Type
+     * Handles triggering a snitch
+     * @param snitch Snitch block
+     * @param player Triggering player
+     * @param locatable Trigger location
+     * @param material Material (if applicable)
+     * @param type SnitchEntryType
      */
-    public void triggerSnitch(Snitch snitch, Player player, Block block, SnitchEntryType type) {
+    public void triggerSnitch(Snitch snitch, Player player, BLocatable locatable, Material material, SnitchEntryType type) {
         final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(snitch.getOwnerId());
 
         final SnitchEntry entry = new SnitchEntry(
                 type,
                 (player != null ? player.getName() : null),
-                block.getType().name(),
+                material.name(),
                 type.getDisplayName(),
-                new BLocatable(block),
+                locatable,
                 (Time.now() + (manager.getPlugin().getConfigManager().getSnitchesConfig().getLogEntryExpireSeconds() * 1000)));
 
         snitch.getLogEntries().add(entry);
@@ -247,17 +248,11 @@ public final class SnitchHandler {
      * Handles printing log information for a Snitch
      * @param player Player
      * @param block Snitch Block
-     * @param page Log Page
      * @param promise Promise
      */
-    public void viewLogs(Player player, Block block, int page, SimplePromise promise) {
+    public void viewLogs(Player player, Block block, SimplePromise promise) {
         final Snitch snitch = getManager().getSnitchByBlock(block);
         final boolean admin = player.hasPermission("arescore.admin");
-
-        // Fix 0 display
-        if (page < 1) {
-            page = 1;
-        }
 
         if (snitch == null) {
             promise.fail("This block is not a snitch");
@@ -290,47 +285,8 @@ public final class SnitchHandler {
             return;
         }
 
-        final int start = (page > 1) ? ((page - 1) * 10) : 0;
-        final int end = (start + 10);
-        final int totalPages = Math.round(entries.size() / 10);
-
-        Collections.reverse(entries);
-
-        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
-        player.sendMessage(ChatColor.YELLOW + snitch.getName() + " Log Entries");
-        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
-
-        for (int i = start; i < end; i++) {
-            if (entries.size() <= i) {
-                break;
-            }
-
-            final SnitchEntry entry = entries.get(i);
-
-            switch(entry.getType()) {
-                case BLOCK_BREAK : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " broken by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case BLOCK_PLACE : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " placed by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case BLOCK_INTERACTION : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.GREEN + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.BLUE + entry.getBlock() + ChatColor.GRAY + " interacted with by " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case KILL : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.DARK_RED + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " died at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case LOGIN : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.YELLOW + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " connected at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case LOGOUT : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.YELLOW + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " disconnected at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-                case SPOTTED : player.sendMessage(ChatColor.GRAY + " * " + ChatColor.DARK_AQUA + "[" + (i + 1) + "] " + ChatColor.LIGHT_PURPLE + entry.getType().getDisplayName() + ChatColor.GRAY + " - " + ChatColor.RED + entry.getEntity() + ChatColor.GRAY + " seen at X: " + ChatColor.AQUA + entry.getBlockLocation().getX() + ChatColor.GRAY + ", Y: " + ChatColor.AQUA + entry.getBlockLocation().getY() + ChatColor.GRAY + ", Z: " + ChatColor.AQUA + entry.getBlockLocation().getZ());
-                    break;
-            }
-
-            player.sendMessage(ChatColor.GRAY + "At " + ChatColor.GOLD + Time.convertToDate(new Date(entry.getCreatedDate())) + ChatColor.GRAY + " (" + Time.convertToElapsed(Time.now() - entry.createdDate) + ")");
-            player.sendMessage(ChatColor.RESET + " ");
-        }
-
-        player.sendMessage(ChatColor.GOLD + "Showing page " + ChatColor.YELLOW + page + "/" + (totalPages));
-        player.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "-------------------------");
-
+        final SnitchLogMenu menu = new SnitchLogMenu(manager.getPlugin(), player, snitch);
+        menu.open();
         promise.success();
     }
 

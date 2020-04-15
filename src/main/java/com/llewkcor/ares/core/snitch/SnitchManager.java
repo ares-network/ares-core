@@ -12,11 +12,15 @@ import com.llewkcor.ares.core.snitch.data.SnitchEntryType;
 import com.llewkcor.ares.core.snitch.listener.SnitchListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class SnitchManager {
@@ -96,7 +100,7 @@ public final class SnitchManager {
                         added.getSpotted().put(bukkitUUID, currentLocation);
 
                         // Triggering snitch for newly added snitches
-                        new Scheduler(plugin).sync(() -> handler.triggerSnitch(added, player, player.getLocation().getBlock(), SnitchEntryType.SPOTTED)).run();
+                        new Scheduler(plugin).sync(() -> handler.triggerSnitch(added, player, currentLocation, Material.AIR, SnitchEntryType.SPOTTED)).run();
                     });
                 };
 
