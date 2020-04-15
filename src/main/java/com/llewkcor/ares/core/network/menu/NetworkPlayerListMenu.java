@@ -53,13 +53,14 @@ public final class NetworkPlayerListMenu extends Menu {
         merged.addAll(online);
         merged.addAll(members);
 
+        int cursor = 0;
         final int start = page * 52;
         final int end = start + 52;
         final boolean hasNextPage = merged.size() > end;
         final boolean hasPrevPage = start > 0;
 
         for (int i = start; i < end; i++) {
-            if (merged.size() <= i) {
+            if (cursor >= 52 || merged.size() <= i) {
                 break;
             }
 
@@ -87,18 +88,18 @@ public final class NetworkPlayerListMenu extends Menu {
             meta.setOwner(member.getUsername());
             icon.setItemMeta(meta);
 
-            addItem(new ClickableItem(icon, i, click -> {
-                ares.getNetworkManager().getHandler().getMenuHandler().openPlayerEditMenu(player, network.getName(), member.getUsername(), new SimplePromise() {
-                    @Override
-                    public void success() {}
+            addItem(new ClickableItem(icon, cursor, click -> ares.getNetworkManager().getHandler().getMenuHandler().openPlayerEditMenu(player, network.getName(), member.getUsername(), new SimplePromise() {
+                @Override
+                public void success() {}
 
-                    @Override
-                    public void fail(String s) {
-                        player.closeInventory();
-                        player.sendMessage(ChatColor.RED + "You do not have permission to perform this action");
-                    }
-                });
-            }));
+                @Override
+                public void fail(String s) {
+                    player.closeInventory();
+                    player.sendMessage(ChatColor.RED + "You do not have permission to perform this action");
+                }
+            })));
+
+            cursor += 1;
         }
 
         if (hasNextPage) {
