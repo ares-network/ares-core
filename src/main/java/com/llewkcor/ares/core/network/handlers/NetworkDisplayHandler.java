@@ -39,15 +39,30 @@ public final class NetworkDisplayHandler {
         final int onlineMembers = network.getOnlineMembers().size();
         final boolean passwordEnabled = network.getConfiguration().isPasswordEnabled();
 
+        /*
+        ----------------------
+        RankXI
+        Founded by johnsama DATE
+
+        Members: 3/20 online
+        Password Access: Enabled/Disabled
+
+        Web Profile: https://playares.com/network/<UUID>
+        -----------------------
+         */
+
         handler.getManager().getPlugin().getPlayerManager().getAccountByBukkitID(foundID, new FailablePromise<AresAccount>() {
             @Override
             public void success(AresAccount aresAccount) {
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");
                 player.sendMessage(ChatColor.GOLD + network.getName());
-                player.sendMessage(ChatColor.YELLOW + "Founded by " + aresAccount.getUsername() + " " + foundedDate);
+                player.sendMessage(ChatColor.YELLOW + "Founded by " + ChatColor.BLUE + aresAccount.getUsername() + ChatColor.YELLOW + " " + foundedDate);
                 player.sendMessage(ChatColor.RESET + " ");
-                player.sendMessage(ChatColor.YELLOW + "" + totalMembers + " (" + onlineMembers + " online)");
-                player.sendMessage(ChatColor.YELLOW + "Password access is " + (passwordEnabled ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+                player.sendMessage(ChatColor.GOLD + "Members" + ChatColor.YELLOW + ": " + onlineMembers + "/" + totalMembers);
+                player.sendMessage(ChatColor.GOLD + "Password Access" + ChatColor.YELLOW + ": " + (passwordEnabled ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+                player.sendMessage(ChatColor.RESET + " ");
+                player.sendMessage(ChatColor.GOLD + "Web Profile" + ChatColor.YELLOW + ": ");
+                player.sendMessage(ChatColor.GREEN + "https://playares.com/network/" + network.getName());
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");
             }
 
@@ -55,10 +70,13 @@ public final class NetworkDisplayHandler {
             public void fail(String s) {
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");
                 player.sendMessage(ChatColor.GOLD + network.getName());
-                player.sendMessage(ChatColor.YELLOW + "Founded " + foundedDate);
+                player.sendMessage(ChatColor.YELLOW + "Founded" + ChatColor.YELLOW + ": " + foundedDate);
                 player.sendMessage(ChatColor.RESET + " ");
-                player.sendMessage(ChatColor.YELLOW + "" + totalMembers + " (" + onlineMembers + " online)");
-                player.sendMessage(ChatColor.YELLOW + "Password access is " + (passwordEnabled ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+                player.sendMessage(ChatColor.GOLD + "Members" + ChatColor.YELLOW + ": " + onlineMembers + "/" + totalMembers);
+                player.sendMessage(ChatColor.GOLD + "Password Access" + ChatColor.YELLOW + ": " + (passwordEnabled ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+                player.sendMessage(ChatColor.RESET + " ");
+                player.sendMessage(ChatColor.GOLD + "Web Profile" + ChatColor.YELLOW + ": ");
+                player.sendMessage(ChatColor.GREEN + "https://playares.com/network/" + network.getName());
                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "-----------------------------------");
             }
         });
