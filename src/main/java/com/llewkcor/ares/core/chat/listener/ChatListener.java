@@ -40,7 +40,7 @@ public final class ChatListener implements Listener {
         manager.getHandler().leaveSession(player);
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler (priority = EventPriority.HIGH)
     public void onNetworkChat(ProcessedChatEvent event) {
         if (event.isCancelled()) {
             return;
