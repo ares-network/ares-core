@@ -126,6 +126,7 @@ public final class Ares extends JavaPlugin {
         prisonPearlManager.getHandler().performPearlCleanup();
         networkManager.getHandler().performNetworkCleanup();
         acidManager.getHandler().performAcidCleanup();
+        altManager.getHandler().performExpiredAltCleanup();
     }
 
     @Override
@@ -137,6 +138,7 @@ public final class Ares extends JavaPlugin {
         factoryManager.getHandler().saveAll(true);
         bastionManager.getHandler().saveAll(true);
         acidManager.getHandler().saveAll(true);
+        playerManager.getHandler().saveAll(true);
 
         databaseInstance.closeConnection();
     }

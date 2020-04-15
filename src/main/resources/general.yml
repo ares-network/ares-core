@@ -4,6 +4,9 @@ auto-save:
   enabled: true
   interval: 900
 
+alt-tracking:
+  alt-entry-lifespan: 2592000
+
 spawn-settings:
   random-spawn-radius: 3000
 

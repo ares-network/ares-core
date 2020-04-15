@@ -20,6 +20,8 @@ public final class GeneralConfig implements AresConfig {
 
     @Getter public String databaseUri;
 
+    @Getter public int maxAltLifespan;
+
     @Getter public int minNetworkNameLength;
     @Getter public int maxNetworkNameLength;
     @Getter public List<String> bannedNetworkNames;
@@ -52,6 +54,8 @@ public final class GeneralConfig implements AresConfig {
         config = Configs.getConfig(configManager.getPlugin(), "general");
 
         databaseUri = config.getString("database");
+
+        maxAltLifespan = config.getInt("alt-tracking.alt-entry-lifespan");
 
         minNetworkNameLength = config.getInt("network-settings.name.min-length");
         maxNetworkNameLength = config.getInt("network-settings.name.max-length");

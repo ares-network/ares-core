@@ -15,9 +15,11 @@ import java.util.UUID;
 
 public final class AltManager {
     @Getter public final Ares plugin;
+    @Getter public final AltHandler handler;
 
     public AltManager(Ares plugin) {
         this.plugin = plugin;
+        this.handler = new AltHandler(this);
 
         Bukkit.getPluginManager().registerEvents(new LoginListener(plugin), plugin);
     }
