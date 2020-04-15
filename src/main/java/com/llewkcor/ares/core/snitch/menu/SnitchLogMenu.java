@@ -2,7 +2,6 @@ package com.llewkcor.ares.core.snitch.menu;
 
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.item.ItemBuilder;
-import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.menu.ClickableItem;
 import com.llewkcor.ares.commons.menu.Menu;
 import com.llewkcor.ares.commons.util.general.Time;
@@ -68,32 +67,47 @@ public final class SnitchLogMenu extends Menu {
             lore.add(ChatColor.AQUA + entry.getBlockLocation().toString());
             lore.add(ChatColor.GRAY + Time.convertToInaccurateElapsed(Time.now() - entry.getCreatedDate()) + " ago");
 
-            String name;
+            final ItemStack icon;
+            final String name = ChatColor.BLUE + entry.getEntity() + " " + entry.getType().getDescriptor();
             Material material;
-
-            if (entry.getEntity() == null || entry.getType().getDescriptor() == null) {
-                Logger.error("Bad log entries");
-                continue;
-            }
-
-            name = ChatColor.BLUE + entry.getEntity() + " " + entry.getType().getDescriptor();
 
             if (entry.getType().equals(SnitchEntryType.BLOCK_BREAK) || entry.getType().equals(SnitchEntryType.BLOCK_PLACE) || entry.getType().equals(SnitchEntryType.BLOCK_INTERACTION)) {
                 material = Material.getMaterial(entry.getBlock());
+
+                // Fixes blank/empty texture bug
+                switch (material) {
+                    case WOODEN_DOOR: material = Material.WOOD_DOOR;
+                        break;
+
+                    case ACACIA_DOOR: material = Material.ACACIA_DOOR_ITEM;
+                        break;
+
+                    case BIRCH_DOOR: material = Material.BIRCH_DOOR_ITEM;
+                        break;
+
+                    case JUNGLE_DOOR: material = Material.JUNGLE_DOOR_ITEM;
+                        break;
+
+                    case SPRUCE_DOOR: material = Material.SPRUCE_DOOR_ITEM;
+                        break;
+                }
+
+                icon = new ItemBuilder()
+                        .setMaterial(material)
+                        .setName(name)
+                        .addLore(lore)
+                        .build();
             }
 
             else {
                 material = Material.SKULL_ITEM;
-            }
+                icon = new ItemBuilder()
+                        .setMaterial(material)
+                        .setName(name)
+                        .setData((short)3)
+                        .addLore(lore)
+                        .build();
 
-            final ItemStack icon = new ItemBuilder()
-                    .setMaterial(material)
-                    .setName(name)
-                    .setData((short)3)
-                    .addLore(lore)
-                    .build();
-
-            if (icon.getType().equals(Material.SKULL_ITEM)) {
                 final SkullMeta meta = (SkullMeta)icon.getItemMeta();
                 meta.setOwner(entry.getEntity());
                 icon.setItemMeta(meta);
@@ -119,5 +133,7 @@ public final class SnitchLogMenu extends Menu {
                 update();
             }));
         }
+
+        player.updateInventory();
     }
 }
