@@ -26,6 +26,10 @@ public final class PlayerUtil {
 
             final Player otherPlayer = (Player)entity;
 
+            if (otherPlayer.getUniqueId().equals(player.getUniqueId())) {
+                continue;
+            }
+
             if (otherPlayer.hasPermission("arescore.admin")) {
                 continue;
             }

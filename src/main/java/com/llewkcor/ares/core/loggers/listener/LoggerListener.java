@@ -5,6 +5,7 @@ import com.llewkcor.ares.core.loggers.LoggerManager;
 import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
 import com.llewkcor.ares.core.loggers.event.PlayerDamageLoggerEvent;
+import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.timers.data.type.PlayerTimerType;
 import com.llewkcor.ares.core.utils.PlayerUtil;
 import lombok.AllArgsConstructor;
@@ -50,11 +51,25 @@ public final class LoggerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+        final double radius = manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius();
 
-        if (
-                !manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.COMBAT) &&
-                player.getNoDamageTicks() == 0 && player.getFireTicks() == 0 && player.getFallDistance() <= 3.0 &&
-                !PlayerUtil.isNearbyEnemy(manager.getPlugin(), player.getNearbyEntities(manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius()), player)) {
+        /*
+        PLAYER IS NOT COMBAT TAGGED
+        PLAYER HAS 0 DAMAGE TICKS
+        PLAYER HAS 0 FIRE TICKS
+        PLAYER HAS LESS THAN 3 BLOCKS FALL DISTANCE
+        PLAYER IS NOT NEAR AN ENEMY
+        PLAYER IS NOT SPAWNED IN
+         */
+
+        if (account == null || !account.isSpawned()) {
+            return;
+        }
+
+        if (!manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.COMBAT) &&
+        player.getNoDamageTicks() == 0 && player.getFireTicks() == 0 && player.getFallDistance() <= 10.0 &&
+        !PlayerUtil.isNearbyEnemy(manager.getPlugin(), player.getNearbyEntities(radius, radius, radius), player)) {
 
             return;
 
