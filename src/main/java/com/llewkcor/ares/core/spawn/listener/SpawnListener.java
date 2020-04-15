@@ -92,7 +92,7 @@ public final class SpawnListener implements Listener {
             return;
         }
 
-        if ((!account.isSpawned() || account.isResetOnJoin()) && prisonPearl == null) {
+        if ((!account.isSpawned() || account.isResetOnJoin() || !player.hasPlayedBefore()) && prisonPearl == null) {
             account.setResetOnJoin(false);
             account.setSpawned(false);
 
