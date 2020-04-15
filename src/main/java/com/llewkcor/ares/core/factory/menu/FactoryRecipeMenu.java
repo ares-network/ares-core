@@ -84,7 +84,7 @@ public final class FactoryRecipeMenu extends Menu {
                 }
 
                 if (!recipe.hasRequiredMaterials(player)) {
-                    player.sendMessage(ChatColor.RED + "You do not have enough resources to start this job A");
+                    player.sendMessage(ChatColor.RED + "You do not have enough resources to start this job");
                     return;
                 }
 
@@ -111,7 +111,7 @@ public final class FactoryRecipeMenu extends Menu {
                 }
 
                 if (toSubtract.size() != recipe.getMaterials().size()) {
-                    player.sendMessage(ChatColor.RED + "You do not have enough resources to start this job B");
+                    player.sendMessage(ChatColor.RED + "You do not have enough resources to start this job");
                     return;
                 }
 
