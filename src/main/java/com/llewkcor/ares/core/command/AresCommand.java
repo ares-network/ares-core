@@ -26,7 +26,7 @@ public final class AresCommand extends BaseCommand {
     @Description("Reload all Ares configuration files")
     @CommandPermission("arescore.admin")
     public void onReload(CommandSender sender) {
-        plugin.getConfigManager().reload();
+        plugin.onReload();
         sender.sendMessage(ChatColor.GREEN + "All Ares configuration files have been reloaded");
     }
 

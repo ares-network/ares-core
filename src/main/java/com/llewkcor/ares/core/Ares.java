@@ -145,6 +145,14 @@ public final class Ares extends JavaPlugin {
     }
 
     /**
+     * Handles reloading all configuration files for this plugin
+     */
+    public void onReload() {
+        configManager.reload();
+        factoryManager.getRecipeManager().loadRecipes();
+    }
+
+    /**
      * Handles registering a custom entity
      * @param entityName Entity Name
      * @param entityId Entity ID
