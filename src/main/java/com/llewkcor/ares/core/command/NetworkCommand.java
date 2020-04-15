@@ -150,7 +150,15 @@ public final class NetworkCommand extends BaseCommand {
     @Description("Kick a member from your network")
     @CommandCompletion("@players")
     public void onKick(Player player, String username, String network) {
+        plugin.getNetworkManager().getHandler().getManageHandler().kickFromNetwork(player, network, username, new SimplePromise() {
+            @Override
+            public void success() {}
 
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
     }
 
     @Subcommand("config|conf|configure|settings")
