@@ -21,11 +21,24 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Set;
 
 @AllArgsConstructor
 public final class TimerListener implements Listener {
     @Getter public final TimerManager manager;
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        final Player player = event.getPlayer();
+        final Set<PlayerTimer> timers = manager.getActiveTimers(player);
+
+        if (!timers.isEmpty()) {
+            timers.forEach(timer -> manager.getHandler().removeTimer(player, timer));
+        }
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
