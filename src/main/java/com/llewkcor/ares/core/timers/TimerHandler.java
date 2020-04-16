@@ -3,6 +3,7 @@ package com.llewkcor.ares.core.timers;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.timers.data.PlayerTimer;
 import com.llewkcor.ares.core.timers.data.type.PlayerTimerType;
+import com.llewkcor.ares.core.timers.menu.CombatMenu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -83,5 +84,14 @@ public final class TimerHandler {
 
         timer.onFinish();
         account.getTimers().remove(timer);
+    }
+
+    /**
+     * Handles opening a Combat Watcher Menu
+     * @param player Player
+     */
+    public void openCombatWatcher(Player player) {
+        final CombatMenu menu = new CombatMenu(manager.getPlugin(), player);
+        menu.open();
     }
 }
