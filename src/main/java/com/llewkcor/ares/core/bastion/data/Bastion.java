@@ -37,7 +37,9 @@ public final class Bastion implements MongoDocument<Bastion> {
      */
     public boolean insideFlat(BLocatable location, double radius) {
         final BLocatable normalizedLocation = new BLocatable(location.getWorldName(), location.getX(), this.location.getY(), location.getZ());
-        return this.location.distance(normalizedLocation) <= radius;
+        final double distance = this.location.distance(normalizedLocation);
+
+        return (distance >= 0.0 && distance <= radius);
     }
 
     /**
@@ -55,8 +57,9 @@ public final class Bastion implements MongoDocument<Bastion> {
         }
 
         final BLocatable normalizedLocation = new BLocatable(location.getWorldName(), location.getX(), this.location.getY(), location.getZ());
+        final double distance = this.location.distance(normalizedLocation);
 
-        return this.location.distance(normalizedLocation) <= radius;
+        return (distance >= 0.0 && distance <= radius);
     }
 
     /**

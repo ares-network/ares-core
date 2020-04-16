@@ -110,7 +110,8 @@ public final class Snitch implements MongoDocument<Snitch> {
      * @return True if within radius
      */
     public boolean inRadius(BLocatable location, double radius) {
-        return this.location.distance(location) <= radius && this.location.getWorldName().equals(location.getWorldName());
+        final double distance = this.location.distance(location);
+        return (distance >= 0.0 && distance <= radius);
     }
 
     @SuppressWarnings("unchecked") @Override
