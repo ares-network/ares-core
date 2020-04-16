@@ -27,7 +27,7 @@ public final class PrisonPearlConfig implements AresConfig {
         banWorldName = config.getString("settings.ban_world");
         banDuration = config.getInt("settings.ban_duration");
         maxPrisonPearledAccounts = config.getInt("settings.max_pearl_accounts");
-        this.altBanDuration = config.getString("settings.alt_ban_duration");
+        altBanDuration = config.getString("settings.alt_ban_duration");
 
         Logger.print("Prison Pearl configuration loaded");
     }
