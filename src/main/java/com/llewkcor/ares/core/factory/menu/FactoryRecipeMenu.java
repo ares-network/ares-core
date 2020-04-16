@@ -30,7 +30,7 @@ public final class FactoryRecipeMenu extends Menu {
         int pos = 0;
 
         final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
-        sortedRecipes.sort(Comparator.comparingInt(FactoryRecipe::getJobTime));
+        sortedRecipes.sort(Comparator.comparing(FactoryRecipe::getName));
         Collections.reverse(sortedRecipes);
 
         for (FactoryRecipe recipe : sortedRecipes) {
