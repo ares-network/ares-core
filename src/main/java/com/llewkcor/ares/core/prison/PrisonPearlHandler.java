@@ -6,6 +6,7 @@ import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.player.data.account.AccountDAO;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.prison.data.PearlLocationType;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
@@ -106,6 +107,9 @@ public final class PrisonPearlHandler {
                     if (aresAccount != null) {
                         aresAccount.setSpawned(false);
                         aresAccount.setResetOnJoin(true);
+
+                        // Saving back to database
+                        new Scheduler(manager.getPlugin()).async(() -> AccountDAO.saveAccount(manager.getPlugin().getDatabaseInstance(), aresAccount)).run();
                     }
                 }
 
