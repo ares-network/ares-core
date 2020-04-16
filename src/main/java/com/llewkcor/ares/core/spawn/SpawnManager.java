@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -35,6 +36,7 @@ public final class SpawnManager {
         Bukkit.getPluginManager().registerEvents(new SpawnListener(this), plugin);
 
         final YamlConfiguration spawnConfig = Configs.getConfig(plugin, "spawn");
+        final World.Environment spawnEnvironment = World.Environment.valueOf(spawnConfig.getString("settings.spawn-environment"));
 
         final double x = spawnConfig.getDouble("spawn-location.x");
         final double y = spawnConfig.getDouble("spawn-location.y");
@@ -42,15 +44,18 @@ public final class SpawnManager {
         final float yaw = (float)spawnConfig.getDouble("spawn-location.yaw");
         final float pitch = (float)spawnConfig.getDouble("spawn-location.pitch");
         final String worldName = spawnConfig.getString("spawn-location.world");
-        this.spawnLocation = new PLocatable(worldName, x, y, z, yaw, pitch);
 
+        this.spawnLocation = new PLocatable(worldName, x, y, z, yaw, pitch);
         this.randomSpawnRadius = spawnConfig.getInt("settings.random-spawn-radius");
         this.mainWorldName = spawnConfig.getString("settings.main-world");
 
-        if (Bukkit.getWorld(mainWorldName) == null) {
-            Logger.error("Failed to find main world! This is about to be FUCKED");
-            return;
-        }
+        Logger.print("Loading or creating the Spawn World");
+        Bukkit.getServer().createWorld(new WorldCreator(worldName).environment(spawnEnvironment));
+        Logger.print("Finished loading the Spawn World");
+
+        Logger.print("Loading or creating the Main World");
+        Bukkit.getServer().createWorld(new WorldCreator(mainWorldName));
+        Logger.print("Finished loading the Main World");
     }
 
     /**

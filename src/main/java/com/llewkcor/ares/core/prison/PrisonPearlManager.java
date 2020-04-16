@@ -9,10 +9,7 @@ import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
 import com.llewkcor.ares.core.prison.listener.PearlTrackerListener;
 import com.llewkcor.ares.core.prison.listener.PrisonPearlListener;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,6 +35,14 @@ public final class PrisonPearlManager {
 
         Bukkit.getPluginManager().registerEvents(new PearlTrackerListener(this), plugin);
         Bukkit.getPluginManager().registerEvents(new PrisonPearlListener(this), plugin);
+
+        if (getPrisonLocation() != null) {
+            Logger.print("Loading or creating the Prison World");
+            Bukkit.getServer().createWorld(new WorldCreator(getPrisonLocation().getWorld().getName()).environment(World.Environment.THE_END));
+            Logger.print("Finished loading the Prison World");
+        } else {
+            Logger.error("Failed to find Prison World Location!");
+        }
 
         this.expireUpdater = new Scheduler(plugin).async(() -> {
             final Set<PrisonPearl> expired = pearlRepository.stream().filter(PrisonPearl::isExpired).collect(Collectors.toSet());
