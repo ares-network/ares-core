@@ -44,6 +44,6 @@ public final class ChatManager {
      */
     public List<Player> getRecipientsInRange(Location location, ChatMessageType type) {
         final double range = plugin.getConfigManager().getGeneralConfig().getChatRanges().getOrDefault(type, 1000.0);
-        return Bukkit.getOnlinePlayers().stream().filter(player -> (player.getLocation().getWorld().getName().equals(location.getWorld().getName()) && player.getLocation().distance(location) <= range) || player.hasPermission("arescore.bypasschatrange")).collect(Collectors.toList());
+        return Bukkit.getOnlinePlayers().stream().filter(player -> (player.getLocation().getWorld().getName().equals(location.getWorld().getName()) && player.getLocation().distance(location) <= range)).collect(Collectors.toList());
     }
 }
