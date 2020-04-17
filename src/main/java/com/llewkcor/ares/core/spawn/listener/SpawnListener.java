@@ -2,6 +2,7 @@ package com.llewkcor.ares.core.spawn.listener;
 
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
+import com.llewkcor.ares.commons.util.bukkit.Players;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
@@ -99,6 +100,8 @@ public final class SpawnListener implements Listener {
             player.teleport(manager.getSpawnLocation().getBukkit());
             player.getInventory().clear();
             player.getInventory().setArmorContents(null);
+
+            Players.resetHealth(player);
         }
     }
 
