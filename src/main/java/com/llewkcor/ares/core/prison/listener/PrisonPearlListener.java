@@ -2,6 +2,7 @@ package com.llewkcor.ares.core.prison.listener;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Lists;
+import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.IPS;
@@ -24,6 +25,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
 import java.util.UUID;
@@ -217,11 +219,32 @@ public final class PrisonPearlListener implements Listener {
         }
 
         final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(hand);
+        final boolean isExpiredPearl = manager.isExpiredPrisonPearl(hand);
 
-        if (prisonPearl == null) {
+        if (prisonPearl == null && !isExpiredPearl) {
             return;
         }
 
+        // Gives the freeing player the imprisoned players skull
+        if (isExpiredPearl) {
+            final String username = ChatColor.stripColor(hand.getItemMeta().getDisplayName());
+
+            player.getInventory().removeItem(hand);
+
+            final ItemStack head = new ItemBuilder()
+                    .setMaterial(Material.SKULL_ITEM)
+                    .setData((short)3)
+                    .setName(ChatColor.GOLD + username)
+                    .build();
+
+            final SkullMeta meta = (SkullMeta)head.getItemMeta();
+            meta.setOwner(username);
+            head.setItemMeta(meta);
+
+            player.getInventory().addItem(head);
+        }
+
+        // Cancel the throw event and run a release attempt
         event.setCancelled(true);
         manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
     }
