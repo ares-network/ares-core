@@ -14,6 +14,7 @@ import com.llewkcor.ares.core.network.data.Network;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
@@ -109,5 +110,14 @@ public final class AcidManager {
      */
     public ImmutableSet<AcidBlock> getExpiredAcidBlocks() {
         return ImmutableSet.copyOf(acidRepository.stream().filter(AcidBlock::isExpired).collect(Collectors.toSet()));
+    }
+
+    /**
+     * Returns an Immutable Set containing Acid Blocks inside the provided Chunk
+     * @param chunk Chunk
+     * @return Immutable Set of Acid Blocks
+     */
+    public ImmutableSet<AcidBlock> getAcidBlockByChunk(Chunk chunk) {
+        return ImmutableSet.copyOf(acidRepository.stream().filter(acid -> acid.getChunkX() == chunk.getX() && acid.getChunkZ() == chunk.getZ() && acid.getLocation().getWorldName().equals(chunk.getWorld().getName())).collect(Collectors.toSet()));
     }
 }

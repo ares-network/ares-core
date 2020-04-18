@@ -14,6 +14,7 @@ public final class Claim implements MongoDocument<Claim> {
     @Getter public UUID ownerId;
     @Getter @Setter public int chunkX;
     @Getter @Setter public int chunkZ;
+    @Getter @Setter public String chunkWorld;
     @Getter @Setter public BLocatable location;
     @Getter public ClaimType type;
     @Getter @Setter public int health;
@@ -24,6 +25,7 @@ public final class Claim implements MongoDocument<Claim> {
         this.ownerId = null;
         this.chunkX = 0;
         this.chunkZ = 0;
+        this.chunkWorld = null;
         this.location = null;
         this.type = null;
         this.health = 0;
@@ -35,6 +37,7 @@ public final class Claim implements MongoDocument<Claim> {
         this.ownerId = ownerId;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+        this.chunkWorld = location.getWorldName();
         this.location = location;
         this.type = type;
         this.health = type.getDurability();
@@ -63,6 +66,7 @@ public final class Claim implements MongoDocument<Claim> {
         this.ownerId = (UUID)document.get("owner_id");
         this.chunkX = document.getInteger("chunk_x");
         this.chunkZ = document.getInteger("chunk_z");
+        this.chunkWorld = document.getString("chunk_world");
         this.location = new BLocatable().fromDocument(document.get("location", Document.class));
         this.type = ClaimType.valueOf(document.getString("type"));
         this.health = document.getInteger("health");
@@ -78,6 +82,7 @@ public final class Claim implements MongoDocument<Claim> {
                 .append("owner_id", ownerId)
                 .append("chunk_x", chunkX)
                 .append("chunk_z", chunkZ)
+                .append("chunk_world", chunkWorld)
                 .append("location", location.toDocument())
                 .append("type", type.name())
                 .append("health", health)

@@ -36,13 +36,14 @@ public final class ClaimDAO {
      * @param database Database
      * @param chunkX Chunk X
      * @param chunkZ Chunk Z
+     * @param chunkWorld Chunk World
      * @return Immutable Collection of claims
      */
-    public static ImmutableCollection<Claim> getChunkClaims(MongoDB database, int chunkX, int chunkZ) {
+    public static ImmutableCollection<Claim> getChunkClaims(MongoDB database, int chunkX, int chunkZ, String chunkWorld) {
         final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
         final List<Claim> claims = Lists.newArrayList();
 
-        for (Document document : collection.find(Filters.and(Filters.eq("chunk_x", chunkX), Filters.eq("chunk_z", chunkZ)))) {
+        for (Document document : collection.find(Filters.and(Filters.eq("chunk_x", chunkX), Filters.eq("chunk_z", chunkZ), Filters.eq("chunk_world", chunkWorld)))) {
             claims.add(new Claim().fromDocument(document));
         }
 

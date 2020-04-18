@@ -14,6 +14,8 @@ import java.util.UUID;
 public final class AcidBlock implements MongoDocument<AcidBlock> {
     @Getter public UUID uniqueId;
     @Getter public UUID ownerId;
+    @Getter public int chunkX;
+    @Getter public int chunkZ;
     @Getter public BLocatable location;
     @Getter @Setter public long matureTime;
     @Getter @Setter public long expireTime;
@@ -29,6 +31,8 @@ public final class AcidBlock implements MongoDocument<AcidBlock> {
     public AcidBlock(Network owner, Block block, long matureTime, long expireTime) {
         this.uniqueId = UUID.randomUUID();
         this.ownerId = owner.getUniqueId();
+        this.chunkX = block.getChunk().getX();
+        this.chunkZ = block.getChunk().getZ();
         this.location = new BLocatable(block);
         this.matureTime = matureTime;
         this.expireTime = expireTime;
@@ -65,6 +69,8 @@ public final class AcidBlock implements MongoDocument<AcidBlock> {
     public AcidBlock fromDocument(Document document) {
         this.uniqueId = (UUID)document.get("id");
         this.ownerId = (UUID)document.get("owner");
+        this.chunkX = document.getInteger("chunk_x");
+        this.chunkZ = document.getInteger("chunk_z");
         this.location = new BLocatable().fromDocument(document.get("location", Document.class));
         this.matureTime = document.getLong("mature");
         this.expireTime = document.getLong("expire");
@@ -77,6 +83,8 @@ public final class AcidBlock implements MongoDocument<AcidBlock> {
         return new Document()
                 .append("id", uniqueId)
                 .append("owner", ownerId)
+                .append("chunk_x", chunkX)
+                .append("chunk_z", chunkZ)
                 .append("location", location.toDocument())
                 .append("mature", matureTime)
                 .append("expire", expireTime);

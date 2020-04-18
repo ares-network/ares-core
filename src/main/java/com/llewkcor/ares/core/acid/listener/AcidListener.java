@@ -5,6 +5,7 @@ import com.llewkcor.ares.core.acid.AcidManager;
 import com.llewkcor.ares.core.acid.data.AcidBlock;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.List;
 
@@ -33,6 +35,15 @@ public final class AcidListener implements Listener {
         }
 
         manager.getHandler().deleteAcid(acid);
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onChunkUnload(ChunkUnloadEvent event) {
+        final Chunk chunk = event.getChunk();
+
+        if (!manager.getAcidBlockByChunk(chunk).isEmpty()) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)

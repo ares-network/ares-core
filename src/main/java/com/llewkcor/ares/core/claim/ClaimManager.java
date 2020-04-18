@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.claim.data.Claim;
+import com.llewkcor.ares.core.claim.experimental.ExperimentalLoadManager;
 import com.llewkcor.ares.core.claim.listener.ClaimCreatorListener;
 import com.llewkcor.ares.core.claim.listener.ClaimListener;
 import com.llewkcor.ares.core.claim.session.ClaimSession;
@@ -23,12 +24,14 @@ public final class ClaimManager {
     @Getter public final ClaimHandler handler;
     @Getter public final Set<Claim> claimRepository;
     @Getter public final Set<ClaimSession> activeClaimSessions;
+    @Getter public final ExperimentalLoadManager experimentalLoadManager;
 
     public ClaimManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new ClaimHandler(this);
         this.claimRepository = Sets.newConcurrentHashSet();
         this.activeClaimSessions = Sets.newConcurrentHashSet();
+        this.experimentalLoadManager = new ExperimentalLoadManager(this);
 
         Bukkit.getPluginManager().registerEvents(new ClaimListener(this), plugin);
         Bukkit.getPluginManager().registerEvents(new ClaimCreatorListener(this), plugin);
@@ -77,6 +80,17 @@ public final class ClaimManager {
                                 claim.getLocation().getWorldName().equals(block.getWorldName()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Returns an Immutable List containing all Claims inside a provided Chunk
+     * @param chunkX Chunk X
+     * @param chunkZ Chunk Z
+     * @param worldName Chunk World Name
+     * @return Immutable List of Claims
+     */
+    public ImmutableList<Claim> getClaimByChunk(int chunkX, int chunkZ, String worldName) {
+        return ImmutableList.copyOf(claimRepository.stream().filter(claim -> claim.getChunkX() == chunkX && claim.getChunkZ() == chunkZ && claim.getChunkWorld().equals(worldName)).collect(Collectors.toList()));
     }
 
     /**
