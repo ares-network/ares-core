@@ -100,7 +100,7 @@ public final class LoggerListener implements Listener {
 
         final CombatLogger logger = (CombatLogger)nmsEntity;
 
-        if (logger == null) {
+        if (logger.getOwnerId() == null || logger.getOwnerUsername() == null) {
             return;
         }
 
@@ -148,7 +148,7 @@ public final class LoggerListener implements Listener {
 
         final CombatLogger logger = (CombatLogger)nmsEntity;
 
-        if (logger == null) {
+        if (logger.getOwnerId() == null || logger.getOwnerUsername() == null) {
             return;
         }
 
@@ -175,6 +175,12 @@ public final class LoggerListener implements Listener {
         final EntityLiving asNms = ((CraftLivingEntity)livingEntity).getHandle();
 
         if (!(asNms instanceof CombatLogger)) {
+            return;
+        }
+
+        final CombatLogger logger = (CombatLogger)asNms;
+
+        if (logger.getOwnerId() == null || logger.getOwnerUsername() == null) {
             return;
         }
 
