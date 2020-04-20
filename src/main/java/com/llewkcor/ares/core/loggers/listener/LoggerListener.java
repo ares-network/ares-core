@@ -75,7 +75,7 @@ public final class LoggerListener implements Listener {
 
         }
 
-        final CombatLogger logger = new CombatLogger(((CraftWorld) player.getWorld()).getHandle(), player);
+        final CombatLogger logger = new CombatLogger(((CraftWorld) player.getWorld()).getHandle(), player, manager.getPlugin().getPrisonPearlManager().getBanDuration(player));
 
         logger.spawn();
         manager.getActiveLoggers().add(logger);

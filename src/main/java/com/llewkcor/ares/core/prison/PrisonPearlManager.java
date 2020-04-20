@@ -137,4 +137,23 @@ public final class PrisonPearlManager {
 
         return false;
     }
+
+    /**
+     * Returns the ban duration for the provided Bukkit Player
+     * @param player Player
+     * @return Ban duration (in seconds)
+     */
+    public int getBanDuration(Player player) {
+        int lowest = plugin.getConfigManager().getPrisonPearlConfig().getBanDuration();
+
+        for (String permission : plugin.getConfigManager().getPrisonPearlConfig().getPremiumBanDurations().keySet()) {
+            final int duration = plugin.getConfigManager().getPrisonPearlConfig().getPremiumBanDurations().getOrDefault(permission, plugin.getConfigManager().getPrisonPearlConfig().getBanDuration());
+
+            if (duration < lowest) {
+                lowest = duration;
+            }
+        }
+
+        return lowest;
+    }
 }

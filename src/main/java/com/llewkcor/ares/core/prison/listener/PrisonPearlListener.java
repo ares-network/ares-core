@@ -160,7 +160,7 @@ public final class PrisonPearlListener implements Listener {
                 killer.getInventory().remove(item);
             }
 
-            manager.getHandler().imprisonPlayer(player.getName(), player.getUniqueId(), killer);
+            manager.getHandler().imprisonPlayer(player.getName(), player.getUniqueId(), killer, manager.getBanDuration(player));
             break;
         }
     }
@@ -196,7 +196,7 @@ public final class PrisonPearlListener implements Listener {
                 killer.getInventory().remove(item);
             }
 
-            manager.getHandler().imprisonPlayer(logger.getOwnerUsername(), logger.getOwnerId(), killer);
+            manager.getHandler().imprisonPlayer(logger.getOwnerUsername(), logger.getOwnerId(), killer, logger.getBanDuration());
             break;
         }
     }

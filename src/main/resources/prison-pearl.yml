@@ -1,5 +1,19 @@
 settings:
-  ban_duration: 1209600
+  ban_duration:
+    default: 1209600
+    premium:
+      GOLD:
+        permission: 'arescore.prisonpearl.premium.gold'
+        duration: 1036800
+      SAPPHIRE:
+        permission: 'arescore.prisonpearl.premium.sapphire'
+        duration: 864000
+      EMERALD:
+        permission: 'arescore.prisonpearl.premium.emerald'
+        duration: 604800
+      RUBY:
+        permission: 'arescore.prisonpearl.premium.ruby'
+        duration: 604800
   ban_world: 'world_the_end'
   clean_inv_upon_summon: true
   max_pearl_accounts: 1

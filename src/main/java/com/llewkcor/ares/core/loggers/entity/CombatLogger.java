@@ -17,19 +17,22 @@ public final class CombatLogger extends EntityVillager {
     @Getter public final UUID ownerId;
     @Getter public final String ownerUsername;
     @Getter public final List<ItemStack> inventory;
+    @Getter public final int banDuration;
 
     public CombatLogger(World world) {
         super(world);
         this.ownerId = null;
         this.ownerUsername = null;
         this.inventory = null;
+        this.banDuration = 0;
     }
 
-    public CombatLogger(World world, Player player) {
+    public CombatLogger(World world, Player player, int banDuration) {
         super(world);
         this.ownerId = player.getUniqueId();
         this.ownerUsername = player.getName();
         this.inventory = Lists.newArrayList();
+        this.banDuration = banDuration;
 
         final CraftLivingEntity living = (CraftLivingEntity)getBukkitEntity();
 

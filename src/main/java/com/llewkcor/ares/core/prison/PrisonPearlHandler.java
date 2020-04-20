@@ -151,11 +151,11 @@ public final class PrisonPearlHandler {
      * @param imprisonedUUID Imprisoned Player UUID
      * @param killer Bukkit Player Killer
      */
-    public void imprisonPlayer(String imprisonedUsername, UUID imprisonedUUID, Player killer) {
+    public void imprisonPlayer(String imprisonedUsername, UUID imprisonedUUID, Player killer, int duration) {
         final PrisonPearl pearl;
 
         if (killer.getInventory().firstEmpty() == -1) {
-            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (manager.getPlugin().getConfigManager().getPrisonPearlConfig().getBanDuration() * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.GROUND);
+            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (duration * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.GROUND);
 
             final Item item = killer.getWorld().dropItemNaturally(killer.getLocation(), pearl.getItem());
 
