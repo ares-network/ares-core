@@ -115,7 +115,7 @@ public final class TimerListener implements Listener {
             damager.sendMessage(ChatColor.RED + "You are combat-tagged for " + manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackerDuration() + " seconds");
         }
 
-        if (damagedExistingTimer != null && (damagedExistingTimer.getRemaining() / 1000L) < manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()) {
+        if (damagedExistingTimer == null || damagedExistingTimer.getRemaining() / 1000L < manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()) {
             manager.getHandler().addTimer(damaged, new CombatTagTimer(damaged.getUniqueId(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()));
         }
 
@@ -146,7 +146,7 @@ public final class TimerListener implements Listener {
             damager.sendMessage(ChatColor.RED + "You are combat-tagged for " + manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackerDuration() + " seconds");
         }
 
-        if (damagedExistingTimer != null && (damagedExistingTimer.getRemaining() / 1000L) < manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()) {
+        if (damagedExistingTimer == null || damagedExistingTimer.getRemaining() / 1000L < manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()) {
             manager.getHandler().addTimer(damaged, new CombatTagTimer(damaged.getUniqueId(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackedDuration()));
         }
 
