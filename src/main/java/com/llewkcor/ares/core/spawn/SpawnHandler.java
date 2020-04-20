@@ -1,23 +1,18 @@
 package com.llewkcor.ares.core.spawn;
 
-import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.location.PLocatable;
 import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
+import com.llewkcor.ares.core.spawn.event.PlayerEnterWorldEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
 
@@ -244,20 +239,6 @@ public final class SpawnHandler {
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
 
-        final ItemStack cookie = new ItemBuilder()
-                .setMaterial(Material.COOKIE)
-                .setAmount(16)
-                .build();
-
-        final ItemStack fishingRod = new ItemBuilder()
-                .setMaterial(Material.FISHING_ROD)
-                .addEnchant(Enchantment.LURE, 1)
-                .build();
-
-        player.getInventory().addItem(fishingRod);
-        player.getInventory().addItem(cookie);
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60 * 20, 0, false));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 3, false));
+        Bukkit.getPluginManager().callEvent(new PlayerEnterWorldEvent(player));
     }
 }

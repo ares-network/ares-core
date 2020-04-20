@@ -1,0 +1,58 @@
+kits:
+  default:
+    display_name: 'Default'
+    weight: 5
+    items:
+      FISHING_ROD:
+        id: 346
+        name: '&aStarter Rod'
+      BREAD:
+        id: 297
+        amount: 16
+  silver:
+    display_name: '&7&lSilver'
+    weight: 10
+    permission: 'ares.starterkit.silver'
+    items:
+      FISHING_ROD:
+        id: 346
+        name: '&7Silver Rod'
+        enchantments:
+          LURE: 1
+          LUCKOFTHESEA: 1
+          UNBREAKING: 1
+      MUTTON:
+        id: 424
+        amount: 16
+      LEATHER_HELMET:
+        id: 298
+        name: '&7Silver Starter Helmet'
+        color:
+          r: 170
+          g: 170
+          b: 170
+      LEATHER_CHEST:
+        id: 299
+        name: '&7Silver Starter Chestplate'
+        color:
+          r: 170
+          g: 170
+          b: 170
+      LEATHER_LEG:
+        id: 300
+        name: '&7Silver Starter Leggings'
+        color:
+          r: 170
+          g: 170
+          b: 170
+      LEATHER_BOOT:
+        id: 301
+        name: '&7Silver Starter Boots'
+        color:
+          r: 170
+          g: 170
+          b: 170
+    effects:
+      SPEED:
+        time: 300
+        amplifier: 0

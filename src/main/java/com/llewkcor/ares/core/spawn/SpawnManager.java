@@ -6,6 +6,7 @@ import com.llewkcor.ares.commons.location.PLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.Ares;
+import com.llewkcor.ares.core.spawn.kits.SpawnKitManager;
 import com.llewkcor.ares.core.spawn.listener.SpawnListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public final class SpawnManager {
     @Getter public final Ares plugin;
     @Getter public final SpawnHandler handler;
+    @Getter public final SpawnKitManager kitManager;
     @Getter public Map<UUID, UUID> teleportRequests;
 
     @Getter @Setter public PLocatable spawnLocation;
@@ -31,6 +33,7 @@ public final class SpawnManager {
     public SpawnManager(Ares plugin) {
         this.plugin = plugin;
         this.handler = new SpawnHandler(this);
+        this.kitManager = new SpawnKitManager(this);
         this.teleportRequests = Maps.newConcurrentMap();
 
         Bukkit.getPluginManager().registerEvents(new SpawnListener(this), plugin);
@@ -56,6 +59,8 @@ public final class SpawnManager {
         Logger.print("Loading or creating the Main World");
         Bukkit.getServer().createWorld(new WorldCreator(mainWorldName));
         Logger.print("Finished loading the Main World");
+
+        kitManager.getHandler().load();
     }
 
     /**

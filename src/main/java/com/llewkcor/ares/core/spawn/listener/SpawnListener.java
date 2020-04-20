@@ -10,6 +10,8 @@ import com.llewkcor.ares.core.player.data.account.AccountDAO;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.spawn.SpawnManager;
+import com.llewkcor.ares.core.spawn.event.PlayerEnterWorldEvent;
+import com.llewkcor.ares.core.spawn.kits.data.SpawnKit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -27,6 +29,18 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 @AllArgsConstructor
 public final class SpawnListener implements Listener {
     @Getter public final SpawnManager manager;
+
+    @EventHandler
+    public void onPlayerEnterWorld(PlayerEnterWorldEvent event) {
+        final Player player = event.getPlayer();
+        final SpawnKit kit = manager.getKitManager().getKit(player);
+
+        if (kit == null) {
+            return;
+        }
+
+        kit.give(player);
+    }
 
     @EventHandler
     public void onHungerChange(FoodLevelChangeEvent event) {

@@ -150,6 +150,7 @@ public final class Ares extends JavaPlugin {
     public void onReload() {
         configManager.reload();
         factoryManager.getRecipeManager().loadRecipes();
+        spawnManager.getKitManager().getHandler().load();
     }
 
     /**
