@@ -36,6 +36,9 @@ public final class SpawnKitHandler {
 
         final YamlConfiguration config = Configs.getConfig(manager.getManager().getPlugin(), "starter-kits");
 
+        manager.setSpawnKitsEnabled(config.getBoolean("settings.enabled"));
+        manager.setSpawnKitObtainCooldown(config.getInt("settings.obtain_cooldown"));
+
         for (String kitIdentifier : config.getConfigurationSection("kits").getKeys(false)) {
             final String path = "kits." + kitIdentifier + ".";
             final String displayName;

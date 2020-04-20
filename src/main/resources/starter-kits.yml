@@ -1,3 +1,7 @@
+settings:
+  enabled: true
+  obtain_cooldown: 900
+
 kits:
   default:
     display_name: 'Default'

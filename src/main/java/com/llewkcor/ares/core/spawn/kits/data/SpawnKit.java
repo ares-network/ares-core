@@ -1,10 +1,8 @@
 package com.llewkcor.ares.core.spawn.kits.data;
 
-import com.llewkcor.ares.commons.util.bukkit.Players;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -21,6 +19,14 @@ public final class SpawnKit {
     @Getter public final int weight;
 
     /**
+     * Returns true if this is a default kit
+     * @return True if default
+     */
+    public boolean isDefault() {
+        return permission == null;
+    }
+
+    /**
      * Gives provided player this spawn kit
      * @param player Player
      */
@@ -34,8 +40,5 @@ public final class SpawnKit {
         }
 
         player.sendMessage(ChatColor.GOLD + "You have been granted the " + displayName + ChatColor.GOLD + " starter kit");
-        player.sendMessage(ChatColor.GREEN + "Thank you for supporting Ares!");
-
-        Players.playSound(player, Sound.NOTE_BASS_GUITAR);
     }
 }

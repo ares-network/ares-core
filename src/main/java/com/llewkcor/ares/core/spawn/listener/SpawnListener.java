@@ -4,6 +4,7 @@ import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.promise.FailablePromise;
 import com.llewkcor.ares.commons.util.bukkit.Players;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
 import com.llewkcor.ares.core.player.data.account.AccountDAO;
@@ -14,7 +15,9 @@ import com.llewkcor.ares.core.spawn.event.PlayerEnterWorldEvent;
 import com.llewkcor.ares.core.spawn.kits.data.SpawnKit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +29,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 public final class SpawnListener implements Listener {
     @Getter public final SpawnManager manager;
@@ -33,13 +38,35 @@ public final class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerEnterWorld(PlayerEnterWorldEvent event) {
         final Player player = event.getPlayer();
+        final UUID uniqueId = player.getUniqueId();
         final SpawnKit kit = manager.getKitManager().getKit(player);
 
-        if (kit == null) {
+        if (manager.getKitManager().hasKitCooldown(player)) {
+            final SpawnKit defaultKit = manager.getKitManager().getDefaultKit();
+
+            player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.RED + "" + ChatColor.BOLD + (Time.convertToDecimal(manager.getKitManager().getKitCooldown(player) - Time.now())) + ChatColor.RED + "s before obtaining your starter kit again");
+            defaultKit.give(player);
+
+            return;
+        }
+
+        if (kit.isDefault()) {
             return;
         }
 
         kit.give(player);
+        manager.getKitManager().getKitCooldowns().put(player.getUniqueId(), (Time.now() + (manager.getKitManager().getSpawnKitObtainCooldown() * 1000L)));
+
+        new Scheduler(manager.getPlugin()).sync(() -> {
+            manager.getKitManager().getKitCooldowns().remove(uniqueId);
+
+            if (Bukkit.getPlayer(uniqueId) != null) {
+                final Player futurePlayer = Bukkit.getPlayer(uniqueId);
+
+                futurePlayer.sendMessage(ChatColor.GREEN + "Your spawn kit can now be used again");
+                Players.playSound(futurePlayer, Sound.NOTE_BASS_GUITAR);
+            }
+        }).delay(manager.getKitManager().getSpawnKitObtainCooldown() * 20).run();
     }
 
     @EventHandler
