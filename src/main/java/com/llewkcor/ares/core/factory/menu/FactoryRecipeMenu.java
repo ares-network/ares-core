@@ -5,6 +5,7 @@ import com.llewkcor.ares.commons.item.ItemBuilder;
 import com.llewkcor.ares.commons.menu.ClickableItem;
 import com.llewkcor.ares.commons.menu.Menu;
 import com.llewkcor.ares.commons.remap.RemappedEnchantment;
+import com.llewkcor.ares.commons.util.bukkit.Players;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.factory.data.Factory;
@@ -13,6 +14,7 @@ import com.llewkcor.ares.core.factory.data.FactoryRecipe;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,9 +29,11 @@ public final class FactoryRecipeMenu extends Menu {
     public FactoryRecipeMenu(Ares plugin, Player player, Factory factory) {
         super(plugin, player, "Factory Recipes", 3);
         this.factory = factory;
-        int pos = 0;
 
+        int pos = 0;
+        final double speedMultiplier = plugin.getFactoryManager().getSpeedMultiplier(player);
         final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
+
         sortedRecipes.sort(Comparator.comparing(FactoryRecipe::getName));
         Collections.reverse(sortedRecipes);
 
@@ -74,7 +78,14 @@ public final class FactoryRecipeMenu extends Menu {
             }
 
             lore.add(ChatColor.RESET + " ");
-            lore.add(ChatColor.DARK_AQUA + "Time: " + ChatColor.GRAY + Time.convertToRemaining(recipe.getJobTime() * 1000L));
+
+            if (speedMultiplier > 1.0) {
+                lore.add(ChatColor.DARK_AQUA + "Time: " + ChatColor.GRAY + Time.convertToRemaining(Math.round(recipe.getJobTime() / speedMultiplier) * 1000L));
+                lore.add(ChatColor.GOLD + "Premium Speed Boost" + ChatColor.GRAY + ": " + speedMultiplier + "x faster");
+            } else {
+                lore.add(ChatColor.DARK_AQUA + "Time: " + ChatColor.GRAY + Time.convertToRemaining(recipe.getJobTime() * 1000L));
+            }
+
 
             final ItemStack icon = new ItemBuilder()
                     .setMaterial(recipe.getOutput().get(0).getType())
@@ -141,11 +152,16 @@ public final class FactoryRecipeMenu extends Menu {
 
                 player.updateInventory();
 
-                final FactoryJob job = new FactoryJob(recipe);
+                final FactoryJob job = new FactoryJob(recipe, (int)Math.round(recipe.getJobTime() / speedMultiplier));
                 factory.getActiveJobs().add(job);
 
                 player.closeInventory();
                 player.sendMessage(ChatColor.AQUA + "Starting job for " + recipe.getName());
+
+                if (speedMultiplier > 1.0) {
+                    player.sendMessage(ChatColor.GOLD + "Applied premium speed multiplier: " + ChatColor.YELLOW + speedMultiplier + "x faster!");
+                    Players.playSound(player, Sound.NOTE_BASS_GUITAR);
+                }
             }));
 
             pos += 1;

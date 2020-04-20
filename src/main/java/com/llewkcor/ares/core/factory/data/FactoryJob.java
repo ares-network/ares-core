@@ -25,6 +25,16 @@ public final class FactoryJob implements MongoDocument<FactoryJob> {
     }
 
     /**
+     * Creates a new FactoryJob instance with a custom provided ready time
+     * @param recipe Recipe
+     * @param readyTime Ready Time
+     */
+    public FactoryJob(FactoryRecipe recipe, int readyTime) {
+        this.recipeName = recipe.getName();
+        this.readyTime = Time.now() + (readyTime * 1000L);
+    }
+
+    /**
      * Returns true if this FactoryJob is complete
      * @return True if compelte
      */

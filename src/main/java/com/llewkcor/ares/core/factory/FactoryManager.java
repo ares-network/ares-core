@@ -1,10 +1,12 @@
 package com.llewkcor.ares.core.factory;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.commons.util.general.Configs;
 import com.llewkcor.ares.core.Ares;
 import com.llewkcor.ares.core.factory.data.Factory;
 import com.llewkcor.ares.core.factory.data.FactoryJob;
@@ -14,8 +16,11 @@ import com.llewkcor.ares.core.factory.menu.FactoryMenuHandler;
 import com.llewkcor.ares.core.network.data.Network;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,6 +31,7 @@ public final class FactoryManager {
     @Getter public final FactoryRecipeManager recipeManager;
     @Getter public final FactoryMenuHandler menuHandler;
     @Getter public final Set<Factory> factoryRepository;
+    @Getter public final Map<String, Double> premiumSpeedMultipliers;
     @Getter public final BukkitTask jobUpdateTask;
 
     public FactoryManager(Ares plugin) {
@@ -34,6 +40,7 @@ public final class FactoryManager {
         this.recipeManager = new FactoryRecipeManager(this);
         this.menuHandler = new FactoryMenuHandler(this);
         this.factoryRepository = Sets.newConcurrentHashSet();
+        this.premiumSpeedMultipliers = Maps.newHashMap();
 
         this.jobUpdateTask = new Scheduler(plugin).async(() -> {
             for (Factory factory : factoryRepository) {
@@ -59,6 +66,17 @@ public final class FactoryManager {
         }).repeat(20L, 20L).run();
 
         Bukkit.getPluginManager().registerEvents(new FactoryListener(this), plugin);
+
+        final YamlConfiguration config = Configs.getConfig(plugin, "factories");
+
+        for (String rankId : config.getConfigurationSection("premium_modifiers").getKeys(false)) {
+            final String permission = config.getString("premium_modifiers." + rankId + ".permission");
+            final double multiplier = config.getDouble("premium_modifiers." + rankId + ".speed_multiplier");
+
+            premiumSpeedMultipliers.put(permission, multiplier);
+        }
+
+        Logger.print("Loaded " + premiumSpeedMultipliers.size() + " Factory speed multipliers");
     }
 
     /**
@@ -95,5 +113,24 @@ public final class FactoryManager {
      */
     public Factory getFactoryByBlock(BLocatable block) {
         return factoryRepository.stream().filter(factory -> factory.match(block)).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns the highest speed multiplier available to the provided Player
+     * @param player Player
+     * @return Speed multiplier
+     */
+    public double getSpeedMultiplier(Player player) {
+        double highest = 1.0;
+
+        for (String permission : premiumSpeedMultipliers.keySet().stream().filter(player::hasPermission).collect(Collectors.toList())) {
+            final double multiplier = premiumSpeedMultipliers.getOrDefault(permission, 1.0);
+
+            if (highest < multiplier) {
+                highest = multiplier;
+            }
+        }
+
+        return highest;
     }
 }

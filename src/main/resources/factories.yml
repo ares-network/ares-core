@@ -1,3 +1,17 @@
+premium_modifiers:
+  SAPPHIRE:
+    permission: 'arescore.factory.premium.sapphire'
+    speed_multiplier: 2.0
+  EMERALD:
+    permission: 'arescore.factory.premium.emerald'
+    speed_multiplier: 3.0
+  RUBY:
+    permission: 'arescore.factory.premium.ruby'
+    speed_multiplier: 4.0
+  PARTNER:
+    permission: 'arescore.factory.premium.partner'
+    speed_multiplier: 4.0
+
 recipes:
   RECIPE_A:
     name: "Recipe A"
