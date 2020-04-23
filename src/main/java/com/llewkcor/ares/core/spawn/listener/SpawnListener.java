@@ -20,6 +20,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -28,6 +29,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.UUID;
 
@@ -83,13 +85,25 @@ public final class SpawnListener implements Listener {
         player.setExhaustion(0);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
         final Player player = (Player)event.getEntity();
+        final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
+
+        if (account == null || account.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onVelocity(PlayerVelocityEvent event) {
+        final Player player = event.getPlayer();
         final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
 
         if (account == null || account.isSpawned()) {
