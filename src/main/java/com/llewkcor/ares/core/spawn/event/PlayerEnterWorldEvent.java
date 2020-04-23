@@ -8,14 +8,20 @@ import org.bukkit.event.player.PlayerEvent;
 
 public final class PlayerEnterWorldEvent extends PlayerEvent {
     @Getter public static final HandlerList handlerList = new HandlerList();
+    @Getter public PlayerEnterWorldMethod entranceMethod;
     @Getter @Setter public boolean cancelled;
 
-    public PlayerEnterWorldEvent(Player who) {
+    public PlayerEnterWorldEvent(Player who, PlayerEnterWorldMethod entranceMethod) {
         super(who);
+        this.entranceMethod = entranceMethod;
     }
 
     @Override
     public HandlerList getHandlers() {
         return handlerList;
+    }
+
+    public enum PlayerEnterWorldMethod {
+        RANDOM, BED, REQUEST;
     }
 }

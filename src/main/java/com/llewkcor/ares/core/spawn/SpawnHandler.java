@@ -40,7 +40,7 @@ public final class SpawnHandler {
 
         manager.getTeleportRequests().remove(player.getUniqueId());
 
-        preparePlayer(player);
+        preparePlayer(player, PlayerEnterWorldEvent.PlayerEnterWorldMethod.RANDOM);
 
         final BLocatable locatable = manager.getRandomSpawnLocation();
         final Location location = locatable.getBukkit().getLocation();
@@ -50,9 +50,7 @@ public final class SpawnHandler {
         }
 
         player.teleport(manager.getRandomSpawnLocation().getBukkit().getLocation());
-
         account.setSpawned(true);
-
         promise.success();
     }
 
@@ -86,13 +84,9 @@ public final class SpawnHandler {
         }
 
         manager.getTeleportRequests().remove(player.getUniqueId());
-
-        preparePlayer(player);
-
+        preparePlayer(player, PlayerEnterWorldEvent.PlayerEnterWorldMethod.BED);
         player.teleport(location);
-
         account.setSpawned(true);
-
         promise.success();
     }
 
@@ -190,14 +184,10 @@ public final class SpawnHandler {
         }
 
         manager.getTeleportRequests().remove(requestId);
-
-        preparePlayer(summonPlayer);
-
+        preparePlayer(summonPlayer, PlayerEnterWorldEvent.PlayerEnterWorldMethod.REQUEST);
         summonPlayer.teleport(player);
         summonPlayer.sendMessage(ChatColor.GREEN + "Your teleport request has been accepted");
-
         playerAccount.setSpawned(true);
-
         promise.success();
     }
 
@@ -226,7 +216,14 @@ public final class SpawnHandler {
      * Cleans up player and gives them the starter kit
      * @param player Bukkit Player
      */
-    private void preparePlayer(Player player) {
+    private void preparePlayer(Player player, PlayerEnterWorldEvent.PlayerEnterWorldMethod entranceMethod) {
+        final PlayerEnterWorldEvent event = new PlayerEnterWorldEvent(player, entranceMethod);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
         player.setHealth(20.0);
         player.setFoodLevel(20);
         player.setSaturation(20);
@@ -238,7 +235,5 @@ public final class SpawnHandler {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
-
-        Bukkit.getPluginManager().callEvent(new PlayerEnterWorldEvent(player));
     }
 }
