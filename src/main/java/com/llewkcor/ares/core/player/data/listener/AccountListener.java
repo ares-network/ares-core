@@ -95,7 +95,7 @@ public final class AccountListener implements Listener {
      * Handles saving Ares Account to database upon disconnecting
      * @param event Bukkit PlayerQuitEvent
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
 
@@ -103,7 +103,6 @@ public final class AccountListener implements Listener {
             @Override
             public void success(AresAccount aresAccount) {
                 aresAccount.setLastLogin(Time.now());
-
                 AccountDAO.saveAccount(playerManager.getPlugin().getDatabaseInstance(), aresAccount);
                 playerManager.getAccountRepository().remove(aresAccount);
             }

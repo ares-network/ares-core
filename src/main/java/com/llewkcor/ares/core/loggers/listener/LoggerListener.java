@@ -1,6 +1,8 @@
 package com.llewkcor.ares.core.loggers.listener;
 
+import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
+import com.llewkcor.ares.core.chat.data.ChatMessageType;
 import com.llewkcor.ares.core.loggers.LoggerManager;
 import com.llewkcor.ares.core.loggers.entity.CombatLogger;
 import com.llewkcor.ares.core.loggers.event.LoggerDeathEvent;
@@ -12,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -48,23 +51,41 @@ public final class LoggerListener implements Listener {
         manager.getActiveLoggers().remove(logger);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final double radius = manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius();
+        boolean combatLog = false;
 
-        if (account == null || !account.isSpawned()) {
+        if (account == null || !account.isSpawned() || player.hasPermission("arescore.admin")) {
             return;
         }
 
-        if (!manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.COMBAT) &&
-        player.getNoDamageTicks() == 0 && player.getFireTicks() == 0 && player.getFallDistance() <= 10.0 &&
-        !PlayerUtil.isNearbyEnemy(manager.getPlugin(), player.getNearbyEntities(radius, radius, radius), player)) {
-
-            return;
-
+        if (manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.COMBAT)) {
+            combatLog = true;
         }
+
+        if (player.getNoDamageTicks() > 0) {
+            combatLog = true;
+        }
+
+        if (player.getFallDistance() >= 4.0) {
+            combatLog = true;
+        }
+
+        if (PlayerUtil.isNearbyEnemy(manager.getPlugin(), player.getNearbyEntities(radius, radius, radius), player)) {
+            combatLog = true;
+        }
+
+        if (!combatLog) {
+            Logger.print("C");
+            return;
+        }
+
+        Logger.print("D");
+
+        manager.getPlugin().getChatManager().getRecipientsInRange(player.getLocation(), ChatMessageType.COMBAT_LOGGED).forEach(notified -> notified.sendMessage(ChatColor.RED + "Combat-Logger: " + ChatColor.BLUE + player.getName()));
 
         final CombatLogger logger = new CombatLogger(
                 ((CraftWorld) player.getWorld()).getHandle(),
