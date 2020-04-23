@@ -1,6 +1,5 @@
 package com.llewkcor.ares.core.loggers.listener;
 
-import com.llewkcor.ares.commons.logger.Logger;
 import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.chat.data.ChatMessageType;
 import com.llewkcor.ares.core.loggers.LoggerManager;
@@ -79,11 +78,8 @@ public final class LoggerListener implements Listener {
         }
 
         if (!combatLog) {
-            Logger.print("C");
             return;
         }
-
-        Logger.print("D");
 
         manager.getPlugin().getChatManager().getRecipientsInRange(player.getLocation(), ChatMessageType.COMBAT_LOGGED).forEach(notified -> notified.sendMessage(ChatColor.RED + "Combat-Logger: " + ChatColor.BLUE + player.getName()));
 
