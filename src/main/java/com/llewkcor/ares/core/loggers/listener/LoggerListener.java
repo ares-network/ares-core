@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
 @AllArgsConstructor
@@ -70,6 +71,10 @@ public final class LoggerListener implements Listener {
         }
 
         if (player.getFallDistance() >= 4.0) {
+            combatLog = true;
+        }
+
+        if (player.getFireTicks() > 0 && !player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
             combatLog = true;
         }
 
