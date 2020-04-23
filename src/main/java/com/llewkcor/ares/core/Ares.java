@@ -97,7 +97,6 @@ public final class Ares extends JavaPlugin {
         commandManager.enableUnstableAPI("help");
 
         commandManager.registerCommand(new NetworkCommand(this));
-        commandManager.registerCommand(new AccountCommand(this));
         commandManager.registerCommand(new PrisonPearlCommand(this));
         commandManager.registerCommand(new SnitchCommand(this));
         commandManager.registerCommand(new ClaimCommand(this));
