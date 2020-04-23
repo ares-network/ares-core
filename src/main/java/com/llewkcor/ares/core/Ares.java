@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class Ares extends JavaPlugin {
+    @Getter public MongoDB databaseInstance;
     @Getter public PlayerManager playerManager;
     @Getter public ChatManager chatManager;
     @Getter public ConfigManager configManager;
@@ -50,8 +51,6 @@ public final class Ares extends JavaPlugin {
     @Getter public BastionManager bastionManager;
     @Getter public AcidManager acidManager;
     @Getter public CompactManager compactManager;
-
-    @Getter protected MongoDB databaseInstance;
     @Getter protected PaperCommandManager commandManager;
 
     @Override
