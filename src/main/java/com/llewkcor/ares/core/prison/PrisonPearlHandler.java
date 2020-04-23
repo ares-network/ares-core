@@ -74,9 +74,13 @@ public final class PrisonPearlHandler {
     public void performPearlCleanup() {
         Logger.warn("Starting Prison Pearl Cleanup...");
 
-        new Scheduler(manager.getPlugin()).async(() ->
-                manager.getPearlRepository().stream().filter(PrisonPearl::isExpired).forEach(expiredPearl ->
-                        PrisonPearlDAO.deletePearl(manager.getPlugin().getDatabaseInstance(), expiredPearl))).run();
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final long count = PrisonPearlDAO.cleanupPearls(manager.getPlugin().getDatabaseInstance());
+
+            new Scheduler(manager.getPlugin()).sync(() -> {
+                Logger.print("Deleted " + count + " expired Prison Pearl entries");
+            }).run();
+        }).run();
     }
 
     /**

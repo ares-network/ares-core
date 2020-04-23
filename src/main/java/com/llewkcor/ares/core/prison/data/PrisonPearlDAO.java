@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.llewkcor.ares.commons.connect.mongodb.MongoDB;
-import com.llewkcor.ares.core.snitch.data.Snitch;
+import com.llewkcor.ares.commons.util.general.Time;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 
 import java.util.Collection;
@@ -81,5 +82,11 @@ public final class PrisonPearlDAO {
         }
 
         collection.deleteOne(existing);
+    }
+
+    public static long cleanupPearls(MongoDB database) {
+        final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
+        final DeleteResult delete = collection.deleteMany(Filters.lte("expire", Time.now()));
+        return delete.getDeletedCount();
     }
 }
