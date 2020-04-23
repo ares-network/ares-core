@@ -33,7 +33,7 @@ public final class SpawnKitManager {
      * @return Default SpawnKit
      */
     public SpawnKit getDefaultKit() {
-        return kitRepository.stream().filter(kit -> kit.getPermission() == null).findFirst().orElse(null);
+        return kitRepository.stream().filter(SpawnKit::isDefault).findFirst().orElse(null);
     }
 
     /**
