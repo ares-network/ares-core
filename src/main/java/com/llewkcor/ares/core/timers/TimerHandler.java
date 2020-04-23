@@ -1,7 +1,10 @@
 package com.llewkcor.ares.core.timers;
 
+import com.llewkcor.ares.commons.logger.Logger;
+import com.llewkcor.ares.commons.promise.SimplePromise;
 import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.timers.data.PlayerTimer;
+import com.llewkcor.ares.core.timers.data.type.PearlProtectionTimer;
 import com.llewkcor.ares.core.timers.data.type.PlayerTimerType;
 import com.llewkcor.ares.core.timers.menu.CombatMenu;
 import lombok.AllArgsConstructor;
@@ -93,5 +96,23 @@ public final class TimerHandler {
     public void openCombatWatcher(Player player) {
         final CombatMenu menu = new CombatMenu(manager.getPlugin(), player);
         menu.open();
+    }
+
+    /**
+     * Handles removing all PvP protections from a player
+     * @param player Player
+     * @param promise Promise
+     */
+    public void removeProtections(Player player, SimplePromise promise) {
+        final PearlProtectionTimer timer = (PearlProtectionTimer)manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            promise.fail("You do not have any protections applied to your account");
+            return;
+        }
+
+        removeTimer(player, timer);
+        Logger.print(player.getName() + " removed their Prison Pearl Protection");
+        promise.success();
     }
 }

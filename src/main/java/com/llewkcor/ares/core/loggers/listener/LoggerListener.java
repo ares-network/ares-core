@@ -54,15 +54,6 @@ public final class LoggerListener implements Listener {
         final AresAccount account = manager.getPlugin().getPlayerManager().getAccountByBukkitID(player.getUniqueId());
         final double radius = manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius();
 
-        /*
-        PLAYER IS NOT COMBAT TAGGED
-        PLAYER HAS 0 DAMAGE TICKS
-        PLAYER HAS 0 FIRE TICKS
-        PLAYER HAS LESS THAN 3 BLOCKS FALL DISTANCE
-        PLAYER IS NOT NEAR AN ENEMY
-        PLAYER IS NOT SPAWNED IN
-         */
-
         if (account == null || !account.isSpawned()) {
             return;
         }
@@ -75,7 +66,11 @@ public final class LoggerListener implements Listener {
 
         }
 
-        final CombatLogger logger = new CombatLogger(((CraftWorld) player.getWorld()).getHandle(), player, manager.getPlugin().getPrisonPearlManager().getBanDuration(player));
+        final CombatLogger logger = new CombatLogger(
+                ((CraftWorld) player.getWorld()).getHandle(),
+                player,
+                manager.getPlugin().getPrisonPearlManager().getBanDuration(player),
+                manager.getPlugin().getTimerManager().hasTimer(player, PlayerTimerType.PEARL_PROTECTION));
 
         logger.spawn();
         manager.getActiveLoggers().add(logger);

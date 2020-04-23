@@ -9,7 +9,8 @@ public enum PlayerTimerType {
     ENDERPEARL(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Enderpearl", true, true),
     COMBAT(ChatColor.RED + "" + ChatColor.BOLD + "Combat", true, true),
     CRAPPLE(ChatColor.GOLD + "" + ChatColor.BOLD + "Crapple", true, true),
-    GAPPLE(ChatColor.GOLD + "" + ChatColor.BOLD + "Gapple", false, false);
+    GAPPLE(ChatColor.GOLD + "" + ChatColor.BOLD + "Gapple", false, false),
+    PEARL_PROTECTION(ChatColor.GREEN + "" + ChatColor.BOLD + "Pearl Protection", true, false);
 
     @Getter public final String displayName;
     @Getter public final boolean render;

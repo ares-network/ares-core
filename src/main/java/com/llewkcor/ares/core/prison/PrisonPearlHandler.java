@@ -11,6 +11,7 @@ import com.llewkcor.ares.core.player.data.account.AresAccount;
 import com.llewkcor.ares.core.prison.data.PearlLocationType;
 import com.llewkcor.ares.core.prison.data.PrisonPearl;
 import com.llewkcor.ares.core.prison.data.PrisonPearlDAO;
+import com.llewkcor.ares.core.prison.event.PrePrisonPearlEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlCreateEvent;
 import com.llewkcor.ares.core.prison.event.PrisonPearlReleaseEvent;
 import lombok.Getter;
@@ -152,6 +153,13 @@ public final class PrisonPearlHandler {
      * @param killer Bukkit Player Killer
      */
     public void imprisonPlayer(String imprisonedUsername, UUID imprisonedUUID, Player killer, int duration) {
+        final PrePrisonPearlEvent preEvent = new PrePrisonPearlEvent(imprisonedUUID, killer, duration);
+        Bukkit.getPluginManager().callEvent(preEvent);
+
+        if (preEvent.isCancelled()) {
+            return;
+        }
+
         final PrisonPearl pearl;
 
         if (killer.getInventory().firstEmpty() == -1) {
@@ -172,10 +180,10 @@ public final class PrisonPearlHandler {
             killer.sendMessage(ChatColor.GREEN + imprisonedUsername + "'s Prison Pearl has been placed in your inventory");
         }
 
-        manager.getPearlRepository().add(pearl);
-
         final PrisonPearlCreateEvent createEvent = new PrisonPearlCreateEvent(pearl);
         Bukkit.getPluginManager().callEvent(createEvent);
+
+        manager.getPearlRepository().add(pearl);
     }
 
     /**

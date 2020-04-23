@@ -34,7 +34,6 @@ import java.util.UUID;
 public final class PrisonPearlListener implements Listener {
     @Getter public final PrisonPearlManager manager;
 
-    // TODO: Test this
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
         if (!manager.getPlugin().getDatabaseInstance().isConnected()) {
@@ -176,6 +175,10 @@ public final class PrisonPearlListener implements Listener {
         }
 
         if (existing != null) {
+            return;
+        }
+
+        if (logger.isPearlProtected()) {
             return;
         }
 

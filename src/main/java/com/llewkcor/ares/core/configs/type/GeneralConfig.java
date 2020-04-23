@@ -36,6 +36,7 @@ public final class GeneralConfig implements AresConfig {
     @Getter public Map<ChatMessageType, Double> chatRanges;
 
     @Getter public int combatLoggerEnemyRadius;
+    @Getter public int pearlProtectionDuration;
     @Getter public int combatTagAttackedDuration;
     @Getter public int combatTagAttackerDuration;
     @Getter public int combatLoggerDuration;
@@ -69,6 +70,7 @@ public final class GeneralConfig implements AresConfig {
         networkRenameCooldown = config.getInt("network-settings.cooldowns.rename");
 
         combatLoggerDuration = config.getInt("combat-logger-settings.enemy-radius");
+        pearlProtectionDuration = config.getInt("timer-settings.fresh-spawn-pearl-protection");
         combatTagAttackedDuration = config.getInt("timer-settings.combat-tag.attacked");
         combatTagAttackerDuration = config.getInt("timer-settings.combat-tag.attacker");
         combatLoggerDuration = config.getInt("timer-settings.combat-tag.logger-keep-alive");

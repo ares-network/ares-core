@@ -120,6 +120,10 @@ public final class AresAccount implements MongoDocument<AresAccount> {
             if (type.equals(PlayerTimerType.GAPPLE)) {
                 timers.add(new GappleTimer().fromDocument(timerDocument));
             }
+
+            if (type.equals(PlayerTimerType.PEARL_PROTECTION)) {
+                timers.add(new PearlProtectionTimer().fromDocument(timerDocument));
+            }
         }
 
         return this;

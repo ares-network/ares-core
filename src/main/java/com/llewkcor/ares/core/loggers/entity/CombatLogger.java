@@ -18,6 +18,7 @@ public final class CombatLogger extends EntityVillager {
     @Getter public final String ownerUsername;
     @Getter public final List<ItemStack> inventory;
     @Getter public final int banDuration;
+    @Getter public final boolean pearlProtected;
 
     public CombatLogger(World world) {
         super(world);
@@ -25,14 +26,16 @@ public final class CombatLogger extends EntityVillager {
         this.ownerUsername = null;
         this.inventory = null;
         this.banDuration = 0;
+        this.pearlProtected = false;
     }
 
-    public CombatLogger(World world, Player player, int banDuration) {
+    public CombatLogger(World world, Player player, int banDuration, boolean pearlProtected) {
         super(world);
         this.ownerId = player.getUniqueId();
         this.ownerUsername = player.getName();
         this.inventory = Lists.newArrayList();
         this.banDuration = banDuration;
+        this.pearlProtected = pearlProtected;
 
         final CraftLivingEntity living = (CraftLivingEntity)getBukkitEntity();
 

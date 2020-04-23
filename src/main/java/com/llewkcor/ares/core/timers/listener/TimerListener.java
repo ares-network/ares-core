@@ -1,16 +1,25 @@
 package com.llewkcor.ares.core.timers.listener;
 
+import com.llewkcor.ares.commons.event.PlayerBigMoveEvent;
 import com.llewkcor.ares.commons.event.PlayerDamagePlayerEvent;
 import com.llewkcor.ares.commons.event.PlayerSplashPlayerEvent;
+import com.llewkcor.ares.commons.location.BLocatable;
+import com.llewkcor.ares.commons.util.bukkit.Players;
+import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
+import com.llewkcor.ares.core.bastion.data.Bastion;
+import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.loggers.event.PlayerDamageLoggerEvent;
+import com.llewkcor.ares.core.network.data.Network;
+import com.llewkcor.ares.core.prison.event.PrePrisonPearlEvent;
+import com.llewkcor.ares.core.spawn.event.PlayerEnterWorldEvent;
 import com.llewkcor.ares.core.timers.TimerManager;
 import com.llewkcor.ares.core.timers.data.PlayerTimer;
 import com.llewkcor.ares.core.timers.data.type.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -18,6 +27,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -29,6 +40,51 @@ import java.util.Set;
 @AllArgsConstructor
 public final class TimerListener implements Listener {
     @Getter public final TimerManager manager;
+
+    @EventHandler
+    public void onPlayerEnterWorld(PlayerEnterWorldEvent event) {
+        final Player player = event.getPlayer();
+
+        if (!event.getEntranceMethod().equals(PlayerEnterWorldEvent.PlayerEnterWorldMethod.RANDOM)) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = new PearlProtectionTimer(player.getUniqueId(), manager.getPlugin().getConfigManager().getGeneralConfig().getPearlProtectionDuration());
+        manager.getHandler().addTimer(player, timer);
+
+        new Scheduler(manager.getPlugin()).sync(() -> {
+            if (player.isOnline()) {
+                player.sendMessage(
+                        ChatColor.GOLD + "You have been granted " + ChatColor.YELLOW +
+                        Time.convertToHHMMSS(manager.getPlugin().getConfigManager().getGeneralConfig().getPearlProtectionDuration() * 1000L) +
+                        ChatColor.GOLD + " of " + ChatColor.GREEN + "Prison Pearl Protection");
+
+                player.sendMessage(ChatColor.DARK_AQUA + "While this timer is active you will have limited access to the map but you will not be imprisoned if you are killed.");
+
+                player.sendMessage(ChatColor.DARK_AQUA + "Type " + ChatColor.AQUA + "/pvp enable" + ChatColor.DARK_AQUA + " to remove this protection and gain full access to the map.");
+
+                Players.playSound(player, Sound.NOTE_STICKS);
+            }
+        }).delay(5 * 20L).run();
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPlayerImprison(PrePrisonPearlEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Player player = Bukkit.getPlayer(event.getImprisoned());
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer)manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null || timer.isExpired()) {
+            return;
+        }
+
+        event.getKiller().sendMessage(ChatColor.AQUA + player.getName() + ChatColor.YELLOW + " had " + ChatColor.GREEN + "Prison Pearl Protection");
+        event.setCancelled(true);
+    }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -59,7 +115,6 @@ public final class TimerListener implements Listener {
         if (existingTimer != null && !existingTimer.isExpired()) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "Enderpearls locked for " + ChatColor.RED + "" + ChatColor.BOLD + Time.convertToDecimal(existingTimer.getExpire() - Time.now()) + ChatColor.RED + "s");
-            return;
         }
     }
 
@@ -196,5 +251,188 @@ public final class TimerListener implements Listener {
         }
 
         manager.getHandler().addTimer(player, new CombatTagTimer(player.getUniqueId(), manager.getPlugin().getConfigManager().getGeneralConfig().getCombatTagAttackerDuration()));
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onPlayerMove(PlayerBigMoveEvent event) {
+        final Player player = event.getPlayer();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final Location from = event.getFrom();
+        final Location to = event.getTo();
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        final Set<Bastion> inRangeBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(to.getBlock()), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
+
+        if (inRangeBastions.isEmpty()) {
+            return;
+        }
+
+        for (Bastion bastion : inRangeBastions) {
+            final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+
+            if (owner == null) {
+                continue;
+            }
+
+            if (!owner.isMember(player.getUniqueId())) {
+                player.teleport(from);
+                player.sendMessage(ChatColor.RED + "You can not enter this bastion field while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onBlockBreak(BlockBreakEvent event) {
+        final Player player = event.getPlayer();
+        final Block block = event.getBlock();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        final Claim claim = manager.getPlugin().getClaimManager().getClaimByBlock(block);
+        final Set<Bastion> inRangeBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
+
+        if (claim != null) {
+            final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
+
+            if (network != null) {
+                if (!network.isMember(player)) {
+                    player.sendMessage(ChatColor.RED + "You can not break fortified blocks while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
+        if (!inRangeBastions.isEmpty()) {
+            for (Bastion bastion : inRangeBastions) {
+                final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+
+                if (owner == null) {
+                    continue;
+                }
+
+                if (!owner.isMember(player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You can not modify blocks in this bastion field while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final Block block = event.getBlock();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        final Set<Bastion> inRangeBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
+
+        if (inRangeBastions.isEmpty()) {
+            return;
+        }
+
+        for (Bastion bastion : inRangeBastions) {
+            final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+
+            if (owner == null) {
+                continue;
+            }
+
+            if (!owner.isMember(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You can not modify blocks in this bastion field while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onPearlProtectedAttack(PlayerDamagePlayerEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Player player = event.getDamager();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "You can not attack others while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+        event.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onCombatLoggerDamage(PlayerDamageLoggerEvent event) {
+        final Player player = event.getPlayer();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "You can not attack others while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+        event.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onPearlProtectedSplash(PlayerSplashPlayerEvent event) {
+        if (event.isCancelled() || event.getDamaged().getUniqueId().equals(event.getDamager().getUniqueId())) {
+            return;
+        }
+
+        final Player player = event.getDamager();
+
+        if (player.hasPermission("arescore.admin")) {
+            return;
+        }
+
+        final PearlProtectionTimer timer = (PearlProtectionTimer) manager.getTimer(player, PlayerTimerType.PEARL_PROTECTION);
+
+        if (timer == null) {
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "You can not attack others while you have Pearl Protection. Type " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your Pearl Protection");
+        event.setCancelled(true);
     }
 }
