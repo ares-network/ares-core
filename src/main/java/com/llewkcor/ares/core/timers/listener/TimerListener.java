@@ -59,10 +59,6 @@ public final class TimerListener implements Listener {
                         Time.convertToHHMMSS(manager.getPlugin().getConfigManager().getGeneralConfig().getPearlProtectionDuration() * 1000L) +
                         ChatColor.GOLD + " of " + ChatColor.GREEN + "Prison Pearl Protection");
 
-                player.sendMessage(ChatColor.DARK_AQUA + "While this timer is active you will have limited access to the map but you will not be imprisoned if you are killed.");
-
-                player.sendMessage(ChatColor.DARK_AQUA + "Type " + ChatColor.AQUA + "/pvp enable" + ChatColor.DARK_AQUA + " to remove this protection and gain full access to the map.");
-
                 Players.playSound(player, Sound.NOTE_STICKS);
             }
         }).delay(5 * 20L).run();
