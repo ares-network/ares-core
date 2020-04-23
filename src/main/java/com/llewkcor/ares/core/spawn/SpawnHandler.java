@@ -217,13 +217,9 @@ public final class SpawnHandler {
      * @param player Bukkit Player
      */
     private void preparePlayer(Player player, PlayerEnterWorldEvent.PlayerEnterWorldMethod entranceMethod) {
-        final PlayerEnterWorldEvent event = new PlayerEnterWorldEvent(player, entranceMethod);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
         player.setHealth(20.0);
         player.setFoodLevel(20);
         player.setSaturation(20);
@@ -232,8 +228,8 @@ public final class SpawnHandler {
         player.setNoDamageTicks(20);
         player.setLevel(0);
         player.setFlying(false);
-        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        player.getInventory().clear();
-        player.getInventory().setArmorContents(null);
+
+        final PlayerEnterWorldEvent event = new PlayerEnterWorldEvent(player, entranceMethod);
+        Bukkit.getPluginManager().callEvent(event);
     }
 }
