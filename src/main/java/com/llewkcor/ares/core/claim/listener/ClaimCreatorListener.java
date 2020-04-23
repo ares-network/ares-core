@@ -103,7 +103,7 @@ public final class ClaimCreatorListener implements Listener {
                     if (item.getAmount() >= (cost + 1)) {
                         if (item.getAmount() > cost) {
                             // Player still has more
-                            item.setAmount(item.getAmount() - cost);
+                            item.setAmount(item.getAmount() - (cost + 1));
                         } else {
                             // Player has the exact amount
                             player.getInventory().removeItem(item);
