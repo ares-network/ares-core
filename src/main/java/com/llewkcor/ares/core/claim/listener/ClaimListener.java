@@ -137,7 +137,7 @@ public final class ClaimListener implements Listener {
                 return;
             }
 
-            final Claim claim = manager.getClaimByBlock(block);
+            final Claim claim = manager.getClaimByBlock(multiBlock);
 
             if (claim == null || !claim.isMatured()) {
                 return;
