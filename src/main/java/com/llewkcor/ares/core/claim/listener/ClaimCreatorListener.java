@@ -269,7 +269,7 @@ public final class ClaimCreatorListener implements Listener {
         final boolean canAccess = (network.isMember(player) && (network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.ACCESS_LAND)));
 
         if (canAccess) {
-            player.sendMessage(ChatColor.YELLOW + "Protected " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " +
+            player.sendMessage(ChatColor.YELLOW + "Protected " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + " by " + network.getName() + ", " +
                     (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
         } else {
             player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
