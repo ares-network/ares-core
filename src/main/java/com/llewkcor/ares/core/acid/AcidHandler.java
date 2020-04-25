@@ -7,6 +7,7 @@ import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.commons.util.general.Time;
 import com.llewkcor.ares.core.acid.data.AcidBlock;
 import com.llewkcor.ares.core.acid.data.AcidDAO;
+import com.llewkcor.ares.core.bastion.data.Bastion;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+
+import java.util.Set;
 
 @AllArgsConstructor
 public final class AcidHandler {
@@ -120,12 +123,21 @@ public final class AcidHandler {
             return;
         }
 
+        final Set<Bastion> badBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
         final AcidBlock acidBlock = new AcidBlock(network, block, (Time.now() + (manager.getPlugin().getConfigManager().getAcidConfig().getAcidMatureTime() * 1000L)), (Time.now() + (manager.getPlugin().getConfigManager().getAcidConfig().getAcidExpireTime() * 1000L)));
 
         manager.getAcidRepository().add(acidBlock);
         new Scheduler(manager.getPlugin()).async(() -> AcidDAO.saveAcidBlock(manager.getPlugin().getDatabaseInstance(), acidBlock)).run();
 
         player.sendMessage(ChatColor.YELLOW + "This Acid Block will mature in " + Time.convertToRemaining(acidBlock.getMatureTime() - Time.now()));
+
+        for (Bastion bastion : badBastions) {
+            if (bastion.isMature() || bastion.getOwnerId().equals(network.getUniqueId())) {
+                continue;
+            }
+
+            player.sendMessage(ChatColor.RED + "This Acid Block is being blocked by a Bastion at " + bastion.toString());
+        }
 
         promise.success();
     }
@@ -160,8 +172,19 @@ public final class AcidHandler {
             return;
         }
 
+        final Set<Bastion> badBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
+
         player.sendMessage(ChatColor.YELLOW + "Acid claimed by " + network.getName() + ", " + (acid.isMature() ? "matured." : "matures in " + Time.convertToRemaining(acid.getMatureTime() - Time.now())));
         player.sendMessage(ChatColor.YELLOW + "Expires in " + Time.convertToRemaining(acid.getExpireTime() - Time.now()));
+
+        for (Bastion bastion : badBastions) {
+            if (bastion.isMature() || bastion.getOwnerId().equals(network.getUniqueId())) {
+                continue;
+            }
+
+            player.sendMessage(ChatColor.RED + "This Acid Block is being blocked by a Bastion at " + bastion.toString());
+        }
+
         promise.success();
     }
 }
