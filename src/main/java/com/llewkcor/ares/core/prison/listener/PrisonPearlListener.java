@@ -36,6 +36,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         if (!manager.getPlugin().getDatabaseInstance().isConnected()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "The server is still starting");
             return;
@@ -86,6 +90,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final Player player = event.getPlayer();
         final World world = player.getWorld();
         final Location prison = manager.getPrisonLocation();
@@ -106,6 +114,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onPrisonPearl(PrisonPearlCreateEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final PrisonPearl prisonPearl = event.getPrisonPearl();
         final Player player = prisonPearl.getImprisoned();
 
@@ -126,6 +138,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onPlayerImprison(PlayerDeathEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final Player player = event.getEntity();
         final Player killer = player.getKiller();
         final PrisonPearl existing = manager.getPrisonPearlByPlayer(player.getUniqueId());
@@ -166,6 +182,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onLoggerDeath(LoggerDeathEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final CombatLogger logger = event.getLogger();
         final Player killer = event.getKiller();
         final PrisonPearl existing = manager.getPrisonPearlByPlayer(logger.getOwnerId());
@@ -206,6 +226,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onThrowPearl(ProjectileLaunchEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         if (event.isCancelled()) {
             return;
         }
@@ -254,6 +278,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final Player player = event.getPlayer();
         final PrisonPearl prisonPearl = manager.getPrisonPearlByPlayer(player.getUniqueId());
 
@@ -272,6 +300,10 @@ public final class PrisonPearlListener implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerTeleportEvent event) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         if (event.isCancelled()) {
             return;
         }

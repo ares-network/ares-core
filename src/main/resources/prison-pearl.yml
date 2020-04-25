@@ -1,4 +1,5 @@
 settings:
+  enabled: true
   ban_duration:
     default: 1209600
     premium:

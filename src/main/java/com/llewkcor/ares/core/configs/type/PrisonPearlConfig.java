@@ -14,6 +14,7 @@ public final class PrisonPearlConfig implements AresConfig {
     @Getter public final ConfigManager configManager;
     @Getter public YamlConfiguration config;
 
+    @Getter public boolean enabled;
     @Getter public String banWorldName;
     @Getter public int banDuration;
     @Getter public int maxPrisonPearledAccounts;
@@ -28,6 +29,7 @@ public final class PrisonPearlConfig implements AresConfig {
     public void load() {
         config = Configs.getConfig(configManager.getPlugin(), "prison-pearl");
 
+        enabled = config.getBoolean("settings.enabled");
         banWorldName = config.getString("settings.ban_world");
         maxPrisonPearledAccounts = config.getInt("settings.max_pearl_accounts");
         altBanDuration = config.getString("settings.alt_ban_duration");

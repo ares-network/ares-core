@@ -157,6 +157,10 @@ public final class PrisonPearlHandler {
      * @param killer Bukkit Player Killer
      */
     public void imprisonPlayer(String imprisonedUsername, UUID imprisonedUUID, Player killer, int duration) {
+        if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
+            return;
+        }
+
         final PrePrisonPearlEvent preEvent = new PrePrisonPearlEvent(imprisonedUUID, killer, duration);
         Bukkit.getPluginManager().callEvent(preEvent);
 
