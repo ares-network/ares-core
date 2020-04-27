@@ -16,6 +16,7 @@ import com.llewkcor.ares.core.factory.menu.FactoryMenuHandler;
 import com.llewkcor.ares.core.network.data.Network;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -32,6 +33,8 @@ public final class FactoryManager {
     @Getter public final FactoryMenuHandler menuHandler;
     @Getter public final Set<Factory> factoryRepository;
     @Getter public final Map<String, Double> premiumSpeedMultipliers;
+    @Getter public final double expLevelBase;
+    @Getter public final double expLevelMultiplier;
     @Getter public final BukkitTask jobUpdateTask;
 
     public FactoryManager(Ares plugin) {
@@ -58,8 +61,15 @@ public final class FactoryManager {
                     }
 
                     new Scheduler(plugin).sync(() -> {
+                        final double levelUp = getLevelRequirement(factory.getLevel() + 1);
+
                         factory.finishJob(recipe);
                         factory.getActiveJobs().remove(job);
+
+                        if (factory.getExperience() >= levelUp) {
+                            factory.setLevel(factory.getLevel() + 1);
+                            factory.getFurnaceLocation().getBukkit().getWorld().playSound(factory.getFurnaceLocation().getBukkit().getLocation(), Sound.LEVEL_UP, 0.5F, 0.5F);
+                        }
                     }).run();
                 }
             }
@@ -68,6 +78,9 @@ public final class FactoryManager {
         Bukkit.getPluginManager().registerEvents(new FactoryListener(this), plugin);
 
         final YamlConfiguration config = Configs.getConfig(plugin, "factories");
+
+        this.expLevelBase = config.getDouble("settings.exp_level_base");
+        this.expLevelMultiplier = config.getDouble("settings.exp_level_multiplier");
 
         for (String rankId : config.getConfigurationSection("premium_modifiers").getKeys(false)) {
             final String permission = config.getString("premium_modifiers." + rankId + ".permission");
@@ -132,5 +145,24 @@ public final class FactoryManager {
         }
 
         return highest;
+    }
+
+    /**
+     * Returns the experience required to reach the provided level
+     * @param level Experience Level
+     * @return Experience required
+     */
+    public double getLevelRequirement(int level) {
+        return (expLevelMultiplier * expLevelBase * level) * level;
+    }
+
+    /**
+     * Returns the required EXP to reach the next level
+     * @param factory Factory
+     * @return EXP to next level
+     */
+    public double getExpToNextLevel(Factory factory) {
+        final double requiredExp = getLevelRequirement(factory.getLevel() + 1);
+        return Math.floor((requiredExp - factory.getExperience()));
     }
 }

@@ -44,6 +44,8 @@ public final class FactoryRecipeManager {
         for (String recipeIdentifier : factoryConfig.getConfigurationSection("recipes").getKeys(false)) {
             final String recipeName = factoryConfig.getString("recipes." + recipeIdentifier + ".name");
             final int jobTime = factoryConfig.getInt("recipes." + recipeIdentifier + ".job_time");
+            final int requiredLevel = factoryConfig.getInt("recipes." + recipeIdentifier + ".required_level");
+            final double expPerRun = factoryConfig.getDouble("recipes." + recipeIdentifier + ".exp_per_run");
             final List<ItemStack> inputMaterials = Lists.newArrayList();
             final List<ItemStack> outputMaterials = Lists.newArrayList();
 
@@ -176,7 +178,7 @@ public final class FactoryRecipeManager {
                 outputMaterials.add(item);
             }
 
-            final FactoryRecipe recipe = new FactoryRecipe(recipeName, jobTime, inputMaterials, outputMaterials);
+            final FactoryRecipe recipe = new FactoryRecipe(recipeName, jobTime, requiredLevel, expPerRun, inputMaterials, outputMaterials);
             recipeRepository.add(recipe);
         }
 

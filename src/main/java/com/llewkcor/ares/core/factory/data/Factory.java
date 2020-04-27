@@ -6,6 +6,7 @@ import com.llewkcor.ares.commons.connect.mongodb.MongoDocument;
 import com.llewkcor.ares.commons.location.BLocatable;
 import com.llewkcor.ares.commons.logger.Logger;
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public final class Factory implements MongoDocument<Factory> {
     @Getter public UUID uniqueId;
     @Getter public UUID ownerId;
+    @Getter @Setter public int level;
+    @Getter @Setter public double experience;
     @Getter public Set<FactoryJob> activeJobs;
     @Getter public BLocatable chestLocation;
     @Getter public BLocatable furnaceLocation;
@@ -29,6 +32,8 @@ public final class Factory implements MongoDocument<Factory> {
     public Factory() {
         this.uniqueId = UUID.randomUUID();
         this.ownerId = null;
+        this.level = 1;
+        this.experience = 0;
         this.activeJobs = Sets.newConcurrentHashSet();
         this.chestLocation = null;
         this.furnaceLocation = null;
@@ -45,10 +50,20 @@ public final class Factory implements MongoDocument<Factory> {
     public Factory(UUID ownerId, Block chest, Block furnace, Block bench) {
         this.uniqueId = UUID.randomUUID();
         this.ownerId = ownerId;
+        this.level = 1;
+        this.experience = 0;
         this.activeJobs = Sets.newConcurrentHashSet();
         this.chestLocation = new BLocatable(chest);
         this.furnaceLocation = new BLocatable(furnace);
         this.benchLocation = new BLocatable(bench);
+    }
+
+    /**
+     * Adds experience to this Factory
+     * @param amount Experience Amount
+     */
+    public void addExperience(double amount) {
+        this.experience += amount;
     }
 
     /**
@@ -78,6 +93,8 @@ public final class Factory implements MongoDocument<Factory> {
 
         final Block furnaceBlock = furnaceLocation.getBukkit();
         furnaceBlock.getWorld().playSound(furnaceLocation.getBukkit().getLocation(), Sound.CLICK, 1.0f, 1.0f);
+
+        addExperience(recipe.getExperience());
     }
 
     /**
@@ -106,6 +123,8 @@ public final class Factory implements MongoDocument<Factory> {
         this.uniqueId = (UUID)document.get("id");
         this.ownerId = (UUID)document.get("owner");
         this.activeJobs = Sets.newConcurrentHashSet();
+        this.level = document.getInteger("level");
+        this.experience = document.getDouble("experience");
         this.chestLocation = new BLocatable().fromDocument(document.get("chest_location", Document.class));
         this.furnaceLocation = new BLocatable().fromDocument(document.get("furnace_location", Document.class));
         this.benchLocation = new BLocatable().fromDocument(document.get("bench_location", Document.class));
@@ -124,7 +143,9 @@ public final class Factory implements MongoDocument<Factory> {
         return new Document()
                 .append("id", uniqueId)
                 .append("owner", ownerId)
+                .append("experience", experience)
                 .append("active_jobs", jobEntries)
+                .append("level", level)
                 .append("chest_location", chestLocation.toDocument())
                 .append("furnace_location", furnaceLocation.toDocument())
                 .append("bench_location", benchLocation.toDocument());

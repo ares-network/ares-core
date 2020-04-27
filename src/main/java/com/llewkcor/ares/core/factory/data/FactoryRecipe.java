@@ -12,9 +12,25 @@ import java.util.List;
 public final class FactoryRecipe {
     @Getter public String name;
     @Getter public int jobTime;
+    @Getter public int requiredLevel;
+    @Getter public double experience;
     @Getter public List<ItemStack> materials;
     @Getter public List<ItemStack> output;
 
+    /**
+     * Returns true if this recipe is unlocked for the provided level
+     * @param currentLevel Current Factory Level
+     * @return True if unlocked
+     */
+    public boolean isUnlocked(int currentLevel) {
+        return currentLevel >= requiredLevel;
+    }
+
+    /**
+     * Returns true if the provided ItemStack is a recipe item
+     * @param item Bukkit ItemStack
+     * @return True if it is an input resource
+     */
     public boolean isRecipeItem(ItemStack item) {
         return materials
                 .stream()

@@ -1,3 +1,7 @@
+settings:
+  exp_level_base: 20
+  exp_level_multiplier: 5
+
 premium_modifiers:
   SAPPHIRE:
     permission: 'arescore.factory.premium.sapphire'
@@ -16,6 +20,8 @@ recipes:
   RECIPE_A:
     name: "Recipe A"
     job_time: 30
+    required_level: 0
+    exp_per_run: 5.0
     input:
       DIAMOND:
         id: 264

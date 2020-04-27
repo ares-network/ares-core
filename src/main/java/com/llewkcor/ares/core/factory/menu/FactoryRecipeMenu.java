@@ -27,18 +27,33 @@ public final class FactoryRecipeMenu extends Menu {
     @Getter public Factory factory;
 
     public FactoryRecipeMenu(Ares plugin, Player player, Factory factory) {
-        super(plugin, player, "Factory Recipes", 3);
+        super(
+                plugin,
+                player,
+                    "Factory LVL " + factory.getLevel() +
+                        " (" + Math.floor(factory.getExperience()) + "/" + plugin.getFactoryManager().getLevelRequirement(factory.getLevel() + 1) + ")",
+                3);
+
         this.factory = factory;
 
+        final int factoryLevel = factory.getLevel();
         int pos = 0;
         final double speedMultiplier = plugin.getFactoryManager().getSpeedMultiplier(player);
         final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
 
-        sortedRecipes.sort(Comparator.comparing(FactoryRecipe::getName));
+        sortedRecipes.sort(Comparator.comparing(factoryRecipe -> factoryRecipe.isUnlocked(factoryLevel)));
         Collections.reverse(sortedRecipes);
 
         for (FactoryRecipe recipe : sortedRecipes) {
             final List<String> lore = Lists.newArrayList();
+
+            if (!recipe.isUnlocked(factoryLevel)) {
+                lore.add(ChatColor.RED + "Recipe is locked");
+                lore.add(ChatColor.GOLD + "Required Level" + ChatColor.YELLOW + ": " + recipe.getRequiredLevel());
+                lore.add(ChatColor.DARK_RED + "Current Level" + ChatColor.RED + ": " + factoryLevel);
+                lore.add(ChatColor.GREEN + "Experience Until Next Level" + ChatColor.WHITE + ": " + plugin.getFactoryManager().getExpToNextLevel(factory));
+                lore.add(ChatColor.RESET + " ");
+            }
 
             lore.add(ChatColor.GOLD + "Input Resources:");
 
@@ -86,6 +101,7 @@ public final class FactoryRecipeMenu extends Menu {
                 lore.add(ChatColor.DARK_AQUA + "Time: " + ChatColor.GRAY + Time.convertToRemaining(recipe.getJobTime() * 1000L));
             }
 
+            lore.add(ChatColor.GREEN + "Experience Reward: " + ChatColor.WHITE + recipe.getExperience());
 
             final ItemStack icon = new ItemBuilder()
                     .setMaterial(recipe.getOutput().get(0).getType())
@@ -95,6 +111,11 @@ public final class FactoryRecipeMenu extends Menu {
                     .build();
 
             addItem(new ClickableItem(icon, pos, click -> {
+                if (!recipe.isUnlocked(factoryLevel)) {
+                    player.sendMessage(ChatColor.RED + "This factory is not a high enough level to run this recipe yet");
+                    return;
+                }
+
                 if (factory.getActiveJobs().size() >= 9) {
                     player.sendMessage(ChatColor.RED + "This factory is working at max capacity. Please wait for a job to finish before starting a new one.");
                     return;
