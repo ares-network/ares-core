@@ -168,7 +168,6 @@ public final class FactoryRecipeManager {
                 } else {
                     item = new ItemBuilder()
                             .setMaterial(material)
-                            .setName(name)
                             .setAmount(amount)
                             .setData((short)data)
                             .addEnchant(enchantments)
