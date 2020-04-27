@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,12 @@ public final class FactoryRecipeManager {
                             .build();
                 }
 
+                if (material.equals(Material.ENCHANTED_BOOK)) {
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta)item.getItemMeta();
+                    enchantments.forEach((enchantment, level) -> meta.addStoredEnchant(enchantment, level, false));
+                    item.setItemMeta(meta);
+                }
+
                 inputMaterials.add(item);
             }
 
@@ -154,24 +161,30 @@ public final class FactoryRecipeManager {
                     }
                 }
 
-                final ItemStack item;
+                if (material == null) {
+                    Logger.error("Invalid material for " + recipeName + ": " + material);
+                    continue;
+                }
+
+                final ItemBuilder builder = new ItemBuilder()
+                        .setMaterial(material)
+                        .setAmount(amount)
+                        .setData((short)data);
 
                 if (name != null) {
-                    item = new ItemBuilder()
-                            .setMaterial(material)
-                            .setName(name)
-                            .setName(name)
-                            .setAmount(amount)
-                            .setData((short)data)
-                            .addEnchant(enchantments)
-                            .build();
-                } else {
-                    item = new ItemBuilder()
-                            .setMaterial(material)
-                            .setAmount(amount)
-                            .setData((short)data)
-                            .addEnchant(enchantments)
-                            .build();
+                    builder.setName(name);
+                }
+
+                if (!enchantments.isEmpty() && !material.equals(Material.ENCHANTED_BOOK)) {
+                    builder.addEnchant(enchantments);
+                }
+
+                final ItemStack item = builder.build();
+
+                if (material.equals(Material.ENCHANTED_BOOK)) {
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta)item.getItemMeta();
+                    enchantments.forEach((enchantment, level) -> meta.addStoredEnchant(enchantment, level, false));
+                    item.setItemMeta(meta);
                 }
 
                 outputMaterials.add(item);
