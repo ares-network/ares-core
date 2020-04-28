@@ -114,7 +114,7 @@ public final class PlayerManager {
      * @param promise Promise
      */
     public void getAccountByUsername(String username, FailablePromise<AresAccount> promise) {
-        final AresAccount cachedProfile = accountRepository.stream().filter(account -> account.getUsername().equals(username)).findFirst().orElse(null);
+        final AresAccount cachedProfile = accountRepository.stream().filter(account -> account.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null);
 
         if (cachedProfile != null) {
             promise.success(cachedProfile);
