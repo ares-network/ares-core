@@ -1,8 +1,6 @@
-database: 'mongodb://localhost'
-
-auto-save:
-  enabled: true
-  interval: 900
+database:
+  uri: 'mongodb://localhost'
+  name: 'ares'
 
 alt-tracking:
   alt-entry-lifespan: 2592000
@@ -57,10 +55,9 @@ help-context:
   - '&4&lAres Help &f- Information & Commands'
   - '&7&m------------------------------'
   - '&cMap Information'
-  - '&6Current Map&e: Map 1, Started April 24th, 2020'
-  - '&6Map Size&e: 15,000 x 15,000'
-  - '&6Disabled Enchantments&e: Knockback & Thorns'
-  - '&6Disabled Potions&e: Instant Damage, Poison Extended, Slowness Extended & Weakness Extended'
+  - '&6Current Map&e: Map 1, Started May 8th, 2020'
+  - '&6Map Size&e: 10,000 x 10,000'
+  - '&6Disabled Potions&e: Instant Damage & Poison 2'
   - '&r '
   - '&cAssistance Commands'
   - '&6/report <player> <reason> &eReport a player to our team'
@@ -75,5 +72,5 @@ help-context:
   - '&6/factory help &eLearn how to create factories'
   - '&r '
   - '&cFor a more in-depth tutorial on how certain aspects of the server work, visit our tutorial page'
-  - '&6https://www.playares.com/tutorial'
+  - '&6https://www.playares.com/getting-started'
   - - '&7&m------------------------------'
