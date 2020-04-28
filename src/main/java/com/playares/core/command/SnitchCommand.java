@@ -45,7 +45,7 @@ public final class SnitchCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("log")
+    @Subcommand("log|logs")
     @Description("View logs for the snitch you are looking at")
     public void onLog(Player player) {
         final Block target = player.getTargetBlock((Set<Material>)null, 4);
