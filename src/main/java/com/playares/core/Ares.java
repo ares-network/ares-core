@@ -23,6 +23,7 @@ import com.playares.core.network.data.Network;
 import com.playares.core.player.PlayerManager;
 import com.playares.core.prison.PrisonPearlManager;
 import com.playares.core.snitch.SnitchManager;
+import com.playares.core.snitch.data.Snitch;
 import com.playares.core.spawn.SpawnManager;
 import com.playares.core.timers.TimerManager;
 import lombok.Getter;
@@ -98,20 +99,21 @@ public final class Ares extends AresPlugin {
         registerCommandManager(new PaperCommandManager(this));
         commandManager.enableUnstableAPI("help");
 
-        commandManager.registerCommand(new NetworkCommand(this));
-        commandManager.registerCommand(new PrisonPearlCommand(this));
-        commandManager.registerCommand(new SnitchCommand(this));
-        commandManager.registerCommand(new ClaimCommand(this));
-        commandManager.registerCommand(new SpawnCommand(this));
-        commandManager.registerCommand(new FactoryCommand(this));
-        commandManager.registerCommand(new BastionCommand(this));
-        commandManager.registerCommand(new AcidCommand(this));
-        commandManager.registerCommand(new AresCommand(this));
-        commandManager.registerCommand(new ChatCommand(this));
-        commandManager.registerCommand(new AHelpCommand(this));
-        commandManager.registerCommand(new CompactorCommand(this));
-        commandManager.registerCommand(new CombatCommand(this));
-        commandManager.registerCommand(new RegionCommand(this));
+        registerCommand(new NetworkCommand(this));
+        registerCommand(new NetworkCommand(this));
+        registerCommand(new PrisonPearlCommand(this));
+        registerCommand(new SnitchCommand(this));
+        registerCommand(new ClaimCommand(this));
+        registerCommand(new SpawnCommand(this));
+        registerCommand(new FactoryCommand(this));
+        registerCommand(new BastionCommand(this));
+        registerCommand(new AcidCommand(this));
+        registerCommand(new AresCommand(this));
+        registerCommand(new ChatCommand(this));
+        registerCommand(new AHelpCommand(this));
+        registerCommand(new CompactorCommand(this));
+        registerCommand(new CombatCommand(this));
+        registerCommand(new RegionCommand(this));
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
@@ -122,6 +124,22 @@ public final class Ares extends AresPlugin {
             }
 
             return ImmutableList.copyOf(networkNames);
+        });
+
+        commandManager.getCommandCompletions().registerCompletion("snitches", c -> {
+            final Player player = c.getPlayer();
+            final List<String> snitchNames = Lists.newArrayList();
+
+            if (player == null) {
+                return ImmutableList.copyOf(snitchNames);
+            }
+
+            for (Network network : networkManager.getNetworksByPlayer(player)) {
+                final List<Snitch> snitches = snitchManager.getSnitchByOwner(network);
+                snitches.forEach(snitch -> snitchNames.add(snitch.getName()));
+            }
+
+            return ImmutableList.copyOf(snitchNames);
         });
 
         // Cleanup Tasks
