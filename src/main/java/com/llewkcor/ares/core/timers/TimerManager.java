@@ -44,7 +44,7 @@ public final class TimerManager {
                     final Player player = Bukkit.getPlayer(account.getBukkitId());
                     final HUDUpdateEvent hudUpdateEvent = new HUDUpdateEvent(player);
 
-                    if (player != null) {
+                    if (player != null && !player.isDead()) {
                         if (!timers.isEmpty()) {
                             timers.stream().filter(activeTimer -> activeTimer.getType().isRender()).forEach(renderedTimer -> {
                                 if (renderedTimer.getType().isDecimal()) {
