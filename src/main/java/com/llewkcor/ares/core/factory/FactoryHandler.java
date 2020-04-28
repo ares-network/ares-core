@@ -10,6 +10,7 @@ import com.llewkcor.ares.commons.util.bukkit.Scheduler;
 import com.llewkcor.ares.core.claim.data.Claim;
 import com.llewkcor.ares.core.factory.data.Factory;
 import com.llewkcor.ares.core.factory.data.FactoryDAO;
+import com.llewkcor.ares.core.factory.menu.FactoryRecipePreviewMenu;
 import com.llewkcor.ares.core.network.data.Network;
 import com.llewkcor.ares.core.network.data.NetworkMember;
 import com.llewkcor.ares.core.network.data.NetworkPermission;
@@ -164,5 +165,14 @@ public final class FactoryHandler {
         network.sendMessage(ChatColor.YELLOW + player.getName() + " has created a factory for " + network.getName() + " at " + factory.getFurnaceLocation().toString());
 
         promise.success();
+    }
+
+    /**
+     * Handles opening a new Recipe Preview Menu for the provided player
+     * @param player Player
+     */
+    public void openRecipePreviewMenu(Player player) {
+        final FactoryRecipePreviewMenu menu = new FactoryRecipePreviewMenu(manager.getPlugin(), player);
+        menu.open();
     }
 }

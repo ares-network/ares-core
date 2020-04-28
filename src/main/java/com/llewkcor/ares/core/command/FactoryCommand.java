@@ -45,6 +45,12 @@ public final class FactoryCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("recipe|recipes")
+    @Description("View a preview menu containing all Factory Recipes")
+    public void onPreview(Player player) {
+        plugin.getFactoryManager().getHandler().openRecipePreviewMenu(player);
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
