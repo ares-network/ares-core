@@ -34,6 +34,7 @@
                                 <includes>
                                     <include>com.playares:ares-commons</include>
                                     <include>com.playares:ares-essentials</include>
+                                    <include>com.playares:ares-humbug</include>
                                     <include>co.aikar</include>
                                     <include>net.jodah</include>
                                 </includes>
@@ -113,10 +114,17 @@
             <version>1.0.0</version>
         </dependency>
 
-        <!-- Ares Commons Library -->
+        <!-- Ares Essentials -->
         <dependency>
             <groupId>com.playares</groupId>
             <artifactId>ares-essentials</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Ares Humbug -->
+        <dependency>
+            <groupId>com.playares</groupId>
+            <artifactId>ares-humbug</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

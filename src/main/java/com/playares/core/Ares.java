@@ -28,6 +28,7 @@ import com.playares.core.snitch.data.Snitch;
 import com.playares.core.spawn.SpawnManager;
 import com.playares.core.timers.TimerManager;
 import com.playares.essentials.EssentialsService;
+import com.playares.humbug.HumbugService;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityTypes;
@@ -120,6 +121,7 @@ public final class Ares extends AresPlugin {
         registerService(new AccountService(this, configManager.getGeneralConfig().getDatabaseName()));
         registerService(new CustomItemService(this));
         registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new HumbugService(this));
         startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
