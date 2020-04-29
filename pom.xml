@@ -32,7 +32,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>com.llewkcor:ares-commons</include>
+                                    <include>com.playares:ares-commons</include>
+                                    <include>com.playares:ares-essentials</include>
                                     <include>co.aikar</include>
                                     <include>net.jodah</include>
                                 </includes>
@@ -107,8 +108,15 @@
 
         <!-- Ares Commons Library -->
         <dependency>
-            <groupId>com.llewkcor</groupId>
+            <groupId>com.playares</groupId>
             <artifactId>ares-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Ares Commons Library -->
+        <dependency>
+            <groupId>com.playares</groupId>
+            <artifactId>ares-essentials</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

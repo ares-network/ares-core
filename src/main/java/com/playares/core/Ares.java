@@ -1,6 +1,7 @@
 package com.playares.core;
 
 import co.aikar.commands.PaperCommandManager;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.playares.commons.AresPlugin;
@@ -26,6 +27,7 @@ import com.playares.core.snitch.SnitchManager;
 import com.playares.core.snitch.data.Snitch;
 import com.playares.core.spawn.SpawnManager;
 import com.playares.core.timers.TimerManager;
+import com.playares.essentials.EssentialsService;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityTypes;
@@ -81,11 +83,6 @@ public final class Ares extends AresPlugin {
         registerDatabase(databaseInstance);
         databaseInstance.openConnection();
 
-        // Services
-        registerService(new CustomEventService(this));
-        registerService(new AccountService(this, configManager.getGeneralConfig().getDatabaseName()));
-        registerService(new CustomItemService(this));
-
         // Load Data
         networkManager.getHandler().loadAll(true);
         snitchManager.getHandler().loadAll(true);
@@ -114,6 +111,16 @@ public final class Ares extends AresPlugin {
         registerCommand(new CompactorCommand(this));
         registerCommand(new CombatCommand(this));
         registerCommand(new RegionCommand(this));
+
+        // Protocol
+        registerProtocolLibrary(ProtocolLibrary.getProtocolManager());
+
+        // Services
+        registerService(new CustomEventService(this));
+        registerService(new AccountService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new CustomItemService(this));
+        registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
+        startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();
