@@ -35,6 +35,7 @@
                                     <include>com.playares:ares-commons</include>
                                     <include>com.playares:ares-essentials</include>
                                     <include>com.playares:ares-humbug</include>
+                                    <include>com.playares:ares-bridge</include>
                                     <include>co.aikar</include>
                                     <include>net.jodah</include>
                                 </includes>
@@ -125,6 +126,13 @@
         <dependency>
             <groupId>com.playares</groupId>
             <artifactId>ares-humbug</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Ares Bridge -->
+        <dependency>
+            <groupId>com.playares</groupId>
+            <artifactId>ares-bridge</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.playares.bridge.BridgeService;
 import com.playares.commons.AresPlugin;
 import com.playares.commons.connect.mongodb.MongoDB;
 import com.playares.commons.services.account.AccountService;
@@ -122,6 +123,7 @@ public final class Ares extends AresPlugin {
         registerService(new CustomItemService(this));
         registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
         registerService(new HumbugService(this));
+        registerService(new BridgeService(this));
         startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
