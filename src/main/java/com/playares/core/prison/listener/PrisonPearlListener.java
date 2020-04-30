@@ -1,13 +1,10 @@
 package com.playares.core.prison.listener;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.Lists;
 import com.playares.commons.item.ItemBuilder;
 import com.playares.commons.logger.Logger;
-import com.playares.commons.util.bukkit.Scheduler;
-import com.playares.commons.util.general.IPS;
+import com.playares.commons.services.alts.data.AccountSession;
+import com.playares.commons.services.alts.event.AltDetectEvent;
 import com.playares.commons.util.general.Time;
-import com.playares.core.alts.data.AltEntry;
 import com.playares.core.loggers.entity.CombatLogger;
 import com.playares.core.loggers.event.LoggerDeathEvent;
 import com.playares.core.prison.PrisonPearlManager;
@@ -23,68 +20,56 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 public final class PrisonPearlListener implements Listener {
     @Getter public final PrisonPearlManager manager;
 
-    @EventHandler (priority = EventPriority.HIGHEST)
-    public void onPlayerLoginAttempt(AsyncPlayerPreLoginEvent event) {
+    @EventHandler
+    public void onAltDetected(AltDetectEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
             return;
         }
 
-        if (!manager.getPlugin().getDatabaseInstance().isConnected()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "The server is still starting");
-            return;
-        }
+        int pearledAccounts = 0;
 
-        if (!event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
-            return;
-        }
-
-        final UUID uniqueId = event.getUniqueId();
-        final long address = IPS.toLong(event.getAddress().getHostAddress());
-        final ImmutableCollection<AltEntry> accountEntries = manager.getPlugin().getAltManager().getAlts(uniqueId, address);
-        final List<AltEntry> pearledAlts = Lists.newArrayList();
-
-        for (AltEntry entry : accountEntries) {
-            final PrisonPearl pearl = manager.getPrisonPearlByPlayer(entry.getUniqueId());
+        for (AccountSession session : event.getSessions()) {
+            final UUID sessionUniqueId = session.getBukkitId();
+            final PrisonPearl pearl = manager.getPrisonPearlByPlayer(sessionUniqueId);
 
             if (pearl == null) {
                 continue;
             }
 
-            pearledAlts.add(entry);
+            pearledAccounts += 1;
         }
 
-        if (pearledAlts.size() > manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Prison Pearl Ban Evasion");
+        if (pearledAccounts > manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
+            event.setCancelled(true);
+            event.setDenyMessage(ChatColor.RED + "Prison Pearl Evasion");
 
-            new Scheduler(manager.getPlugin()).sync(() -> {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tempban " + event.getName() + " " + manager.getPlugin().getConfigManager().getPrisonPearlConfig().getAltBanDuration() + " Prison Pearl Ban Evasion");
-                Logger.print(event.getName() + " was banned for having " + pearledAlts.size() + " Prison Pearled alt accounts");
-            }).run();
-
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tempban " + event.getPlayer().getName() + " " + manager.getPlugin().getConfigManager().getPrisonPearlConfig().getAltBanDuration() + " Prison Pearl Evasion");
+            Logger.print(event.getPlayer().getName() + " was banned for having " + pearledAccounts + " Prison Pearled alt accounts");
             return;
         }
 
-        if (pearledAlts.size() >= 1 && pearledAlts.size() < manager.getPlugin().getConfigManager().getPrisonPearlConfig().getMaxPrisonPearledAccounts()) {
-            final AltEntry pearledAlt = pearledAlts.get(0);
-
-            if (!pearledAlt.getUniqueId().equals(uniqueId)) {
-                new Scheduler(manager.getPlugin()).sync(() ->
-                        Bukkit.getOnlinePlayers().stream().filter(player ->
-                                player.hasPermission("arescore.admin")).forEach(staff ->
-                                staff.sendMessage(ChatColor.DARK_RED + "[Prison Evasion] " +
-                                        ChatColor.DARK_AQUA + event.getName() + ChatColor.GRAY + " is evading a prison pearl on an alt account. If they are Prison Pearled again they will be banned."))).run();
-            }
+        if (pearledAccounts > 1) {
+            Bukkit.getOnlinePlayers().stream().filter(player ->
+                    player.hasPermission("arescore.admin")).forEach(staff ->
+                    staff.sendMessage(ChatColor.DARK_RED + "[Prison Evasion] " +
+                            ChatColor.DARK_AQUA + event.getPlayer().getName() + ChatColor.GRAY + " is evading a prison pearl on an alt account. Type " + ChatColor.RED + "/lookup " + event.getPlayer().getName() + ChatColor.GRAY + " to view their account history."));
         }
     }
 
@@ -272,8 +257,10 @@ public final class PrisonPearlListener implements Listener {
         }
 
         // Cancel the throw event and run a release attempt
-        event.setCancelled(true);
-        manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
+        if (prisonPearl != null) {
+            event.setCancelled(true);
+            manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
+        }
     }
 
     @EventHandler

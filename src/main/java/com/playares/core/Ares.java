@@ -8,10 +8,10 @@ import com.playares.bridge.BridgeService;
 import com.playares.commons.AresPlugin;
 import com.playares.commons.connect.mongodb.MongoDB;
 import com.playares.commons.services.account.AccountService;
+import com.playares.commons.services.alts.AltWatcherService;
 import com.playares.commons.services.customitems.CustomItemService;
 import com.playares.commons.services.event.CustomEventService;
 import com.playares.core.acid.AcidManager;
-import com.playares.core.alts.AltManager;
 import com.playares.core.bastion.BastionManager;
 import com.playares.core.chat.ChatManager;
 import com.playares.core.claim.ClaimManager;
@@ -51,7 +51,6 @@ public final class Ares extends AresPlugin {
     @Getter public PrisonPearlManager prisonPearlManager;
     @Getter public SpawnManager spawnManager;
     @Getter public FactoryManager factoryManager;
-    @Getter public AltManager altManager;
     @Getter public TimerManager timerManager;
     @Getter public LoggerManager loggerManager;
     @Getter public BastionManager bastionManager;
@@ -74,7 +73,6 @@ public final class Ares extends AresPlugin {
         this.chatManager = new ChatManager(this);
         this.spawnManager = new SpawnManager(this);
         this.factoryManager = new FactoryManager(this);
-        this.altManager = new AltManager(this);
         this.timerManager = new TimerManager(this);
         this.loggerManager = new LoggerManager(this);
         this.bastionManager = new BastionManager(this);
@@ -124,6 +122,7 @@ public final class Ares extends AresPlugin {
         registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
         registerService(new HumbugService(this));
         registerService(new BridgeService(this));
+        registerService(new AltWatcherService(this, configManager.getGeneralConfig().getDatabaseName()));
         startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
@@ -158,7 +157,6 @@ public final class Ares extends AresPlugin {
         prisonPearlManager.getHandler().performPearlCleanup();
         networkManager.getHandler().performNetworkCleanup();
         acidManager.getHandler().performAcidCleanup();
-        altManager.getHandler().performExpiredAltCleanup();
     }
 
     @Override
