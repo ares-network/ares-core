@@ -232,6 +232,13 @@ public final class PrisonPearlListener implements Listener {
 
         if (prisonPearl != null) {
             event.setCancelled(true);
+            player.getInventory().removeItem(hand);
+
+            if (prisonPearl.isExpired()) {
+                player.sendMessage(ChatColor.YELLOW + "Prison Pearl has expired");
+                return;
+            }
+
             manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
         }
     }
