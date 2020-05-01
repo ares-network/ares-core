@@ -72,7 +72,7 @@ public final class NetworkCreateHandler {
         Logger.print(player.getName() + " created network " + name);
 
         createCooldowns.put(player.getUniqueId(), (Time.now() + (handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getNetworkCreateCooldown() * 1000L)));
-        new Scheduler(handler.getManager().getPlugin()).sync(() -> createCooldowns.remove(bukkitUUID)).delay((handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getNetworkCreateCooldown() * 1000)).run();
+        new Scheduler(handler.getManager().getPlugin()).sync(() -> createCooldowns.remove(bukkitUUID)).delay((handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getNetworkCreateCooldown() * 20)).run();
 
         promise.success();
     }
