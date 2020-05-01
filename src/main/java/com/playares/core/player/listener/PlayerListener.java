@@ -39,7 +39,7 @@ public final class PlayerListener implements Listener {
         if (profile == null) {
             profile = new AresPlayer(player);
             manager.getPlayerRepository().add(profile);
-        } else if (!profile.getUsername().equals(player.getName())) {
+        } else if (profile.getUsername() == null || !profile.getUsername().equals(player.getName())) {
             profile.setUsername(player.getName());
             Logger.print("Updated Ares Player profile username for " + profile.getUsername());
         }
