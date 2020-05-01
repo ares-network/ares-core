@@ -86,7 +86,7 @@ public final class PrisonPearlDAO {
 
     public static long cleanupPearls(MongoDB database) {
         final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
-        final DeleteResult delete = collection.deleteMany(Filters.lte("expire", Time.now()));
+        final DeleteResult delete = collection.deleteMany(Filters.or(Filters.lte("expire", Time.now()), Filters.eq("released", true)));
         return delete.getDeletedCount();
     }
 }
