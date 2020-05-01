@@ -1,5 +1,6 @@
 package com.playares.core.prison.listener;
 
+import com.google.common.collect.Lists;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.services.alts.data.AccountSession;
 import com.playares.commons.services.alts.event.AltDetectEvent;
@@ -19,17 +20,49 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 public final class PrisonPearlListener implements Listener {
     @Getter public final PrisonPearlManager manager;
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final List<ItemStack> toRemove = Lists.newArrayList();
+        final Player viewer = (Player)event.getPlayer();
+
+        for (ItemStack item : event.getInventory().getContents()) {
+            if (item == null) {
+                continue;
+            }
+
+            if (manager.isExpiredPrisonPearl(item)) {
+                toRemove.add(item);
+            }
+        }
+
+        if (toRemove.isEmpty()) {
+            return;
+        }
+
+        toRemove.forEach(removed -> {
+            event.getInventory().remove(removed);
+        });
+
+        viewer.sendMessage(ChatColor.YELLOW + "Removed " + toRemove.size() + " expired Prison Pearls");
+    }
 
     @EventHandler
     public void onAltDetected(AltDetectEvent event) {
@@ -234,8 +267,8 @@ public final class PrisonPearlListener implements Listener {
             event.setCancelled(true);
             player.getInventory().removeItem(hand);
 
-            if (prisonPearl.isExpired()) {
-                player.sendMessage(ChatColor.YELLOW + "Prison Pearl has expired");
+            if (prisonPearl.isExpired() || prisonPearl.isReleased()) {
+                player.sendMessage(ChatColor.YELLOW + "Prison Pearl was expired");
                 return;
             }
 
