@@ -89,7 +89,7 @@ public final class PrisonPearlHandler {
      * @param reason Release Reason
      */
     public void releasePearl(PrisonPearl pearl, String reason) {
-        if (pearl.isExpired()) {
+        if (pearl.isReleased()) {
             return;
         }
 
@@ -119,6 +119,7 @@ public final class PrisonPearlHandler {
         }
 
         pearl.setExpireTime(Time.now());
+        pearl.setReleased(true);
 
         final PrisonPearlReleaseEvent releaseEvent = new PrisonPearlReleaseEvent(pearl, reason);
         Bukkit.getPluginManager().callEvent(releaseEvent);
@@ -202,7 +203,7 @@ public final class PrisonPearlHandler {
             pearl = manager.getPrisonPearlByPlayer(player.getUniqueId());
         }
 
-        if (pearl == null || pearl.isExpired()) {
+        if (pearl == null || pearl.isReleased() || pearl.isExpired()) {
             promise.fail("Player is not imprisoned");
             return;
         }

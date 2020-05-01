@@ -45,7 +45,7 @@ public final class PrisonPearlManager {
         }
 
         this.expireUpdater = new Scheduler(plugin).async(() -> {
-            final Set<PrisonPearl> expired = pearlRepository.stream().filter(PrisonPearl::isExpired).collect(Collectors.toSet());
+            final Set<PrisonPearl> expired = pearlRepository.stream().filter(prisonPearl -> prisonPearl.isExpired() && !prisonPearl.isReleased()).collect(Collectors.toSet());
 
             if (expired.isEmpty()) {
                 return;

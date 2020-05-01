@@ -34,6 +34,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
     @Getter @Setter public BLocatable location;
     @Getter @Setter public PearlLocationType locationType;
     @Getter @Setter public Item trackedItem;
+    @Getter @Setter public boolean released;
 
     public PrisonPearl() {
         this.uniqueId = UUID.randomUUID();
@@ -46,6 +47,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
         this.location = null;
         this.locationType = null;
         this.trackedItem = null;
+        this.released = false;
     }
 
     public PrisonPearl(String imprisonedUsername, UUID imprisonedUUID, String killerUsername, UUID killerUUID, long expireTime, BLocatable location, PearlLocationType locationType) {
@@ -59,6 +61,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
         this.location = location;
         this.locationType = locationType;
         this.trackedItem = null;
+        this.released = false;
     }
 
     /**
@@ -157,6 +160,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
         this.expireTime = document.getLong("expire");
         this.location = new BLocatable().fromDocument(document.get("location", Document.class));
         this.locationType = PearlLocationType.valueOf(document.getString("location_type"));
+        this.released = document.getBoolean("released");
 
         return this;
     }
@@ -172,6 +176,7 @@ public final class PrisonPearl implements MongoDocument<PrisonPearl> {
                 .append("created", createTime)
                 .append("expire", expireTime)
                 .append("location", location.toDocument())
-                .append("location_type", locationType.name());
+                .append("location_type", locationType.name())
+                .append("released", released);
     }
 }
