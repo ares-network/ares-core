@@ -11,6 +11,7 @@ import com.playares.commons.services.account.AccountService;
 import com.playares.commons.services.alts.AltWatcherService;
 import com.playares.commons.services.customitems.CustomItemService;
 import com.playares.commons.services.event.CustomEventService;
+import com.playares.commons.services.serversync.ServerSyncService;
 import com.playares.core.acid.AcidManager;
 import com.playares.core.bastion.BastionManager;
 import com.playares.core.chat.ChatManager;
@@ -125,6 +126,7 @@ public final class Ares extends AresPlugin {
         registerService(new BridgeService(this));
         registerService(new AltWatcherService(this, configManager.getGeneralConfig().getDatabaseName()));
         registerService(new LuxeService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new ServerSyncService(this, configManager.getGeneralConfig().getDatabaseName()));
         startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
