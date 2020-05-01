@@ -109,14 +109,12 @@ public final class PrisonPearlHandler {
             new Scheduler(manager.getPlugin()).async(() -> {
                 final AresPlayer freePlayerProfile = manager.getPlugin().getPlayerManager().getPlayerFromDatabase(Filters.eq("id", pearl.getImprisonedUUID()));
 
-                new Scheduler(manager.getPlugin()).sync(() -> {
-                    if (freePlayerProfile != null) {
-                        freePlayerProfile.setSpawned(false);
-                        freePlayerProfile.setResetOnJoin(true);
+                if (freePlayerProfile != null) {
+                    freePlayerProfile.setSpawned(false);
+                    freePlayerProfile.setResetOnJoin(true);
 
-                        manager.getPlugin().getPlayerManager().setPlayer(false, freePlayerProfile);
-                    }
-                }).run();
+                    manager.getPlugin().getPlayerManager().setPlayer(true, freePlayerProfile);
+                }
             }).run();
         }
 

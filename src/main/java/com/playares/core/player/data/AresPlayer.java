@@ -43,7 +43,7 @@ public final class AresPlayer implements MongoDocument<AresPlayer> {
     @SuppressWarnings("unchecked")
     @Override
     public AresPlayer fromDocument(Document document) {
-        this.uniqueId = (UUID)document.get("ares_id");
+        this.uniqueId = (UUID)document.get("id");
         this.spawned = document.getBoolean("spawned");
         this.resetOnJoin = document.getBoolean("reset_on_join");
         this.settings = new AresSettings().fromDocument(document.get("settings", Document.class));
@@ -86,7 +86,7 @@ public final class AresPlayer implements MongoDocument<AresPlayer> {
         getTimers().forEach(timer -> timerDocuments.add(timer.toDocument()));
 
         return new Document()
-                .append("ares_id", uniqueId)
+                .append("id", uniqueId)
                 .append("reset_on_join", resetOnJoin)
                 .append("spawned", spawned)
                 .append("timers", timerDocuments)

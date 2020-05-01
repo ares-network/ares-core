@@ -1,6 +1,5 @@
 package com.playares.core.prison.listener;
 
-import com.playares.commons.item.ItemBuilder;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.services.alts.data.AccountSession;
 import com.playares.commons.services.alts.event.AltDetectEvent;
@@ -25,7 +24,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.UUID;
 
@@ -231,32 +229,7 @@ public final class PrisonPearlListener implements Listener {
         }
 
         final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(hand);
-        final boolean isExpiredPearl = manager.isExpiredPrisonPearl(hand);
 
-        if (prisonPearl == null && !isExpiredPearl) {
-            return;
-        }
-
-        // Gives the freeing player the imprisoned players skull
-        if (isExpiredPearl) {
-            final String username = ChatColor.stripColor(hand.getItemMeta().getDisplayName());
-
-            player.getInventory().removeItem(hand);
-
-            final ItemStack head = new ItemBuilder()
-                    .setMaterial(Material.SKULL_ITEM)
-                    .setData((short)3)
-                    .setName(ChatColor.GOLD + username)
-                    .build();
-
-            final SkullMeta meta = (SkullMeta)head.getItemMeta();
-            meta.setOwner(username);
-            head.setItemMeta(meta);
-
-            player.getInventory().addItem(head);
-        }
-
-        // Cancel the throw event and run a release attempt
         if (prisonPearl != null) {
             event.setCancelled(true);
             manager.getHandler().releasePearl(prisonPearl, "Released by " + player.getName());
