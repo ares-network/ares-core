@@ -30,6 +30,7 @@ import com.playares.core.spawn.SpawnManager;
 import com.playares.core.timers.TimerManager;
 import com.playares.essentials.EssentialsService;
 import com.playares.humbug.HumbugService;
+import com.playares.luxe.LuxeService;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityTypes;
@@ -123,6 +124,7 @@ public final class Ares extends AresPlugin {
         registerService(new HumbugService(this));
         registerService(new BridgeService(this));
         registerService(new AltWatcherService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new LuxeService(this, configManager.getGeneralConfig().getDatabaseName()));
         startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {

@@ -12,6 +12,7 @@ import com.playares.core.prison.data.PrisonPearl;
 import com.playares.core.spawn.SpawnManager;
 import com.playares.core.spawn.event.PlayerEnterWorldEvent;
 import com.playares.core.spawn.kits.data.SpawnKit;
+import com.playares.luxe.rewards.event.PlayerClaimRewardEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -35,6 +36,21 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class SpawnListener implements Listener {
     @Getter public final SpawnManager manager;
+
+    @EventHandler
+    public void onRewardClaim(PlayerClaimRewardEvent event) {
+        final Player player = event.getPlayer();
+        final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+
+        if (profile == null) {
+            return;
+        }
+
+        if (!profile.isSpawned()) {
+            player.sendMessage(ChatColor.RED + "Rewards can not be claimed while you are in Spawn");
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     public void onPlayerEnterWorld(PlayerEnterWorldEvent event) {
