@@ -35,7 +35,7 @@ public final class ChatHandler {
             return;
         }
 
-        if (!admin && member != null && !(member.hasPermission(NetworkPermission.ADMIN) && member.hasPermission(NetworkPermission.ACCESS_CHAT))) {
+        if (!admin && !(member.hasPermission(NetworkPermission.ADMIN) || member.hasPermission(NetworkPermission.ACCESS_CHAT))) {
             promise.fail("You do not have permission to perform this action");
             return;
         }
