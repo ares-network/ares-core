@@ -66,6 +66,7 @@ public final class SpawnKitHandler {
 
                 for (String itemId : config.getConfigurationSection(path + "items").getKeys(false)) {
                     final Material material = Material.getMaterial(config.getInt(path + "items." + itemId + ".id"));
+                    final List<String> lore = Lists.newArrayList();
                     final Map<Enchantment, Integer> enchantments = Maps.newHashMap();
                     String name = null;
                     int amount = 1;
@@ -74,6 +75,12 @@ public final class SpawnKitHandler {
 
                     if (config.get(path + "items." + itemId + ".name") != null) {
                         name = ChatColor.translateAlternateColorCodes('&', config.getString(path + "items." + itemId + ".name"));
+                    }
+
+                    if (config.get(path + "items." + itemId + ".lore") != null) {
+                        for (String entry : config.getStringList(path + "items." + itemId + ".lore")) {
+                            lore.add(ChatColor.translateAlternateColorCodes('&', entry));
+                        }
                     }
 
                     if (config.get(path + "items." + itemId + ".amount") != null) {
@@ -111,6 +118,7 @@ public final class SpawnKitHandler {
                         item = new ItemBuilder()
                                 .setMaterial(material)
                                 .setName(name)
+                                .addLore(lore)
                                 .setData((short)data)
                                 .setAmount(amount)
                                 .addEnchant(enchantments)
@@ -118,6 +126,7 @@ public final class SpawnKitHandler {
                     } else {
                         item = new ItemBuilder()
                                 .setMaterial(material)
+                                .addLore(lore)
                                 .setData((short)data)
                                 .setAmount(amount)
                                 .addEnchant(enchantments)
