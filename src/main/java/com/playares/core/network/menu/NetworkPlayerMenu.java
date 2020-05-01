@@ -39,18 +39,30 @@ public final class NetworkPlayerMenu extends Menu {
         final boolean admin = player.hasPermission("arescore.admin");
 
         if (!network.isMember(member.getUniqueId())) {
+            this.updateTask.cancel();
+            this.updateTask = null;
+            this.updateScheduler = null;
+
             player.closeInventory();
             player.sendMessage(ChatColor.RED + member.getUsername() + " is not longer a member of " + member.getUsername());
             return;
         }
 
         if (!network.isMember(player) && !admin) {
+            this.updateTask.cancel();
+            this.updateTask = null;
+            this.updateScheduler = null;
+
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You are no longer a member of " + network.getName());
             return;
         }
 
         if (!member.hasPermission(NetworkPermission.ADMIN) && !admin) {
+            this.updateTask.cancel();
+            this.updateTask = null;
+            this.updateScheduler = null;
+
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You no longer have the proper permissions needed to perform this action");
             return;
