@@ -122,6 +122,11 @@ public final class PrisonPearlManager {
         }
 
         final ItemMeta meta = item.getItemMeta();
+
+        if (meta == null || !meta.hasLore()) {
+            return false;
+        }
+
         final List<String> lore = meta.getLore();
 
         if (lore == null || lore.isEmpty()) {
