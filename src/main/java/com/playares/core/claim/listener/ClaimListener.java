@@ -128,34 +128,36 @@ public final class ClaimListener implements Listener {
             return;
         }
 
-        if (block == null || !action.equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (block == null) {
             return;
         }
 
-        for (Block multiBlock : multiBlocks) {
-            if (!Blocks.isInteractable(multiBlock.getType())) {
-                return;
-            }
+        if (action.equals(Action.RIGHT_CLICK_BLOCK) || action.equals(Action.PHYSICAL)) {
+            for (Block multiBlock : multiBlocks) {
+                if (!Blocks.isInteractable(multiBlock.getType())) {
+                    return;
+                }
 
-            final Claim claim = manager.getClaimByBlock(multiBlock);
+                final Claim claim = manager.getClaimByBlock(multiBlock);
 
-            if (claim == null || !claim.isMatured()) {
-                return;
-            }
+                if (claim == null || !claim.isMatured()) {
+                    return;
+                }
 
-            final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
+                final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
 
-            if (network == null) {
-                Logger.error("A claim was found with no attached network");
-                return;
-            }
+                if (network == null) {
+                    Logger.error("A claim was found with no attached network");
+                    return;
+                }
 
-            final boolean canAccess = (network.isMember(player) && (network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.ACCESS_LAND)));
+                final boolean canAccess = (network.isMember(player) && (network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.ACCESS_LAND)));
 
-            if (!canAccess) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
-                return;
+                if (!canAccess) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
+                    return;
+                }
             }
         }
     }
