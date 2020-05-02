@@ -24,6 +24,12 @@ public final class DeathMessageListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         final Player slain = event.getEntity();
         final Player killer = slain.getKiller();
+
+        if (slain.getLastDamageCause() == null) {
+            event.setDeathMessage(null);
+            return;
+        }
+
         final EntityDamageEvent.DamageCause reason = slain.getLastDamageCause().getCause();
         final String prefix = ChatColor.RED + "RIP:" + ChatColor.RESET;
         final String slainUsername = ChatColor.GOLD + slain.getName() + ChatColor.RESET;
