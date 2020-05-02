@@ -171,6 +171,7 @@ public final class Ares extends AresPlugin {
     public void onDisable() {
         stopServices();
 
+        playerManager.setAllPlayers(true);
         claimManager.getHandler().saveAll(true);
         networkManager.getHandler().saveAll(true);
         snitchManager.getHandler().saveAll(true);

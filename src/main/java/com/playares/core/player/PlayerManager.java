@@ -49,6 +49,21 @@ public final class PlayerManager {
         return new AresPlayer().fromDocument(existing);
     }
 
+    /**
+     * Handles saving all players in the Player Repository to the database
+     * @param blocking Block the current thread
+     */
+    public void setAllPlayers(boolean blocking) {
+        AresPlayer[] arr = new AresPlayer[playerRepository.size()];
+        arr = playerRepository.toArray(arr);
+        setPlayer(blocking, arr);
+    }
+
+    /**
+     * Handles saving players to the database
+     * @param blocking Block the current thread
+     * @param players Players to save
+     */
     public void setPlayer(boolean blocking, AresPlayer... players) {
         if (blocking) {
             for (AresPlayer player : players) {
