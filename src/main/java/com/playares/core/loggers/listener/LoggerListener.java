@@ -58,6 +58,10 @@ public final class LoggerListener implements Listener {
         final double radius = manager.getPlugin().getConfigManager().getGeneralConfig().getCombatLoggerEnemyRadius();
         boolean combatLog = false;
 
+        if (player.isDead()) {
+            return;
+        }
+
         if (account == null || !account.isSpawned() || player.hasPermission("arescore.admin")) {
             return;
         }
