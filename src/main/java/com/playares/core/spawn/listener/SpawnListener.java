@@ -58,13 +58,16 @@ public final class SpawnListener implements Listener {
         final Player player = event.getPlayer();
         final UUID uniqueId = player.getUniqueId();
         final SpawnKit kit = manager.getKitManager().getKit(player);
+        final SpawnKit defaultKit = manager.getKitManager().getDefaultKit();
+
+        if (!event.getEntranceMethod().equals(PlayerEnterWorldEvent.PlayerEnterWorldMethod.RANDOM)) {
+            defaultKit.give(player);
+            return;
+        }
 
         if (manager.getKitManager().hasKitCooldown(player)) {
-            final SpawnKit defaultKit = manager.getKitManager().getDefaultKit();
-
             player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.RED + "" + ChatColor.BOLD + (Time.convertToDecimal(manager.getKitManager().getKitCooldown(player) - Time.now())) + ChatColor.RED + "s before obtaining your starter kit again");
             defaultKit.give(player);
-
             return;
         }
 
