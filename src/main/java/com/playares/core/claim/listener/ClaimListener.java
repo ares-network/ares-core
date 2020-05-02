@@ -339,4 +339,16 @@ public final class ClaimListener implements Listener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        final Block block = event.getBlock();
+        final Claim claim = manager.getClaimByBlock(block);
+
+        if (claim == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
 }
