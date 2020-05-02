@@ -1,6 +1,7 @@
 package com.playares.core.spawn.listener;
 
 import com.mongodb.client.model.Filters;
+import com.playares.commons.event.PlayerDamagePlayerEvent;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.util.bukkit.Players;
 import com.playares.commons.util.bukkit.Scheduler;
@@ -114,6 +115,23 @@ public final class SpawnListener implements Listener {
         }
 
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onEntityDamageEntity(PlayerDamagePlayerEvent event) {
+        final Player attacker = event.getDamager();
+        final Player attacked = event.getDamaged();
+
+        final AresPlayer attackerProfile = manager.getPlugin().getPlayerManager().getPlayer(attacker.getUniqueId());
+        final AresPlayer attackedProfile = manager.getPlugin().getPlayerManager().getPlayer(attacked.getUniqueId());
+
+        if (attackerProfile == null || attackedProfile == null) {
+            return;
+        }
+
+        if (!attackerProfile.isSpawned()) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler (priority = EventPriority.LOW)
