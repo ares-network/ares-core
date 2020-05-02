@@ -34,6 +34,10 @@ public final class PlayerUtil {
                 continue;
             }
 
+            if (otherPlayer.isDead()) {
+                continue;
+            }
+
             if (networks.isEmpty()) {
                 return true;
             }
