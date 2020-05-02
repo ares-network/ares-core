@@ -189,7 +189,7 @@ public final class SpawnHandler {
         preparePlayer(summonPlayer, PlayerEnterWorldEvent.PlayerEnterWorldMethod.REQUEST);
         summonPlayer.teleport(player);
         summonPlayer.sendMessage(ChatColor.GREEN + "Your teleport request has been accepted");
-        playerProfile.setSpawned(true);
+        summonProfile.setSpawned(true);
         promise.success();
     }
 
