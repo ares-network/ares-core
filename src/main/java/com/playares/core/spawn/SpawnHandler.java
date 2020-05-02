@@ -6,6 +6,7 @@ import com.playares.commons.logger.Logger;
 import com.playares.commons.promise.SimplePromise;
 import com.playares.commons.util.general.Configs;
 import com.playares.core.player.data.AresPlayer;
+import com.playares.core.prison.data.PrisonPearl;
 import com.playares.core.spawn.event.PlayerEnterWorldEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,10 +29,16 @@ public final class SpawnHandler {
      */
     public void randomlySpawn(Player player, SimplePromise promise) {
         final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+        final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
 
         if (profile == null) {
             promise.fail("Failed to obtain your account");
             Logger.error("Account service not found while trying to randomly spawn " + player.getName());
+            return;
+        }
+
+        if (prisonPearl != null && !prisonPearl.isExpired() && !prisonPearl.isReleased()) {
+            promise.fail("You can not spawn again until your Prison Pearl expires or you are set free");
             return;
         }
 
@@ -63,9 +70,15 @@ public final class SpawnHandler {
      */
     public void spawnBed(Player player, SimplePromise promise) {
         final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+        final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
 
         if (profile == null) {
             promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (prisonPearl != null && !prisonPearl.isExpired() && !prisonPearl.isReleased()) {
+            promise.fail("You can not spawn again until your Prison Pearl expires or you are set free");
             return;
         }
 
@@ -100,6 +113,7 @@ public final class SpawnHandler {
      */
     public void sendTeleportRequest(Player player, String username, SimplePromise promise) {
         final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+        final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
         final UUID existing = manager.getTeleportRequest(player);
 
         if (!player.hasPermission("arescore.spawn.ott")) {
@@ -110,6 +124,11 @@ public final class SpawnHandler {
 
         if (profile == null) {
             promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (prisonPearl != null && !prisonPearl.isExpired() && !prisonPearl.isReleased()) {
+            promise.fail("You can not spawn again until your Prison Pearl expires or you are set free");
             return;
         }
 
