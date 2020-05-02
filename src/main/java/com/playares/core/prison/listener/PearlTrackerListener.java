@@ -603,6 +603,23 @@ public final class PearlTrackerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        for (int i = 0; i < event.getInventory().getSize(); i++) {
+            final ItemStack item = event.getInventory().getItem(i);
+
+            if (item == null || manager.getPrisonPearlByItem(item) == null) {
+                continue;
+            }
+
+            event.setCancelled(true);
+            event.getViewers().forEach(viewer -> {
+                viewer.closeInventory();
+                viewer.sendMessage(ChatColor.RED + "Prison Pearls can not be used for crafting");
+            });
+        }
+    }
+
     /**
      * Returns the location of the provided InventoryHolder
      * @param holder InventoryHolder
