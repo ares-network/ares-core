@@ -427,4 +427,44 @@ public final class ClaimListener implements Listener {
 
         event.setCancelled(true);
     }
+
+    @EventHandler
+    public void onBlockRedstone(BlockRedstoneEvent event) {
+        final Block block = event.getBlock();
+        final List<Block> multiBlocks = BlockUtil.getMultiblockLocations(block);
+
+        for (Block b : multiBlocks) {
+            final Claim claim = manager.getClaimByBlock(b);
+
+            if (claim == null) {
+                continue;
+            }
+
+            final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
+
+            if (owner == null) {
+                continue;
+            }
+
+            boolean valid = false;
+
+            for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 5, 5, 5)) {
+                if (!(entity instanceof Player)) {
+                    continue;
+                }
+
+                final Player player = (Player)entity;
+
+                if (owner.isMember(player)) {
+                    valid = true;
+                    break;
+                }
+            }
+
+            if (!valid) {
+                event.setNewCurrent(event.getOldCurrent());
+                return;
+            }
+        }
+    }
 }
