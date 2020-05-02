@@ -240,13 +240,9 @@ public final class PrisonPearlListener implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGH)
+    @EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onThrowPearl(ProjectileLaunchEvent event) {
         if (!manager.getPlugin().getConfigManager().getPrisonPearlConfig().isEnabled()) {
-            return;
-        }
-
-        if (event.isCancelled()) {
             return;
         }
 
