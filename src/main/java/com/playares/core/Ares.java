@@ -169,6 +169,8 @@ public final class Ares extends AresPlugin {
 
     @Override
     public void onDisable() {
+        stopServices();
+
         claimManager.getHandler().saveAll(true);
         networkManager.getHandler().saveAll(true);
         snitchManager.getHandler().saveAll(true);
