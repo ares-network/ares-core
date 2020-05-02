@@ -85,48 +85,33 @@ public final class ClaimCreatorListener implements Listener {
         }
 
         final Material materialToSubtract = session.getClaimType().getMaterial();
-        final int cost = (merge ? blocks.size() - 1 : blocks.size());
+        int cost = (merge ? blocks.size() - 1 : blocks.size());
         boolean paid = false;
+
+        // Add 1 since Minecraft will only subtract 1
+        if (block.getType().equals(materialToSubtract)) {
+            cost += 1;
+        }
 
         for (ItemStack item : player.getInventory()) {
             if (item == null || !item.getType().equals(materialToSubtract)) {
                 continue;
             }
 
-            // Player has more reinforcement material than the total blocks being reinforced
             if (item.getAmount() > cost) {
-
-                // Player is reinforcing with the same type as reinforcement material (stone)
-                if (item.getType().equals(materialToSubtract) && item.getDurability() == (short)0) {
-
-                    // Player now needs to have an additional reinforcement material since the game will override subtraction
-                    if (item.getAmount() >= (cost + 1)) {
-                        if (item.getAmount() > cost) {
-                            // Player still has more
-                            item.setAmount(item.getAmount() - (cost + 1));
-                        } else {
-                            // Player has the exact amount
-                            player.getInventory().removeItem(item);
-                        }
-
-                        paid = true;
-                        break;
-                    }
-
-                } else {
-                    // Not reinforcing with the reinforcement material, just subtract the actual cost
+                if (block.getType().equals(materialToSubtract)) {
                     item.setAmount(item.getAmount() - cost);
                     paid = true;
                     break;
                 }
 
-            } else if (item.getAmount() == cost) {
+                item.setAmount(item.getAmount() - cost);
 
-                // Player is reinforcing with the same type as reinforcement material (stone)
-                if (block.getType().equals(materialToSubtract) && item.getDurability() == (short)0) {
-                    continue;
-                }
+                paid = true;
+                break;
+            }
 
+            else if (item.getAmount() == cost) {
                 player.getInventory().removeItem(item);
                 paid = true;
                 break;
