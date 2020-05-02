@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.playares.commons.event.ProcessedChatEvent;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.util.bukkit.Players;
+import com.playares.commons.util.general.Time;
 import com.playares.core.Ares;
 import com.playares.core.chat.ChatManager;
 import com.playares.core.chat.data.ChatMessageType;
@@ -140,7 +141,8 @@ public final class ChatListener implements Listener {
         final PrisonPearl prisonPearl = event.getPrisonPearl();
         final Location location = prisonPearl.getBukkitLocation();
         final List<Player> inRange = manager.getRecipientsInRange(location, ChatMessageType.PLAYER_IMPRISONED);
-        final String message = ChatColor.RED + prisonPearl.getImprisonedUsername() + ChatColor.GRAY + " has been " + ChatColor.RED + "imprisoned" + ChatColor.GRAY + " by " + ChatColor.DARK_AQUA + prisonPearl.getKillerUsername();
+        final String time = Time.convertToRemaining(prisonPearl.getExpireTime() - Time.now());
+        final String message = ChatColor.GOLD + prisonPearl.getKillerUsername() + ChatColor.DARK_RED + " has imprisoned " + ChatColor.GOLD + prisonPearl.getImprisonedUsername() + ChatColor.DARK_RED + " for " + ChatColor.RED + time;
 
         inRange.forEach(p -> p.sendMessage(message));
     }
@@ -150,8 +152,10 @@ public final class ChatListener implements Listener {
         final PrisonPearl prisonPearl = event.getPrisonPearl();
         final Location location = prisonPearl.getBukkitLocation();
         final List<Player> inRange = manager.getRecipientsInRange(location, ChatMessageType.PLAYER_RELEASED);
-        final String message = ChatColor.RED + prisonPearl.getImprisonedUsername() + ChatColor.GRAY + " has been " + ChatColor.GREEN + "released" + ChatColor.GRAY + ", Reason: " + event.getReason();
 
-        inRange.forEach(p -> p.sendMessage(message));
+        inRange.forEach(p -> {
+            p.sendMessage(ChatColor.GOLD + prisonPearl.getImprisonedUsername() + ChatColor.GREEN + " has been released from their Prison Pearl");
+            p.sendMessage(ChatColor.GOLD + "Reason" + ChatColor.YELLOW + ": " + event.getReason());
+        });
     }
 }
