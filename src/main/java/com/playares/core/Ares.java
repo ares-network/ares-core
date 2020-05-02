@@ -20,6 +20,7 @@ import com.playares.core.command.*;
 import com.playares.core.compactor.CompactManager;
 import com.playares.core.configs.ConfigManager;
 import com.playares.core.factory.FactoryManager;
+import com.playares.core.listener.DeathMessageListener;
 import com.playares.core.loggers.LoggerManager;
 import com.playares.core.network.NetworkManager;
 import com.playares.core.network.data.Network;
@@ -113,6 +114,9 @@ public final class Ares extends AresPlugin {
         registerCommand(new CompactorCommand(this));
         registerCommand(new CombatCommand(this));
         registerCommand(new RegionCommand(this));
+
+        // Listeners
+        registerListener(new DeathMessageListener(this));
 
         // Protocol
         registerProtocolLibrary(ProtocolLibrary.getProtocolManager());

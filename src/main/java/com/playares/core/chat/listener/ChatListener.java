@@ -3,6 +3,7 @@ package com.playares.core.chat.listener;
 import com.google.common.collect.Lists;
 import com.playares.commons.event.ProcessedChatEvent;
 import com.playares.commons.logger.Logger;
+import com.playares.commons.util.bukkit.Players;
 import com.playares.core.Ares;
 import com.playares.core.chat.ChatManager;
 import com.playares.core.chat.data.ChatMessageType;
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -104,7 +106,7 @@ public final class ChatListener implements Listener {
         event.getRecipients().removeAll(toRemove);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         final Player player = event.getEntity();
         final String deathMessage = event.getDeathMessage();
@@ -112,7 +114,10 @@ public final class ChatListener implements Listener {
 
         event.setDeathMessage(null);
 
-        inRange.forEach(p -> p.sendMessage(deathMessage));
+        inRange.forEach(p -> {
+            p.sendMessage(deathMessage);
+            Players.playSound(p, Sound.AMBIENCE_THUNDER);
+        });
     }
 
     @EventHandler
