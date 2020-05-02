@@ -20,6 +20,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,11 +39,22 @@ import java.util.UUID;
 
 public final class ClaimListener implements Listener {
     @Getter public final ClaimManager manager;
+    @Getter public final Set<UUID> physicalInteractCooldowns;
     @Getter public final Set<UUID> blockGlitchCooldowns;
 
     public ClaimListener(ClaimManager manager) {
         this.manager = manager;
+        this.physicalInteractCooldowns = Sets.newConcurrentHashSet();
         this.blockGlitchCooldowns = Sets.newConcurrentHashSet();
+    }
+
+    /**
+     * Returns true if this player has physically interacted with redstone within the last 20 ticks
+     * @param player Player
+     * @return True if on cooldown
+     */
+    private boolean hasPhysicalInteractCooldown(Player player) {
+        return physicalInteractCooldowns.contains(player.getUniqueId());
     }
 
     /**
@@ -52,6 +64,17 @@ public final class ClaimListener implements Listener {
      */
     private boolean hasBlockGlitchCooldown(Player player) {
         return blockGlitchCooldowns.contains(player.getUniqueId());
+    }
+
+    /**
+     * Applies a cooldown to the provided player preventing them from receiving spam claim notifications
+     * @param player Player
+     */
+    private void applyPhysicalInteractCooldown(Player player) {
+        final UUID uniqueId = player.getUniqueId();
+
+        physicalInteractCooldowns.add(uniqueId);
+        new Scheduler(manager.getPlugin()).sync(() -> physicalInteractCooldowns.remove(uniqueId)).delay(20L).run();
     }
 
     /**
@@ -199,6 +222,15 @@ public final class ClaimListener implements Listener {
 
                 if (!canAccess) {
                     event.setCancelled(true);
+
+                    if (action.equals(Action.PHYSICAL)) {
+                        if (hasPhysicalInteractCooldown(player)) {
+                            return;
+                        }
+
+                        applyPhysicalInteractCooldown(player);
+                    }
+
                     player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
                     return;
                 }
