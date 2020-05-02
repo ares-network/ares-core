@@ -7,9 +7,8 @@ import org.bukkit.Material;
 @AllArgsConstructor
 public enum ClaimType {
     STONE("Stone", 100, 600, Material.STONE),
-    IRON("Iron", 300, 1800, Material.IRON_INGOT),
-    DIAMOND("Diamond", 600, 10800, Material.DIAMOND),
-    EMERALD("Emerald", 1200, 21600, Material.EMERALD);
+    IRON("Iron", 500, 1800, Material.IRON_INGOT),
+    DIAMOND("Diamond", 1800, 10800, Material.DIAMOND);
 
     @Getter public final String displayName;
     @Getter public final int durability;
