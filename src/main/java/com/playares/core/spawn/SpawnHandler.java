@@ -59,7 +59,10 @@ public final class SpawnHandler {
         }
 
         player.teleport(manager.getRandomSpawnLocation().getBukkit().getLocation());
+
         profile.setSpawned(true);
+        manager.getPlugin().getPlayerManager().setPlayer(false, profile);
+
         promise.success();
     }
 
@@ -101,7 +104,10 @@ public final class SpawnHandler {
         manager.getTeleportRequests().remove(player.getUniqueId());
         preparePlayer(player, PlayerEnterWorldEvent.PlayerEnterWorldMethod.BED);
         player.teleport(location);
+
         profile.setSpawned(true);
+        manager.getPlugin().getPlayerManager().setPlayer(false, profile);
+
         promise.success();
     }
 
@@ -208,7 +214,10 @@ public final class SpawnHandler {
         preparePlayer(summonPlayer, PlayerEnterWorldEvent.PlayerEnterWorldMethod.REQUEST);
         summonPlayer.teleport(player);
         summonPlayer.sendMessage(ChatColor.GREEN + "Your teleport request has been accepted");
+
         summonProfile.setSpawned(true);
+        manager.getPlugin().getPlayerManager().setPlayer(false, summonProfile);
+
         promise.success();
     }
 
