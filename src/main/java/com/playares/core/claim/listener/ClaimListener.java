@@ -1,6 +1,7 @@
 package com.playares.core.claim.listener;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.playares.commons.item.ItemBuilder;
 import com.playares.commons.location.BLocatable;
 import com.playares.commons.logger.Logger;
@@ -14,7 +15,6 @@ import com.playares.core.claim.session.ClaimSession;
 import com.playares.core.network.data.Network;
 import com.playares.core.network.data.NetworkPermission;
 import com.playares.core.utils.BlockUtil;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,10 +33,53 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
-@AllArgsConstructor
 public final class ClaimListener implements Listener {
     @Getter public final ClaimManager manager;
+    @Getter public final Set<UUID> blockGlitchCooldowns;
+
+    public ClaimListener(ClaimManager manager) {
+        this.manager = manager;
+        this.blockGlitchCooldowns = Sets.newConcurrentHashSet();
+    }
+
+    /**
+     * Returns true if this player has broken a claimed block within the last 5 ticks
+     * @param player Player
+     * @return True if on cooldown and should be disallowed block placing of any sort
+     */
+    private boolean hasBlockGlitchCooldown(Player player) {
+        return blockGlitchCooldowns.contains(player.getUniqueId());
+    }
+
+    /**
+     * Applies a cooldown to the provided player preventing them from placing any blocks for 2 ticks
+     * @param player Player
+     */
+    private void applyBlockGlitchCooldown(Player player) {
+        final UUID uniqueId = player.getUniqueId();
+
+        blockGlitchCooldowns.add(uniqueId);
+        new Scheduler(manager.getPlugin()).sync(() -> blockGlitchCooldowns.remove(uniqueId)).delay(2L).run();
+    }
+
+    @EventHandler
+    public void onBlockGlitchAttempt(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final Block block = event.getBlock();
+
+        if (block == null || block.getType().equals(Material.AIR)) {
+            return;
+        }
+
+        if (hasBlockGlitchCooldown(player)) {
+            player.sendMessage(ChatColor.RED + "Please wait a moment before trying to place a block");
+            Logger.warn(player.getName() + " attempted to block glitch using a " + block.getType().name());
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
@@ -110,6 +153,7 @@ public final class ClaimListener implements Listener {
         event.setCancelled(true);
         claim.setHealth(claim.getHealth() - 1);
         player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
+        applyBlockGlitchCooldown(player);
     }
 
     @EventHandler (priority = EventPriority.HIGH)
