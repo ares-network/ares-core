@@ -47,14 +47,19 @@ public final class PrisonPearlManager {
         this.expireUpdater = new Scheduler(plugin).async(() -> {
             final Set<PrisonPearl> expired = pearlRepository.stream().filter(prisonPearl -> prisonPearl.isExpired() && !prisonPearl.isReleased()).collect(Collectors.toSet());
 
-            if (expired.isEmpty()) {
-                return;
-            }
-
             expired.forEach(expiredPearl -> {
                 PrisonPearlDAO.deletePearl(plugin.getDatabaseInstance(), expiredPearl);
                 new Scheduler(plugin).sync(() -> handler.releasePearl(expiredPearl, "Imprisonment has naturally expired")).run();
             });
+
+            new Scheduler(plugin).sync(() -> {
+                final Set<PrisonPearl> invalid = pearlRepository.stream().filter(prisonPearl -> prisonPearl.getBukkitLocation().getY() <= -25.0).collect(Collectors.toSet());
+
+                new Scheduler(plugin).async(() -> invalid.forEach(invalidPearl -> {
+                    PrisonPearlDAO.deletePearl(plugin.getDatabaseInstance(), invalidPearl);
+                    new Scheduler(plugin).sync(() -> handler.releasePearl(invalidPearl, "Pearl fell in to the void")).run();
+                })).run();
+            }).run();
         }).repeat(20L, 5 * 20L).run();
     }
 
