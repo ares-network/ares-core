@@ -158,6 +158,14 @@ public final class PrisonPearlManager {
         for (String permission : plugin.getConfigManager().getPrisonPearlConfig().getPremiumBanDurations().keySet()) {
             final int duration = plugin.getConfigManager().getPrisonPearlConfig().getPremiumBanDurations().getOrDefault(permission, plugin.getConfigManager().getPrisonPearlConfig().getBanDuration());
 
+            if (permission == null || duration <= 0) {
+                continue;
+            }
+
+            if (!player.hasPermission(permission)) {
+                continue;
+            }
+
             if (duration < lowest) {
                 lowest = duration;
             }
