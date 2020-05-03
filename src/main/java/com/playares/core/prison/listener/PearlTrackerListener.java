@@ -496,6 +496,11 @@ public final class PearlTrackerListener implements Listener {
             return;
         }
 
+        if (getInventoryLocation(destination.getHolder()) == null) {
+            event.setCancelled(true);
+            return;
+        }
+
         final Location location = getInventoryLocation(destination.getHolder());
 
         if (location == null) {
@@ -523,13 +528,14 @@ public final class PearlTrackerListener implements Listener {
             return;
         }
 
-        if (location == null) {
-            return;
-        }
-
         final PrisonPearl prisonPearl = manager.getPrisonPearlByItem(item.getItemStack());
 
         if (prisonPearl == null) {
+            return;
+        }
+
+        if (location == null) {
+            event.setCancelled(true);
             return;
         }
 
