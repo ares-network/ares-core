@@ -10,6 +10,8 @@ import com.playares.core.network.data.NetworkPermission;
 import com.playares.core.player.data.AresPlayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -91,7 +93,14 @@ public final class NetworkInviteHandler {
             final Player invitedPlayer = Bukkit.getPlayer(aresAccount.getBukkitId());
 
             if (invitedPlayer != null && invitedPlayer.isOnline()) {
-                invitedPlayer.sendMessage(ChatColor.GREEN + "You have been invited to join " + network.getName() + ". Type '/network accept " + network.getName() + "' to join");
+                invitedPlayer.spigot().sendMessage(new ComponentBuilder
+                        ("You have been invited to join ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                        .append(network.getName()).color(net.md_5.bungee.api.ChatColor.BLUE)
+                        .append(". Type ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                        .append("/network accept " + network.getName()).color(net.md_5.bungee.api.ChatColor.GOLD)
+                        .append(" or ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                        .append("[Click Here]").color(net.md_5.bungee.api.ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/network accept " + network.getName()))
+                        .append(" to join.").color(net.md_5.bungee.api.ChatColor.YELLOW).create());
             }
         });
     }
