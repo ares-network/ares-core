@@ -78,7 +78,7 @@ public final class ChatListener implements Listener {
             return;
         }
 
-        if (member != null && !admin && !(member.hasPermission(NetworkPermission.ADMIN) && member.hasPermission(NetworkPermission.ACCESS_CHAT))) {
+        if (member != null && !admin && !(member.hasPermission(NetworkPermission.ADMIN) || member.hasPermission(NetworkPermission.ACCESS_CHAT))) {
             manager.getHandler().leaveSession(player);
             player.sendMessage(ChatColor.RED + "You have been removed from this chat channel because you no longer have permission to access it");
             return;
