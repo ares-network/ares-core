@@ -45,6 +45,8 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int crappleDuration;
     @Getter public int gappleDuration;
 
+    @Getter public int mapNumber;
+
     @Getter public List<String> helpContext;
 
     public GeneralConfig(ConfigManager configManager) {
@@ -83,6 +85,9 @@ public final class GeneralConfig implements AresConfig {
         rangedChatEnabled = config.getBoolean("message-settings.range-chat");
         chatRanges = Maps.newHashMap();
 
+        mapNumber = config.getInt("map-context.map-number");
+        helpContext = Lists.newArrayList();
+
         for (String chatType : config.getConfigurationSection("message-settings.chat-ranges").getKeys(false)) {
             ChatMessageType type = null;
 
@@ -93,8 +98,6 @@ public final class GeneralConfig implements AresConfig {
             final double distance = config.getInt("message-settings.chat-ranges." + chatType);
             chatRanges.put(type, distance);
         }
-
-        this.helpContext = Lists.newArrayList();
 
         for (String line : config.getStringList("help-context")) {
             helpContext.add(ChatColor.translateAlternateColorCodes('&', line));

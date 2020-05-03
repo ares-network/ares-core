@@ -50,6 +50,9 @@ message-settings:
     PLAYER_RELEASED: 250.0
     COMBAT_LOGGED: 150.0
 
+map-context:
+  map-number: 1
+
 help-context:
   - '&7&m------------------------------'
   - '&4&lAres Help &f- Information & Commands'
