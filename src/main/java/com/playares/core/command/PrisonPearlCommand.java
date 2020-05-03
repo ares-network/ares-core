@@ -20,6 +20,7 @@ public final class PrisonPearlCommand extends BaseCommand {
     @Subcommand("locate")
     @Syntax("[player]")
     @Description("Locate your prison pearl")
+    @CommandCompletion("@players")
     public void onLocate(Player player, @Optional String username) {
         plugin.getPrisonPearlManager().getHandler().locatePearl(player, username, new FailablePromise<String>() {
             @Override
@@ -56,6 +57,7 @@ public final class PrisonPearlCommand extends BaseCommand {
     @Subcommand("info")
     @Syntax("[player]")
     @Description("View the information about your prison pearl")
+    @CommandCompletion("@players")
     public void onInfo(Player player, @Optional String username) {
         plugin.getPrisonPearlManager().getHandler().lookupInfo(player, username, new SimplePromise() {
             @Override

@@ -23,6 +23,7 @@ public final class BastionCommand extends BaseCommand {
     @Subcommand("create")
     @Description("Create a new bastion")
     @Syntax("<network name>")
+    @CommandCompletion("@networks")
     public void onCreate(Player player, String networkName) {
         final Block target = player.getTargetBlock((Set<Material>)null, 4);
 

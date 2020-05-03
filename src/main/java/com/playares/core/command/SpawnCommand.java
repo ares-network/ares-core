@@ -42,6 +42,7 @@ public final class SpawnCommand extends BaseCommand {
     @Subcommand("request")
     @Syntax("<username>")
     @Description("Request to teleport to a player out of spawn")
+    @CommandCompletion("@players")
     public void onRequest(Player player, String username) {
         plugin.getSpawnManager().getHandler().sendTeleportRequest(player, username, new SimplePromise() {
             @Override

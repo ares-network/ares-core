@@ -23,6 +23,7 @@ public final class AcidCommand extends BaseCommand {
     @Subcommand("create")
     @Description("Create a new Acid Block")
     @Syntax("<network name>")
+    @CommandCompletion("@networks")
     public void onCreate(Player player, String networkName) {
         final Block target = player.getTargetBlock((Set<Material>)null, 4);
 
