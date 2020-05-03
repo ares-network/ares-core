@@ -5,6 +5,7 @@ import com.playares.commons.location.BLocatable;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.promise.FailablePromise;
 import com.playares.commons.promise.SimplePromise;
+import com.playares.commons.util.bukkit.Players;
 import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.commons.util.general.Time;
 import com.playares.core.player.data.AresPlayer;
@@ -100,6 +101,10 @@ public final class PrisonPearlHandler {
 
             freePlayer.sendMessage(ChatColor.GREEN + "You have been set free! Reason: " + reason);
             freePlayer.teleport(manager.getPlugin().getSpawnManager().getSpawnLocation().getBukkit());
+
+            freePlayer.getInventory().clear();
+            freePlayer.getInventory().setArmorContents(null);
+            Players.resetHealth(freePlayer);
 
             if (freePlayerProfile != null) {
                 freePlayerProfile.setSpawned(false);
