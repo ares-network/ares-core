@@ -170,7 +170,7 @@ public final class PrisonPearlHandler {
         final PrisonPearl pearl;
 
         if (killer.getInventory().firstEmpty() == -1) {
-            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (duration * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.GROUND);
+            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (preEvent.getDuration() * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.GROUND);
 
             final Item item = killer.getWorld().dropItemNaturally(killer.getLocation(), pearl.getItem());
 
@@ -179,7 +179,7 @@ public final class PrisonPearlHandler {
 
             killer.sendMessage(ChatColor.RED + imprisonedUsername + "'s Prison Pearl has dropped at your feet because your inventory is full");
         } else {
-            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (manager.getPlugin().getConfigManager().getPrisonPearlConfig().getBanDuration() * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.PLAYER);
+            pearl = new PrisonPearl(imprisonedUsername, imprisonedUUID, killer.getName(), killer.getUniqueId(), (Time.now() + (preEvent.getDuration() * 1000L)), new BLocatable(killer.getLocation().getBlock()), PearlLocationType.PLAYER);
 
             killer.getInventory().addItem(pearl.getItem());
             killer.updateInventory();
