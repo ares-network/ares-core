@@ -118,7 +118,7 @@ public final class DeathMessageListener implements Listener {
         if (reason.equals(EntityDamageEvent.DamageCause.FALL)) {
             final double distance = Math.floor(slain.getFallDistance());
 
-            if (distance < 1.0) {
+            if (distance >= 3.0) {
                 event.setDeathMessage(prefix + " " + slainUsername + cA + " fell " + cB + distance + " blocks" + cA + " to their death");
             } else {
                 event.setDeathMessage(prefix + " " + slainUsername + cA + " died");
