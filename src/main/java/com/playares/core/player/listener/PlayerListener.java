@@ -56,5 +56,6 @@ public final class PlayerListener implements Listener {
         }
 
         manager.setPlayer(false, profile);
+        manager.getPlayerRepository().remove(profile);
     }
 }
