@@ -30,6 +30,7 @@ public final class NetworkInviteHandler {
     public void inviteMember(Player player, String networkName, String username, SimplePromise promise) {
         final AccountService service = (AccountService)handler.getManager().getPlugin().getService(AccountService.class);
         final Network network = handler.getManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
         if (service == null) {
             promise.fail("Failed to obtain Account Service");
@@ -53,7 +54,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        if (!networkMember.hasPermission(NetworkPermission.INVITE_MEMBERS) && !networkMember.hasPermission(NetworkPermission.ADMIN)) {
+        if (!admin && !(networkMember.hasPermission(NetworkPermission.INVITE_MEMBERS) || networkMember.hasPermission(NetworkPermission.ADMIN))) {
             promise.fail("You do not have permission to perform this action");
             return;
         }
@@ -134,7 +135,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        if (!networkMember.hasPermission(NetworkPermission.INVITE_MEMBERS) && !networkMember.hasPermission(NetworkPermission.ADMIN) && !admin) {
+        if (!admin && !(networkMember.hasPermission(NetworkPermission.INVITE_MEMBERS) || networkMember.hasPermission(NetworkPermission.ADMIN))) {
             promise.fail("You do not have permission to perform this action");
             return;
         }
