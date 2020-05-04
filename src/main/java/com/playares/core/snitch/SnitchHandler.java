@@ -141,7 +141,7 @@ public final class SnitchHandler {
             return;
         }
 
-        if (networkMember != null && !(networkMember.hasPermission(NetworkPermission.ADMIN) || networkMember.hasPermission(NetworkPermission.MODIFY_SNITCHES))) {
+        if (networkMember != null && !(networkMember.hasPermission(NetworkPermission.ADMIN) || networkMember.hasPermission(NetworkPermission.MODIFY_SNITCHES)) && !admin) {
             promise.fail("You do not have permission to perform this action");
             return;
         }
