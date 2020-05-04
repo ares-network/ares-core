@@ -87,10 +87,22 @@ public final class NetworkPlayerMenu extends Menu {
                     .build();
 
             addItem(new ClickableItem(icon, pos, click -> {
+                final Player playerMember = member.getBukkitPlayer();
+
                 if (hasPermission) {
+                    if (playerMember != null) {
+                        playerMember.sendMessage(ChatColor.GOLD + player.getName() + ChatColor.YELLOW + " updated your permissions in " + ChatColor.BLUE + network.getName());
+                        playerMember.sendMessage(ChatColor.GOLD + permission.getDisplayName() + ChatColor.YELLOW + ": " + ChatColor.RED + "Revoked");
+                    }
+
                     member.revokePermission(permission);
                     update();
                     return;
+                }
+
+                if (playerMember != null) {
+                    playerMember.sendMessage(ChatColor.GOLD + player.getName() + ChatColor.YELLOW + " updated your permissions in " + ChatColor.BLUE + network.getName());
+                    playerMember.sendMessage(ChatColor.GOLD + permission.getDisplayName() + ChatColor.YELLOW + ": " + ChatColor.GREEN + "Granted");
                 }
 
                 member.grantPermission(permission);
