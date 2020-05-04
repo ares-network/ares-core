@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import com.playares.commons.promise.SimplePromise;
-import com.playares.commons.services.account.AccountService;
 import com.playares.core.Ares;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,14 +33,7 @@ public final class AresCommand extends BaseCommand {
     @Subcommand("settings")
     @Description("Access your Ares Account settings")
     public void onSettings(Player player) {
-        final AccountService service = (AccountService)plugin.getService(AccountService.class);
-
-        if (service == null) {
-            player.sendMessage(ChatColor.RED + "Failed to obtain Account Service");
-            return;
-        }
-
-        service.openSettingsMenu(player, new SimplePromise() {
+        plugin.getPlayerManager().getHandler().openSettingsMenu(player, new SimplePromise() {
             @Override
             public void success() {}
 
