@@ -71,4 +71,13 @@ public final class NetworkManager {
     public ImmutableCollection<Network> getNetworksByPlayer(String username) {
         return ImmutableList.copyOf(networkRepository.stream().filter(network -> network.isMember(username)).collect(Collectors.toList()));
     }
+
+    /**
+     * Returns all networks the provided UUID has a pending invite to
+     * @param uniqueId Bukkit UUID
+     * @return Immutable Collection of Networks
+     */
+    public ImmutableCollection<Network> getNetworksByInvite(UUID uniqueId) {
+        return ImmutableList.copyOf(networkRepository.stream().filter(network -> network.getPendingMembers().contains(uniqueId)).collect(Collectors.toList()));
+    }
 }
