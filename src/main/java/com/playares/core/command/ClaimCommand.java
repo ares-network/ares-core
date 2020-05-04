@@ -27,7 +27,7 @@ public final class ClaimCommand extends BaseCommand {
             @Override
             public void success() {
                 player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.AQUA + "reinforcement" + ChatColor.GREEN + " mode");
-                player.sendMessage(ChatColor.GREEN + "Punch blocks with your reinforcement material " + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "in-hand" + ChatColor.GREEN + "to claim the block");
+                player.sendMessage(ChatColor.GREEN + "Punch blocks with your reinforcement material " + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "in-hand" + ChatColor.GREEN + " to claim the block");
                 player.sendMessage(ChatColor.AQUA + "When you're finished, type " + ChatColor.YELLOW + "/claim disable" + ChatColor.AQUA + " to exit this mode");
             }
 
@@ -47,7 +47,7 @@ public final class ClaimCommand extends BaseCommand {
             @Override
             public void success() {
                 player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.YELLOW + "fortification" + ChatColor.GREEN + " mode");
-                player.sendMessage(ChatColor.GREEN + "As you" + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "place blocks" + ChatColor.GREEN + "your reinforcement material will be consumed");
+                player.sendMessage(ChatColor.GREEN + "As you" + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "place blocks" + ChatColor.GREEN + " your reinforcement material will be consumed");
                 player.sendMessage(ChatColor.AQUA + "When you're finished, type " + ChatColor.YELLOW + "/claim disable" + ChatColor.AQUA + " to exit this mode");
             }
 
