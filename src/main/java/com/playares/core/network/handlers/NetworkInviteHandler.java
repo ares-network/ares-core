@@ -1,8 +1,10 @@
 package com.playares.core.network.handlers;
 
+import com.mongodb.client.model.Filters;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.promise.SimplePromise;
 import com.playares.commons.services.account.AccountService;
+import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.core.network.NetworkHandler;
 import com.playares.core.network.data.Network;
 import com.playares.core.network.data.NetworkMember;
@@ -65,7 +67,7 @@ public final class NetworkInviteHandler {
                 return;
             }
 
-            final AresPlayer account = handler.getManager().getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+            AresPlayer account = handler.getManager().getPlugin().getPlayerManager().getPlayer(aresAccount.getBukkitId());
 
             if (network.getPendingMembers().contains(aresAccount.getBukkitId())) {
                 promise.fail(aresAccount.getUsername() + " already has a pending invitation to join this network");
@@ -75,23 +77,73 @@ public final class NetworkInviteHandler {
             network.sendMessage(ChatColor.YELLOW + player.getName() + " invited " + aresAccount.getUsername() + " to " + network.getName());
             Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") invited " + aresAccount.getUsername() + "(" + aresAccount.getBukkitId().toString() + ") to " + network.getName() + "(" + network.getUniqueId().toString() + ")");
 
-            if (
-                // Offline user is accepting automatically
-                    account.getSettings().isAutoAcceptNetworkInvites()
-                            // Network has enough room for them to join
-                            && network.getMembers().size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()
-                            // Player is not in too many networks
-                            && handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxJoinedNetworks()) {
+            if (account == null) {
+                new Scheduler(handler.getManager().getPlugin()).async(() -> {
+
+                    final Player invitedPlayer = Bukkit.getPlayer(aresAccount.getBukkitId());
+                    final AresPlayer offlineAccount = handler.getManager().getPlugin().getPlayerManager().getPlayerFromDatabase(Filters.eq("id", aresAccount.getBukkitId()));
+
+                    new Scheduler(handler.getManager().getPlugin()).sync(() -> {
+
+                        if (offlineAccount == null) {
+                            promise.fail("Account not found");
+                            return;
+                        }
+
+                        // Offline user is accepting automatically
+                        if (offlineAccount.getSettings().isAutoAcceptNetworkInvites() &&
+                                // Network has enough room for them to join
+                        network.getMembers().size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers() &&
+                                // Player is not in too many networks
+                        handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()) {
+
+                            network.addMember(aresAccount.getBukkitId(), aresAccount.getUsername());
+                            network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
+                            promise.success();
+
+                            return;
+                        }
+
+                        network.getPendingMembers().add(aresAccount.getBukkitId());
+
+                        if (invitedPlayer != null && invitedPlayer.isOnline()) {
+                            invitedPlayer.spigot().sendMessage(new ComponentBuilder
+                                    ("You have been invited to join ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                                    .append(network.getName()).color(net.md_5.bungee.api.ChatColor.BLUE)
+                                    .append(". Type ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                                    .append("/network accept " + network.getName()).color(net.md_5.bungee.api.ChatColor.GOLD)
+                                    .append(" or ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+                                    .append("[Click Here]").color(net.md_5.bungee.api.ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/network accept " + network.getName()))
+                                    .append(" to join.").color(net.md_5.bungee.api.ChatColor.YELLOW).create());
+                        }
+
+                    }).run();
+
+                }).run();
+
+                return;
+            }
+
+            final Player invitedPlayer = Bukkit.getPlayer(aresAccount.getBukkitId());
+
+            // User is accepting automatically
+            if (account.getSettings().isAutoAcceptNetworkInvites() &&
+                    // Network has enough room for them to join
+                    network.getMembers().size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers() &&
+                    // Player is not in too many networks
+                    handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()) {
+
+                if (invitedPlayer != null && invitedPlayer.isOnline()) {
+                    invitedPlayer.sendMessage(ChatColor.GREEN + "You have automatically joined " + network.getName());
+                }
 
                 network.addMember(aresAccount.getBukkitId(), aresAccount.getUsername());
                 network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
+                promise.success();
                 return;
-
             }
 
             network.getPendingMembers().add(aresAccount.getBukkitId());
-
-            final Player invitedPlayer = Bukkit.getPlayer(aresAccount.getBukkitId());
 
             if (invitedPlayer != null && invitedPlayer.isOnline()) {
                 invitedPlayer.spigot().sendMessage(new ComponentBuilder
