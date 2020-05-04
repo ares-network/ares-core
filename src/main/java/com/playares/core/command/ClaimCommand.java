@@ -26,9 +26,9 @@ public final class ClaimCommand extends BaseCommand {
         plugin.getClaimManager().getHandler().startReinforcements(player, network, new SimplePromise() {
             @Override
             public void success() {
-                player.sendMessage(ChatColor.GREEN + "You are now in reinforcement mode");
-                player.sendMessage(ChatColor.GREEN + "Punch blocks with your reinforcement material in-hand to claim the block");
-                player.sendMessage(ChatColor.YELLOW + "When you're finished, type '/claim disable' to exit this mode");
+                player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.AQUA + "reinforcement" + ChatColor.GREEN + " mode");
+                player.sendMessage(ChatColor.GREEN + "Punch blocks with your reinforcement material " + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "in-hand" + ChatColor.GREEN + "to claim the block");
+                player.sendMessage(ChatColor.AQUA + "When you're finished, type " + ChatColor.YELLOW + "/claim disable" + ChatColor.AQUA + " to exit this mode");
             }
 
             @Override
@@ -46,9 +46,9 @@ public final class ClaimCommand extends BaseCommand {
         plugin.getClaimManager().getHandler().startFortifications(player, network, new SimplePromise() {
             @Override
             public void success() {
-                player.sendMessage(ChatColor.GREEN + "You are now in fortification mode");
-                player.sendMessage(ChatColor.GREEN + "As you place blocks your reinforcement material will be consumed");
-                player.sendMessage(ChatColor.YELLOW + "When you're finished, type '/claim disable' to exit this mode");
+                player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.YELLOW + "fortification" + ChatColor.GREEN + " mode");
+                player.sendMessage(ChatColor.GREEN + "As you" + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "place blocks" + ChatColor.GREEN + "your reinforcement material will be consumed");
+                player.sendMessage(ChatColor.AQUA + "When you're finished, type " + ChatColor.YELLOW + "/claim disable" + ChatColor.AQUA + " to exit this mode");
             }
 
             @Override
@@ -64,9 +64,9 @@ public final class ClaimCommand extends BaseCommand {
         plugin.getClaimManager().getHandler().startInformation(player, new SimplePromise() {
             @Override
             public void success() {
-                player.sendMessage(ChatColor.GREEN + "You are now in information mode");
-                player.sendMessage(ChatColor.GREEN + "Right-click blocks to view their claim information");
-                player.sendMessage(ChatColor.YELLOW + "When you're finished, type '/claim disable' to exit this mode");
+                player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.DARK_PURPLE + "information" + ChatColor.GREEN + " mode");
+                player.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "Right-click blocks" + ChatColor.GREEN + " to view their claim information");
+                player.sendMessage(ChatColor.AQUA + "When you're finished, type " + ChatColor.YELLOW + "/claim disable" + ChatColor.AQUA + " to exit this mode");
             }
 
             @Override
@@ -99,7 +99,7 @@ public final class ClaimCommand extends BaseCommand {
         player.sendMessage(ChatColor.BLUE + "Reinforcement Materials" + ChatColor.AQUA + ":");
 
         for (ClaimType type : ClaimType.values()) {
-            player.sendMessage(ChatColor.AQUA + type.getDisplayName() + ChatColor.GRAY + ": " + type.getDurability() + " Durability, Matures in " + Time.convertToHHMMSS(type.getMatureTimeInSeconds() * 1000L));
+            player.sendMessage(ChatColor.AQUA + type.getDisplayName() + ChatColor.YELLOW + ": " + type.getDurability() + " Durability, Matures in " + Time.convertToHHMMSS(type.getMatureTimeInSeconds() * 1000L));
         }
 
         player.sendMessage(ChatColor.RESET + " ");

@@ -55,7 +55,7 @@ public final class AcidManager {
                                     final Network acidBlockOwner = plugin.getNetworkManager().getNetworkByID(acidBlock.getOwnerId());
 
                                     if (acidBlockOwner != null) {
-                                        acidBlockOwner.sendMessage(ChatColor.YELLOW + acidBlockOwner.getName() + "'s Acid Block destroyed a Claim at " + nearbyClaim.getLocation().toString());
+                                        acidBlockOwner.sendMessage(ChatColor.RED + "Acid Block" + ChatColor.YELLOW + " destroyed a claim at " + ChatColor.BLUE + nearbyClaim.getLocation().toString());
                                     }
 
                                     Logger.print("Acid Block at " + acidBlock.getLocation().toString() + " destroyed claim at " + nearbyClaim.getLocation().toString());

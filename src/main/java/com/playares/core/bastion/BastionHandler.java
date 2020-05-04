@@ -116,6 +116,7 @@ public final class BastionHandler {
         manager.getBastionRepository().add(bastion);
         new Scheduler(manager.getPlugin()).async(() -> BastionDAO.saveBastion(manager.getPlugin().getDatabaseInstance(), bastion)).run();
 
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " created a " + ChatColor.LIGHT_PURPLE + "Bastion Block" + ChatColor.YELLOW + " at " + ChatColor.GREEN + bastion.getLocation().toString());
         player.sendMessage(ChatColor.YELLOW + "This bastion will mature in " + Time.convertToRemaining(bastion.getMatureTime() - Time.now()));
         Logger.print(player.getName() + " (" + player.getUniqueId().toString() + ") created a bastion at " + bastion.getLocation().toString() + " for " + network.getName() + " (" + network.getUniqueId().toString() + ")");
 
@@ -145,7 +146,20 @@ public final class BastionHandler {
         }
 
         player.sendMessage(ChatColor.GOLD + "Nearby Bastions");
-        nearby.forEach(bastion -> player.sendMessage(ChatColor.AQUA + bastion.getLocation().toString()));
+        nearby.forEach(bastion -> {
+            final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
+            final long timeUntilMature = bastion.getMatureTime() - Time.now();
+
+            if (owner != null) {
+                player.sendMessage(ChatColor.GOLD + " - " + ChatColor.YELLOW + owner.getName() + ": " + ChatColor.BLUE + bastion.getLocation().toString().replace(",", ChatColor.YELLOW + "," + ChatColor.BLUE));
+
+                if (!bastion.isMature()) {
+                    player.sendMessage(ChatColor.RESET + " " + ChatColor.RESET + " " + ChatColor.RED + "Matures in " + Time.convertToRemaining(timeUntilMature));
+                }
+            } else {
+                Logger.error("Found a bastion with no defined owner");
+            }
+        });
         promise.success();
     }
 

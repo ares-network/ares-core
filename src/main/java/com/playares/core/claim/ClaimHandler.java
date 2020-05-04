@@ -74,7 +74,7 @@ public final class ClaimHandler {
             final Network oldNetwork = getManager().getPlugin().getNetworkManager().getNetworkByID(existing.getNetworkId());
 
             if (oldNetwork != null) {
-                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + oldNetwork.getName());
+                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + ChatColor.BLUE + oldNetwork.getName());
                 Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") finished session for " + oldNetwork.getName() + "(" + oldNetwork.getUniqueId().toString() + ")");
             }
 
@@ -140,7 +140,7 @@ public final class ClaimHandler {
             final Network oldNetwork = getManager().getPlugin().getNetworkManager().getNetworkByID(existing.getNetworkId());
 
             if (oldNetwork != null) {
-                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + oldNetwork.getName());
+                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + ChatColor.BLUE + oldNetwork.getName());
                 Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") finished session for " + oldNetwork.getName() + "(" + oldNetwork.getUniqueId().toString() + ")");
             }
 
@@ -203,7 +203,7 @@ public final class ClaimHandler {
             final Network oldNetwork = getManager().getPlugin().getNetworkManager().getNetworkByID(existing.getNetworkId());
 
             if (oldNetwork != null) {
-                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + oldNetwork.getName());
+                player.sendMessage(ChatColor.YELLOW + "Finished claiming for " + ChatColor.BLUE + oldNetwork.getName());
                 Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") finished session for " + oldNetwork.getName() + "(" + oldNetwork.getUniqueId().toString() + ")");
             }
 

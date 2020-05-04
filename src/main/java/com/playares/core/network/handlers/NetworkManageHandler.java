@@ -73,7 +73,7 @@ public final class NetworkManageHandler {
         handler.getManager().getPlugin().getFactoryManager().getFactoryRepository().removeAll(factories);
         handler.getManager().getPlugin().getBastionManager().getBastionRepository().removeAll(bastions);
 
-        network.sendMessage(ChatColor.RED + network.getName() + " has been disbanded by " + player.getName());
+        network.sendMessage(ChatColor.RED + "Network has been disbanded by " + ChatColor.BLUE + player.getName());
         network.getMembers().clear();
         network.getPendingMembers().clear();
         handler.getManager().getNetworkRepository().remove(network);
@@ -130,7 +130,7 @@ public final class NetworkManageHandler {
         }
 
         network.removeMember(player.getUniqueId());
-        network.sendMessage(ChatColor.RED + player.getName() + " has left " + network.getName());
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.RED + " has left the network");
         promise.success();
     }
 
@@ -180,7 +180,7 @@ public final class NetworkManageHandler {
         }
 
         network.removeMember(kickedMember.getUniqueId());
-        network.sendMessage(ChatColor.YELLOW + player.getName() + " kicked " + kickedMember.getUsername() + " from " + network.getName());
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " kicked " + ChatColor.BLUE + kickedMember.getUsername() + ChatColor.YELLOW + " from the network");
         Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") kicked " + kickedMember.getUsername() + "(" + kickedMember.getUniqueId().toString() + ") from " + network.getName() + "(" + network.getName() + ")");
         promise.success();
     }
@@ -245,7 +245,7 @@ public final class NetworkManageHandler {
             return;
         }
 
-        network.sendMessage(ChatColor.YELLOW + player.getName() + " renamed " + network.getName() + " to " + newName);
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " renamed " + ChatColor.GOLD + network.getName() + ChatColor.YELLOW + " to " + ChatColor.GOLD + newName);
         Logger.print("Network " + network.getName() + "(" + network.getUniqueId().toString() + ") has been renamed to " + newName + " by " + player.getName() + "(" + player.getUniqueId().toString() + ")");
 
         network.setName(newName);
@@ -300,7 +300,7 @@ public final class NetworkManageHandler {
         }
 
         network.getConfiguration().setPassword(password);
-        network.sendMessage(ChatColor.YELLOW + player.getName() + " updated the password for " + network.getName());
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " updated the password");
         Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") changed the password for " + network.getName() + "(" + network.getUniqueId().toString() + ") to " + password);
 
         if (!network.getConfiguration().isPasswordEnabled()) {

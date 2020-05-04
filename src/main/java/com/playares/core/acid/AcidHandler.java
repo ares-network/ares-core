@@ -129,6 +129,7 @@ public final class AcidHandler {
         manager.getAcidRepository().add(acidBlock);
         new Scheduler(manager.getPlugin()).async(() -> AcidDAO.saveAcidBlock(manager.getPlugin().getDatabaseInstance(), acidBlock)).run();
 
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " created an " + ChatColor.RED + "Acid Block" + ChatColor.YELLOW + " at " + acidBlock.getLocation().toString());
         player.sendMessage(ChatColor.YELLOW + "This Acid Block will mature in " + Time.convertToRemaining(acidBlock.getMatureTime() - Time.now()));
 
         for (Bastion bastion : badBastions) {
@@ -174,7 +175,7 @@ public final class AcidHandler {
 
         final Set<Bastion> badBastions = manager.getPlugin().getBastionManager().getBastionInRange(new BLocatable(block), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
 
-        player.sendMessage(ChatColor.YELLOW + "Acid claimed by " + network.getName() + ", " + (acid.isMature() ? "matured." : "matures in " + Time.convertToRemaining(acid.getMatureTime() - Time.now())));
+        player.sendMessage(ChatColor.YELLOW + "Acid claimed by " + ChatColor.BLUE + network.getName() + ChatColor.YELLOW + ", " + (acid.isMature() ? "matured." : "matures in " + Time.convertToRemaining(acid.getMatureTime() - Time.now())));
         player.sendMessage(ChatColor.YELLOW + "Expires in " + Time.convertToRemaining(acid.getExpireTime() - Time.now()));
 
         for (Bastion bastion : badBastions) {
@@ -182,7 +183,7 @@ public final class AcidHandler {
                 continue;
             }
 
-            player.sendMessage(ChatColor.RED + "This Acid Block is being blocked by a Bastion at " + bastion.toString());
+            player.sendMessage(ChatColor.YELLOW + "This " + ChatColor.RED + "Acid Block" + ChatColor.YELLOW + " is being blocked by a Bastion at " + ChatColor.BLUE + bastion.toString());
         }
 
         promise.success();

@@ -161,9 +161,7 @@ public final class FactoryHandler {
 
         final Factory factory = new Factory(network.getUniqueId(), chest, block, workbench);
         manager.getFactoryRepository().add(factory);
-
-        network.sendMessage(ChatColor.YELLOW + player.getName() + " has created a factory for " + network.getName() + " at " + factory.getFurnaceLocation().toString());
-
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " has created a " + ChatColor.BLUE + "Factory" + ChatColor.YELLOW + " at " + ChatColor.GREEN + factory.getFurnaceLocation().toString());
         promise.success();
     }
 

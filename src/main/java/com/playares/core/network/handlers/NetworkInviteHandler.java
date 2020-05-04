@@ -76,7 +76,7 @@ public final class NetworkInviteHandler {
                 return;
             }
 
-            network.sendMessage(ChatColor.YELLOW + player.getName() + " invited " + aresAccount.getUsername() + " to " + network.getName());
+            network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " invited " + ChatColor.BLUE + aresAccount.getUsername() + ChatColor.YELLOW + " to the network");
             Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") invited " + aresAccount.getUsername() + "(" + aresAccount.getBukkitId().toString() + ") to " + network.getName() + "(" + network.getUniqueId().toString() + ")");
 
             if (account == null) {
@@ -100,7 +100,8 @@ public final class NetworkInviteHandler {
                         handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxNetworkMembers()) {
 
                             network.addMember(aresAccount.getBukkitId(), aresAccount.getUsername());
-                            network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
+                            network.sendMessage(ChatColor.BLUE + aresAccount.getUsername() + ChatColor.YELLOW + " has joined");
+                            Logger.print(aresAccount.getUsername() + " (" + aresAccount.getBukkitId().toString() + ") joined " + network.getName() + " (" + network.getUniqueId().toString() + ") by invitation");
                             promise.success();
 
                             return;
@@ -140,7 +141,8 @@ public final class NetworkInviteHandler {
                 }
 
                 network.addMember(aresAccount.getBukkitId(), aresAccount.getUsername());
-                network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
+                network.sendMessage(ChatColor.BLUE + aresAccount.getUsername() + ChatColor.YELLOW + " has joined");
+                Logger.print(aresAccount.getUsername() + " (" + aresAccount.getBukkitId().toString() + ") joined " + network.getName() + " (" + network.getUniqueId().toString() + ") by invitation");
                 promise.success();
                 return;
             }
@@ -206,7 +208,7 @@ public final class NetworkInviteHandler {
             }
 
             network.getPendingMembers().remove(aresAccount.getBukkitId());
-            network.sendMessage(ChatColor.YELLOW + player.getName() + " revoked " + aresAccount.getUsername() + "'s invitation to join " + network.getName());
+            network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " revoked " + ChatColor.BLUE + aresAccount.getUsername() + ChatColor.YELLOW + "'s invitation to join");
             Logger.print(player.getName() + " revoked " + aresAccount.getUsername() + "'s invitation to join " + network.getName() + "(" + network.getUniqueId().toString() + ")");
             promise.success();
         });
@@ -249,7 +251,8 @@ public final class NetworkInviteHandler {
 
         network.addMember(player);
         network.getPendingMembers().remove(player.getUniqueId());
-        network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " has joined");
+        Logger.print(player.getName() + " (" + player.getUniqueId().toString() + ") joined " + network.getName() + " (" + network.getUniqueId().toString() + ") by invitation");
         promise.success();
     }
 
@@ -296,7 +299,8 @@ public final class NetworkInviteHandler {
 
         network.addMember(player);
         network.getPendingMembers().remove(player.getUniqueId());
-        network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " has joined");
+        Logger.print(player.getName() + " (" + player.getUniqueId().toString() + ") joined " + network.getName() + " (" + network.getUniqueId().toString() + ") by password");
         promise.success();
     }
 

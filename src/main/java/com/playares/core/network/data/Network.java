@@ -9,6 +9,7 @@ import com.playares.commons.util.general.Time;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -138,6 +139,20 @@ public final class Network implements MongoDocument<Network> {
      * @param message Message
      */
     public void sendMessage(String message) {
+        getOnlineMembers().forEach(online -> {
+            final Player player = online.getBukkitPlayer();
+
+            if (player != null) {
+                player.sendMessage(ChatColor.GOLD + "[" + ChatColor.YELLOW + name + ChatColor.GOLD + "] " + message);
+            }
+        });
+    }
+
+    /**
+     * Sends a raw message to all online members of this Network
+     * @param message Message
+     */
+    public void sendRawMessage(String message) {
         getOnlineMembers().forEach(online -> {
             final Player player = online.getBukkitPlayer();
 

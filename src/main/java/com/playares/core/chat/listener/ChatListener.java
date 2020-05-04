@@ -85,7 +85,7 @@ public final class ChatListener implements Listener {
         }
 
         event.setCancelled(true);
-        network.sendMessage(ChatColor.GREEN + "[" + network.getName() + "] " + event.getDisplayName() + ": " + message);
+        network.sendRawMessage(ChatColor.GREEN + "[" + network.getName() + "] " + event.getDisplayName() + ": " + message);
         Logger.print("[" + network.getName() + "] " + player.getName() + ": " + message);
     }
 

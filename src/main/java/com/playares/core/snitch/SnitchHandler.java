@@ -155,11 +155,9 @@ public final class SnitchHandler {
 
         final Snitch snitch = new Snitch(description, network.getUniqueId(), block, (Time.now() + (getManager().getPlugin().getConfigManager().getSnitchesConfig().getExpireTime() * 1000)));
         manager.getSnitchRepository().add(snitch);
-
-        player.sendMessage(ChatColor.YELLOW + "Snitch will mature in " + Time.convertToRemaining(snitch.getMatureTime() - Time.now()));
-
+        network.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.YELLOW + " created a new " + ChatColor.AQUA + "Snitch Block" + ChatColor.YELLOW + " at " + ChatColor.GREEN + snitch.getLocation().toString());
+        player.sendMessage(ChatColor.AQUA + "Snitch" + ChatColor.YELLOW + " will mature in " + ChatColor.GOLD + Time.convertToRemaining(snitch.getMatureTime() - Time.now()));
         Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") created a snitch (" + snitch.getUniqueId().toString() + ") at " + snitch.getLocation().toString());
-
         promise.success();
     }
 
@@ -245,9 +243,7 @@ public final class SnitchHandler {
         }
 
         snitch.getLogEntries().clear();
-
         Logger.print(player.getName() + "(" + player.getUniqueId().toString() + ") cleared the logs for a snitch owned by " + network.getName() + "(" + network.getUniqueId().toString() + ") at " + snitch.getLocation().toString());
-
         promise.success();
     }
 
