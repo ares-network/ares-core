@@ -112,6 +112,37 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("deny")
+    @Syntax("<network name>")
+    @Description("Deny a network's invitation")
+    public void onDeny(Player player, String network) {
+        plugin.getNetworkManager().getHandler().getInviteHandler().denyInvite(player, network, new SimplePromise() {
+            @Override
+            public void success() {
+                player.sendMessage(ChatColor.GREEN + "Invitation has been rejected");
+            }
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
+    @Subcommand("pending")
+    @Description("View a list of your pending network invitations")
+    public void onPending(Player player) {
+        plugin.getNetworkManager().getHandler().getInviteHandler().displayPending(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @Subcommand("leave")
     @Syntax("<network name>")
     @Description("Leave a network")

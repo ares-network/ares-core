@@ -18,6 +18,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 @AllArgsConstructor
 public final class NetworkInviteHandler {
     @Getter public final NetworkHandler handler;
@@ -295,6 +297,57 @@ public final class NetworkInviteHandler {
         network.addMember(player);
         network.getPendingMembers().remove(player.getUniqueId());
         network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
+        promise.success();
+    }
+
+    /**
+     * Deny an invitation to join a network
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void denyInvite(Player player, String networkName, SimplePromise promise) {
+        final Network network = handler.getManager().getNetworkByName(networkName);
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        if (!network.getPendingMembers().contains(player.getUniqueId())) {
+            promise.fail("You did not have a pending invitation to join this network");
+            return;
+        }
+
+        network.getPendingMembers().remove(player.getUniqueId());
+        Logger.print(player.getName() + " (" + player.getUniqueId().toString() + ") " + " denied to join " + network.getName() + " (" + network.getUniqueId().toString() + ")");
+        promise.success();
+    }
+
+    /**
+     * Sends the provided player a list of all networks they have open invitations to join
+     * @param player Player
+     * @param promise Promise
+     */
+    public void displayPending(Player player, SimplePromise promise) {
+        final Collection<Network> pending = handler.getManager().getNetworksByInvite(player.getUniqueId());
+
+        if (pending.isEmpty()) {
+            promise.fail("You do not have any pending network invitations");
+            return;
+        }
+
+        player.sendMessage(ChatColor.BLUE + "Your pending network invitations (" + ChatColor.DARK_AQUA + pending.size() + ChatColor.BLUE + ")");
+
+        pending.forEach(invitation -> player.spigot().sendMessage(new ComponentBuilder(
+                " - ").color(net.md_5.bungee.api.ChatColor.GOLD)
+                .append(invitation.getName()).color(net.md_5.bungee.api.ChatColor.YELLOW)
+                .append(" [Accept]").color(net.md_5.bungee.api.ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/network accept " + invitation.getName()))
+                .append(" or ").color(net.md_5.bungee.api.ChatColor.YELLOW).italic(true)
+                .append("[Deny]").color(net.md_5.bungee.api.ChatColor.RED).italic(false).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/network deny " + invitation.getName())).create()));
+
+        player.sendMessage(ChatColor.RESET + " ");
+
         promise.success();
     }
 }
