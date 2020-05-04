@@ -1,6 +1,8 @@
 package com.playares.core.bastion;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.playares.commons.location.BLocatable;
 import com.playares.core.Ares;
@@ -10,6 +12,7 @@ import com.playares.core.network.data.Network;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,5 +75,24 @@ public final class BastionManager {
      */
     public ImmutableSet<Bastion> getBastionInRangeFlat(BLocatable location, double radius) {
         return ImmutableSet.copyOf(bastionRepository.stream().filter(bastion -> bastion.insideFlat(location, radius)).collect(Collectors.toSet()));
+    }
+
+    /**
+     * Returns an Immutable List containing all perimeter blocks of a radius from the provided Bastion
+     * @param bastion Bastion
+     * @param y Y Level to obtain blocks at
+     * @return Immutable List of Block Locations
+     */
+    public ImmutableList<BLocatable> getPerimeter(Bastion bastion, double y) {
+        final List<BLocatable> result = Lists.newArrayList();
+        final int radius = (int)Math.round(plugin.getConfigManager().getBastionsConfig().getBastionRadius());
+
+        for (double x = bastion.getLocation().getX() - radius; x <= bastion.getLocation().getX() + radius; x++) {
+            for (double z = bastion.getLocation().getZ() - radius; z <= bastion.getLocation().getZ() + radius; z++) {
+                result.add(new BLocatable(bastion.getLocation().getWorldName(), x, y, z));
+            }
+        }
+
+        return ImmutableList.copyOf(result);
     }
 }
