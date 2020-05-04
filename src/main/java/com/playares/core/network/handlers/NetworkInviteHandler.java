@@ -47,7 +47,7 @@ public final class NetworkInviteHandler {
             return;
         }
 
-        final NetworkMember networkMember = network.getMembers().stream().filter(member -> member.getUniqueId().equals(player.getUniqueId())).findFirst().orElse(null);
+        final NetworkMember networkMember = network.getMember(player);
 
         if (networkMember == null) {
             promise.fail("There was an issue locating your account information");
@@ -83,7 +83,7 @@ public final class NetworkInviteHandler {
                             // Player is not in too many networks
                             && handler.getManager().getNetworksByPlayer(aresAccount.getBukkitId()).size() < handler.getManager().getPlugin().getConfigManager().getGeneralConfig().getMaxJoinedNetworks()) {
 
-                network.addMember(aresAccount.getUniqueId(), aresAccount.getUsername());
+                network.addMember(aresAccount.getBukkitId(), aresAccount.getUsername());
                 network.sendMessage(ChatColor.GREEN + aresAccount.getUsername() + " has joined " + network.getName());
                 return;
 
@@ -196,7 +196,6 @@ public final class NetworkInviteHandler {
         network.addMember(player);
         network.getPendingMembers().remove(player.getUniqueId());
         network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
-        Logger.print(player.getName());
         promise.success();
     }
 
@@ -244,7 +243,6 @@ public final class NetworkInviteHandler {
         network.addMember(player);
         network.getPendingMembers().remove(player.getUniqueId());
         network.sendMessage(ChatColor.GREEN + player.getName() + " has joined " + network.getName());
-        Logger.print(player.getName());
         promise.success();
     }
 }
