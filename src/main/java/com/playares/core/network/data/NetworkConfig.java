@@ -10,6 +10,12 @@ public final class NetworkConfig implements MongoDocument<NetworkConfig> {
     @Getter @Setter public String password;
     @Getter @Setter public boolean snitchNotificationsEnabled;
 
+    public NetworkConfig() {
+        this.passwordEnabled = false;
+        this.password = null;
+        this.snitchNotificationsEnabled = true;
+    }
+
     @Override
     public NetworkConfig fromDocument(Document document) {
         this.passwordEnabled = document.getBoolean("password_enabled");
