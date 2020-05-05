@@ -378,6 +378,10 @@ public final class TimerListener implements Listener {
 
         final Player player = event.getDamager();
 
+        if (player.getUniqueId().equals(event.getDamaged().getUniqueId())) {
+            return;
+        }
+
         if (player.hasPermission("arescore.admin")) {
             return;
         }
