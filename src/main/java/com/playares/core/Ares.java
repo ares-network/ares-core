@@ -29,7 +29,6 @@ import com.playares.core.prison.PrisonPearlManager;
 import com.playares.core.snitch.SnitchManager;
 import com.playares.core.snitch.data.Snitch;
 import com.playares.core.spawn.SpawnManager;
-import com.playares.core.stats.StatsManager;
 import com.playares.core.timers.TimerManager;
 import com.playares.essentials.EssentialsService;
 import com.playares.humbug.HumbugService;
@@ -60,7 +59,6 @@ public final class Ares extends AresPlugin {
     @Getter public BastionManager bastionManager;
     @Getter public AcidManager acidManager;
     @Getter public CompactManager compactManager;
-    @Getter public StatsManager statsManager;
 
     @Override
     public void onEnable() {
@@ -83,7 +81,6 @@ public final class Ares extends AresPlugin {
         this.bastionManager = new BastionManager(this);
         this.acidManager = new AcidManager(this);
         this.compactManager = new CompactManager(this);
-        this.statsManager = new StatsManager(this, configManager.getGeneralConfig().getMapNumber());
 
         this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
 
