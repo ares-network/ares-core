@@ -89,6 +89,36 @@ public final class SnitchCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("near|nearby")
+    @Description("View a list of all Snitches you have access to within a 32 block range")
+    public void onNear(Player player) {
+        plugin.getSnitchManager().getHandler().listByNearby(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
+    @Subcommand("list")
+    @Description("View a list of all Snitches you have access to in the network you provide")
+    @CommandCompletion("@networks")
+    @Syntax("<network name>")
+    public void onList(Player player, String networkName) {
+        plugin.getSnitchManager().getHandler().listByNetwork(player, networkName, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();

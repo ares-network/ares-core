@@ -15,6 +15,7 @@ import com.playares.core.snitch.data.Snitch;
 import com.playares.core.snitch.data.SnitchDAO;
 import com.playares.core.snitch.data.SnitchEntry;
 import com.playares.core.snitch.data.SnitchEntryType;
+import com.playares.core.snitch.menu.SnitchListMenu;
 import com.playares.core.snitch.menu.SnitchLogMenu;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -23,6 +24,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class SnitchHandler {
@@ -291,6 +293,70 @@ public final class SnitchHandler {
         final SnitchLogMenu menu = new SnitchLogMenu(manager.getPlugin(), player, snitch);
         menu.open();
         promise.success();
+    }
+
+    /**
+     * Handles displaying a GUI of all snitches within a 64 block range of the player
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void listByNetwork(Player player, String networkName, SimplePromise promise) {
+        final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember member = network.getMember(player);
+
+        if (member == null && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (!admin && !(member.hasPermission(NetworkPermission.ADMIN) || member.hasPermission(NetworkPermission.VIEW_SNITCHES))) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        final List<Snitch> snitches = manager.getSnitchByOwner(network);
+
+        if (snitches.isEmpty()) {
+            promise.fail("There are no snitches nearby");
+            return;
+        }
+
+        final SnitchListMenu menu = new SnitchListMenu(manager.getPlugin(), player, "Snitches: " + network.getName(), snitches);
+        menu.open();
+        promise.success();
+    }
+
+    /**
+     * Handles opening a GUI containing all nearby friendly snitches
+     * @param player Player
+     * @param promise Promise
+     */
+    public void listByNearby(Player player, SimplePromise promise) {
+        final UUID uniqueId = player.getUniqueId();
+
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final List<Snitch> nearby = manager.getSnitchByRadius(new BLocatable(player.getLocation().getBlock()), 64.0);
+            final List<Snitch> friendly = nearby.stream().filter(snitch -> manager.getPlugin().getNetworkManager().getNetworkByID(snitch.getOwnerId()).isMember(uniqueId)).collect(Collectors.toList());
+
+            new Scheduler(manager.getPlugin()).sync(() -> {
+                if (friendly.isEmpty()) {
+                    promise.fail("There are no snitches nearby");
+                    return;
+                }
+
+                final SnitchListMenu menu = new SnitchListMenu(manager.getPlugin(), player, "Nearby Snitches", friendly);
+                menu.open();
+                promise.success();
+            }).run();
+        }).run();
     }
 
     private String formatNotification(Snitch snitch, SnitchEntry entry) {
