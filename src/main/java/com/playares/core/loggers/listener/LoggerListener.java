@@ -15,6 +15,7 @@ import net.minecraft.server.v1_8_R3.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
@@ -59,6 +60,10 @@ public final class LoggerListener implements Listener {
         boolean combatLog = false;
 
         if (player.isDead()) {
+            return;
+        }
+
+        if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
             return;
         }
 
