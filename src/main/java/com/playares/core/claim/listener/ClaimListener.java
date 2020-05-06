@@ -15,6 +15,7 @@ import com.playares.core.claim.session.ClaimSession;
 import com.playares.core.network.data.Network;
 import com.playares.core.network.data.NetworkPermission;
 import com.playares.core.utils.BlockUtil;
+import com.playares.humbug.event.FoundOreEvent;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -102,6 +103,29 @@ public final class ClaimListener implements Listener {
             Logger.warn(player.getName() + " attempted to block glitch using a " + block.getType().name());
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onFoundOre(FoundOreEvent event) {
+        if (event.isCancelled() || event.getBlocks().isEmpty()) {
+            return;
+        }
+
+        final List<Block> toRemove = Lists.newArrayList();
+
+        event.getBlocks().forEach(block -> {
+            final Claim claim = manager.getClaimByBlock(block);
+
+            if (claim != null) {
+                toRemove.add(block);
+            }
+        });
+
+        if (toRemove.isEmpty()) {
+            return;
+        }
+
+        event.getBlocks().removeAll(toRemove);
     }
 
     @EventHandler (priority = EventPriority.HIGH)
