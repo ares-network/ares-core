@@ -47,8 +47,14 @@ public final class TimerManager {
                 final HUDUpdateEvent hudUpdateEvent = new HUDUpdateEvent(player);
 
                 if (player != null && !player.isDead()) {
-                    if (essentialsService != null && essentialsService.getRebootManager().isRebootInProgress()) {
-                        hudUpdateEvent.add(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Restart" + ChatColor.RESET + " " + ChatColor.RED + Time.convertToHHMMSS(essentialsService.getRebootManager().getTimeUntilReboot()));
+                    if (essentialsService != null) {
+                        if (essentialsService.getRebootManager().isRebootInProgress()) {
+                            hudUpdateEvent.add(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Restart" + ChatColor.RESET + " " + ChatColor.RED + Time.convertToHHMMSS(essentialsService.getRebootManager().getTimeUntilReboot()));
+                        }
+
+                        if (essentialsService.getVanishManager().isVanished(player)) {
+                            hudUpdateEvent.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Vanished");
+                        }
                     }
 
                     if (!timers.isEmpty()) {
