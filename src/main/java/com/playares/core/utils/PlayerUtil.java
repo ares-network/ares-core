@@ -3,7 +3,6 @@ package com.playares.core.utils;
 import com.playares.core.Ares;
 import com.playares.core.network.data.Network;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -20,7 +19,7 @@ public final class PlayerUtil {
         final Collection<Network> networks = plugin.getNetworkManager().getNetworksByPlayer(player);
 
         for (Entity entity : entities) {
-            if (!(entity instanceof LivingEntity)) {
+            if (!(entity instanceof Player)) {
                 continue;
             }
 
