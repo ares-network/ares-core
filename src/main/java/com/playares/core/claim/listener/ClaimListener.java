@@ -366,6 +366,10 @@ public final class ClaimListener implements Listener {
             return;
         }
 
+        if (!event.getReason().equals(PortalCreateEvent.CreateReason.OBC_DESTINATION)) {
+            return;
+        }
+
         final List<Block> toRemove = Lists.newArrayList();
 
         for (Block block : event.getBlocks()) {
