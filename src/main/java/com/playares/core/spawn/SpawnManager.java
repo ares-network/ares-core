@@ -4,8 +4,10 @@ import com.google.common.collect.Maps;
 import com.playares.commons.location.BLocatable;
 import com.playares.commons.location.PLocatable;
 import com.playares.commons.logger.Logger;
+import com.playares.commons.services.customitems.CustomItemService;
 import com.playares.commons.util.general.Configs;
 import com.playares.core.Ares;
+import com.playares.core.spawn.item.SpawnCompass;
 import com.playares.core.spawn.kits.SpawnKitManager;
 import com.playares.core.spawn.listener.SpawnListener;
 import lombok.Getter;
@@ -61,6 +63,14 @@ public final class SpawnManager {
         Logger.print("Finished loading the Main World");
 
         kitManager.getHandler().load();
+
+        final CustomItemService customItemService = (CustomItemService)plugin.getService(CustomItemService.class);
+
+        if (customItemService != null) {
+            customItemService.registerNewItem(new SpawnCompass(plugin));
+        } else {
+            Logger.error("Failed to obtain Custom Item Service while trying to register the Spawn Compass");
+        }
     }
 
     /**

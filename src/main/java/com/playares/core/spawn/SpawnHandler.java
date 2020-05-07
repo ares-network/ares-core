@@ -8,6 +8,7 @@ import com.playares.commons.util.general.Configs;
 import com.playares.core.player.data.AresPlayer;
 import com.playares.core.prison.data.PrisonPearl;
 import com.playares.core.spawn.event.PlayerEnterWorldEvent;
+import com.playares.core.spawn.menu.SpawnSelectorMenu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -218,6 +219,29 @@ public final class SpawnHandler {
         summonProfile.setSpawned(true);
         manager.getPlugin().getPlayerManager().setPlayer(false, summonProfile);
 
+        promise.success();
+    }
+
+    /**
+     * Handles opening the spawn selector menu
+     * @param player
+     * @param promise
+     */
+    public void openSelectorMenu(Player player, SimplePromise promise) {
+        final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+
+        if (profile == null) {
+            promise.fail("Failed to obtain your account");
+            return;
+        }
+
+        if (profile.isSpawned()) {
+            promise.fail("You have already spawned in");
+            return;
+        }
+
+        final SpawnSelectorMenu menu = new SpawnSelectorMenu(manager.getPlugin(), player);
+        menu.open();
         promise.success();
     }
 

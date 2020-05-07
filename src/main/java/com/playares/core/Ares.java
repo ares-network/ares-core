@@ -62,12 +62,34 @@ public final class Ares extends AresPlugin {
 
     @Override
     public void onEnable() {
-        // Managers
         this.configManager = new ConfigManager(this);
-
-        // We load the config for any constructors that may take config values
         configManager.load();
 
+        // Register Command Manager
+        registerCommandManager(new PaperCommandManager(this));
+        commandManager.enableUnstableAPI("help");
+
+        // Database Instances
+        this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
+        registerDatabase(databaseInstance);
+        databaseInstance.openConnection();
+
+        // Protocol
+        registerProtocolLibrary(ProtocolLibrary.getProtocolManager());
+
+        // Services
+        registerService(new CustomEventService(this));
+        registerService(new AccountService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new CustomItemService(this));
+        registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new HumbugService(this));
+        registerService(new BridgeService(this));
+        registerService(new AltWatcherService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new LuxeService(this, configManager.getGeneralConfig().getDatabaseName()));
+        registerService(new ServerSyncService(this, configManager.getGeneralConfig().getDatabaseName()));
+        startServices();
+
+        // Managers
         this.playerManager = new PlayerManager(this);
         this.networkManager = new NetworkManager(this);
         this.snitchManager = new SnitchManager(this);
@@ -82,11 +104,6 @@ public final class Ares extends AresPlugin {
         this.acidManager = new AcidManager(this);
         this.compactManager = new CompactManager(this);
 
-        this.databaseInstance = new MongoDB(configManager.getGeneralConfig().getDatabaseUri());
-
-        registerDatabase(databaseInstance);
-        databaseInstance.openConnection();
-
         // Load Data
         networkManager.getHandler().loadAll(true);
         snitchManager.getHandler().loadAll(true);
@@ -97,9 +114,6 @@ public final class Ares extends AresPlugin {
         acidManager.getHandler().loadAll(true);
 
         // Commands
-        registerCommandManager(new PaperCommandManager(this));
-        commandManager.enableUnstableAPI("help");
-
         registerCommand(new NetworkCommand(this));
         registerCommand(new NetworkCommand(this));
         registerCommand(new PrisonPearlCommand(this));
@@ -118,21 +132,6 @@ public final class Ares extends AresPlugin {
 
         // Listeners
         registerListener(new DeathMessageListener(this));
-
-        // Protocol
-        registerProtocolLibrary(ProtocolLibrary.getProtocolManager());
-
-        // Services
-        registerService(new CustomEventService(this));
-        registerService(new AccountService(this, configManager.getGeneralConfig().getDatabaseName()));
-        registerService(new CustomItemService(this));
-        registerService(new EssentialsService(this, configManager.getGeneralConfig().getDatabaseName()));
-        registerService(new HumbugService(this));
-        registerService(new BridgeService(this));
-        registerService(new AltWatcherService(this, configManager.getGeneralConfig().getDatabaseName()));
-        registerService(new LuxeService(this, configManager.getGeneralConfig().getDatabaseName()));
-        registerService(new ServerSyncService(this, configManager.getGeneralConfig().getDatabaseName()));
-        startServices();
 
         commandManager.getCommandCompletions().registerCompletion("networks", c -> {
             final Player player = c.getPlayer();

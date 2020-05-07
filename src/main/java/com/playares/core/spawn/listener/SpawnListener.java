@@ -3,6 +3,7 @@ package com.playares.core.spawn.listener;
 import com.mongodb.client.model.Filters;
 import com.playares.commons.event.PlayerDamagePlayerEvent;
 import com.playares.commons.logger.Logger;
+import com.playares.commons.services.customitems.CustomItemService;
 import com.playares.commons.util.bukkit.Players;
 import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.commons.util.general.Time;
@@ -12,6 +13,7 @@ import com.playares.core.player.data.AresPlayer;
 import com.playares.core.prison.data.PrisonPearl;
 import com.playares.core.spawn.SpawnManager;
 import com.playares.core.spawn.event.PlayerEnterWorldEvent;
+import com.playares.core.spawn.item.SpawnCompass;
 import com.playares.core.spawn.kits.data.SpawnKit;
 import com.playares.luxe.rewards.event.PlayerClaimRewardEvent;
 import lombok.AllArgsConstructor;
@@ -27,10 +29,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
 
 import java.util.UUID;
 
@@ -88,6 +88,46 @@ public final class SpawnListener implements Listener {
                 Players.playSound(futurePlayer, Sound.NOTE_BASS_GUITAR);
             }
         }).delay(manager.getKitManager().getSpawnKitObtainCooldown() * 20).run();
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        final Player player = event.getPlayer();
+        final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+
+        if (profile == null || profile.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerPickupItemEvent event) {
+        final Player player = event.getPlayer();
+        final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+
+        if (profile == null || profile.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        final Player player = (Player)event.getWhoClicked();
+        final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+
+        if (profile == null || profile.isSpawned()) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     @EventHandler
@@ -178,6 +218,7 @@ public final class SpawnListener implements Listener {
         final Player player = event.getPlayer();
         final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
         final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
+        final CustomItemService customItemService = (CustomItemService)manager.getPlugin().getService(CustomItemService.class);
 
         if (profile == null) {
             Logger.error("Failed to obtain account for " + player.getName());
@@ -193,6 +234,12 @@ public final class SpawnListener implements Listener {
             player.getInventory().setArmorContents(null);
 
             Players.resetHealth(player);
+
+            if (customItemService != null) {
+                customItemService.getItem(SpawnCompass.class).ifPresent(compass -> {
+                    player.getInventory().setItem(4, compass.getItem());
+                });
+            }
         }
     }
 
@@ -201,6 +248,7 @@ public final class SpawnListener implements Listener {
         final Player player = event.getPlayer();
         final AresPlayer profile = manager.getPlugin().getPlayerManager().getPlayer(player.getUniqueId());
         final PrisonPearl prisonPearl = manager.getPlugin().getPrisonPearlManager().getPrisonPearlByPlayer(player.getUniqueId());
+        final CustomItemService customItemService = (CustomItemService)manager.getPlugin().getService(CustomItemService.class);
 
         if (profile == null) {
             player.sendMessage(ChatColor.RED + "Failed to obtain your account");
@@ -215,6 +263,16 @@ public final class SpawnListener implements Listener {
         profile.setResetOnJoin(false);
 
         event.setRespawnLocation(manager.getSpawnLocation().getBukkit());
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+
+        Players.resetHealth(player);
+
+        if (customItemService != null) {
+            customItemService.getItem(SpawnCompass.class).ifPresent(compass -> {
+                player.getInventory().setItem(4, compass.getItem());
+            });
+        }
     }
 
     @EventHandler
