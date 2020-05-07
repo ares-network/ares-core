@@ -66,6 +66,36 @@ public final class AcidCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("near")
+    @Description("View a list of all Acid Blocks nearby that you have access to")
+    public void onNear(Player player) {
+        plugin.getAcidManager().getHandler().listByNearby(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
+    @Subcommand("list")
+    @Description("View a list of all Acid Blocks owned by the provided network")
+    @Syntax("<network name>")
+    @CommandCompletion("@networks")
+    public void onList(Player player, String network) {
+        plugin.getAcidManager().getHandler().listByNetwork(player, network, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();

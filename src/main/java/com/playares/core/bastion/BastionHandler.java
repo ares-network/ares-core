@@ -8,6 +8,7 @@ import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.commons.util.general.Time;
 import com.playares.core.bastion.data.Bastion;
 import com.playares.core.bastion.data.BastionDAO;
+import com.playares.core.bastion.menu.BastionListMenu;
 import com.playares.core.network.data.Network;
 import com.playares.core.network.data.NetworkMember;
 import com.playares.core.network.data.NetworkPermission;
@@ -17,6 +18,8 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+
+import java.util.Set;
 
 @AllArgsConstructor
 public final class BastionHandler {
@@ -137,29 +140,55 @@ public final class BastionHandler {
      * @param player Player
      * @param promise Promise
      */
-    public void showNear(Player player, SimplePromise promise) {
+    public void listByNearby(Player player, SimplePromise promise) {
         final ImmutableSet<Bastion> nearby = manager.getBastionInRangeFlat(new BLocatable(player.getLocation().getBlock()), manager.getPlugin().getConfigManager().getBastionsConfig().getBastionRadius());
 
         if (nearby.isEmpty()) {
-            promise.fail("No bastions nearby");
+            promise.fail("There are no bastions nearby");
             return;
         }
 
-        player.sendMessage(ChatColor.GOLD + "Nearby Bastions");
-        nearby.forEach(bastion -> {
-            final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(bastion.getOwnerId());
-            final long timeUntilMature = bastion.getMatureTime() - Time.now();
+        final BastionListMenu menu = new BastionListMenu(manager.getPlugin(), player, "Nearby Bastions", nearby);
+        menu.open();
+        promise.success();
+    }
 
-            if (owner != null) {
-                player.sendMessage(ChatColor.GOLD + " - " + ChatColor.YELLOW + owner.getName() + ": " + ChatColor.BLUE + bastion.getLocation().toString().replace(",", ChatColor.YELLOW + "," + ChatColor.BLUE));
+    /**
+     * Handles showing a list of all bastions on the provided network
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void listByNetwork(Player player, String networkName, SimplePromise promise) {
+        final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
 
-                if (!bastion.isMature()) {
-                    player.sendMessage(ChatColor.RESET + " " + ChatColor.RESET + " " + ChatColor.RED + "Matures in " + Time.convertToRemaining(timeUntilMature));
-                }
-            } else {
-                Logger.error("Found a bastion with no defined owner");
-            }
-        });
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember member = network.getMember(player);
+
+        if (member == null && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (!admin && !(member.hasPermission(NetworkPermission.ADMIN) || member.hasPermission(NetworkPermission.MODIFY_BASTION))) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        final Set<Bastion> bastions = manager.getBastionByOwner(network);
+
+        if (bastions.isEmpty()) {
+            promise.fail("This network does not have any active bastion blocks");
+            return;
+        }
+
+        final BastionListMenu menu = new BastionListMenu(manager.getPlugin(), player, "Bastions: " + network.getName(), bastions);
+        menu.open();
         promise.success();
     }
 

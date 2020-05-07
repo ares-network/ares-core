@@ -54,7 +54,7 @@ public final class BastionManager {
      * @return Immutable Set of Bastions
      */
     public ImmutableSet<Bastion> getBastionByOwner(Network network) {
-        return ImmutableSet.copyOf(bastionRepository.stream().filter(bastion -> bastion.getOwnerId().equals(network.getCreatorId())).collect(Collectors.toSet()));
+        return ImmutableSet.copyOf(bastionRepository.stream().filter(bastion -> bastion.getOwnerId().equals(network.getUniqueId())).collect(Collectors.toSet()));
     }
 
     /**

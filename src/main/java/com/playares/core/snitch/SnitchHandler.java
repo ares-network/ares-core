@@ -325,7 +325,7 @@ public final class SnitchHandler {
         final List<Snitch> snitches = manager.getSnitchByOwner(network);
 
         if (snitches.isEmpty()) {
-            promise.fail("There are no snitches nearby");
+            promise.fail("This network does not have any active snitch blocks");
             return;
         }
 

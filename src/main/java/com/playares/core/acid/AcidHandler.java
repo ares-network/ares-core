@@ -1,12 +1,14 @@
 package com.playares.core.acid;
 
 import com.playares.commons.location.BLocatable;
+import com.playares.commons.location.PLocatable;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.promise.SimplePromise;
 import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.commons.util.general.Time;
 import com.playares.core.acid.data.AcidBlock;
 import com.playares.core.acid.data.AcidDAO;
+import com.playares.core.acid.menu.AcidListMenu;
 import com.playares.core.bastion.data.Bastion;
 import com.playares.core.network.data.Network;
 import com.playares.core.network.data.NetworkMember;
@@ -18,7 +20,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public final class AcidHandler {
@@ -187,5 +192,70 @@ public final class AcidHandler {
         }
 
         promise.success();
+    }
+
+    /**
+     * Handles displaying a menu of all Acid Blocks owned by the provided network name
+     * @param player Player
+     * @param networkName Network Name
+     * @param promise Promise
+     */
+    public void listByNetwork(Player player, String networkName, SimplePromise promise) {
+        final Network network = manager.getPlugin().getNetworkManager().getNetworkByName(networkName);
+        final boolean admin = player.hasPermission("arescore.admin");
+
+        if (network == null) {
+            promise.fail("Network not found");
+            return;
+        }
+
+        final NetworkMember member = network.getMember(player);
+
+        if (member == null && !admin) {
+            promise.fail("You are not a member of this network");
+            return;
+        }
+
+        if (!admin && !(member.hasPermission(NetworkPermission.ADMIN) || member.hasPermission(NetworkPermission.VIEW_SNITCHES))) {
+            promise.fail("You do not have permission to perform this action");
+            return;
+        }
+
+        final Set<AcidBlock> acid = manager.getAcidBlockByOwner(network);
+
+        if (acid.isEmpty()) {
+            promise.fail("This network does not have any active acid blocks");
+            return;
+        }
+
+        final AcidListMenu menu = new AcidListMenu(manager.getPlugin(), player, "Acid Blocks: " + network.getName(), acid);
+        menu.open();
+        promise.success();
+    }
+
+    /**
+     * Handles opening a menu showing all nearby Acid Blocks a player can see
+     * @param player Player
+     * @param promise Promise
+     */
+    public void listByNearby(Player player, SimplePromise promise) {
+        final UUID uniqueId = player.getUniqueId();
+        final PLocatable location = new PLocatable(player);
+
+        new Scheduler(manager.getPlugin()).async(() -> {
+            final List<AcidBlock> nearby = manager.getAcidRepository().stream().filter(acid -> acid.getLocation().nearby(location, 64.0)).collect(Collectors.toList());
+            final List<AcidBlock> friendly = nearby.stream().filter(acid -> manager.getPlugin().getNetworkManager().getNetworkByID(acid.getOwnerId()).isMember(uniqueId)).collect(Collectors.toList());
+
+            new Scheduler(manager.getPlugin()).sync(() -> {
+                if (friendly.isEmpty()) {
+                    promise.fail("There are no acid blocks nearby");
+                    return;
+                }
+
+                final AcidListMenu menu = new AcidListMenu(manager.getPlugin(), player, "Nearby Acid Blocks", friendly);
+                menu.open();
+                promise.success();
+            }).run();
+        }).run();
     }
 }

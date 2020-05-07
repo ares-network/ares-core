@@ -45,6 +45,7 @@ public final class AcidManager {
                         // This code performs if there aren't any nearby bastions that aren't owned by the Acid blocking network
                         if (badBastions.isEmpty()) {
                             nearbyClaim.setHealth(nearbyClaim.getHealth() - 1);
+                            acidBlock.addDamage(1);
 
                             // We killed him
                             if (nearbyClaim.getHealth() <= 0) {
@@ -55,7 +56,7 @@ public final class AcidManager {
                                     final Network acidBlockOwner = plugin.getNetworkManager().getNetworkByID(acidBlock.getOwnerId());
 
                                     if (acidBlockOwner != null) {
-                                        acidBlockOwner.sendMessage(ChatColor.RED + "Acid Block" + ChatColor.YELLOW + " destroyed a claim at " + ChatColor.BLUE + nearbyClaim.getLocation().toString());
+                                        acidBlockOwner.sendMessage(ChatColor.AQUA + "Acid Block" + ChatColor.YELLOW + " destroyed a claim at " + ChatColor.BLUE + nearbyClaim.getLocation().toString());
                                     }
 
                                     Logger.print("Acid Block at " + acidBlock.getLocation().toString() + " destroyed claim at " + nearbyClaim.getLocation().toString());

@@ -278,6 +278,22 @@ public final class ClaimListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final Block block = event.getBlock();
+        final Claim claim = manager.getClaimByBlock(block);
+
+        if (claim == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
     @EventHandler (priority = EventPriority.HIGH)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.isCancelled()) {

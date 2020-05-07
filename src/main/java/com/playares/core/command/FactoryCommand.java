@@ -45,6 +45,22 @@ public final class FactoryCommand extends BaseCommand {
         });
     }
 
+    @Subcommand("list")
+    @Syntax("<network name>")
+    @Description("View a list of all Factories registered for the provided network")
+    @CommandCompletion("@networks")
+    public void onList(Player player, String network) {
+        plugin.getFactoryManager().getMenuHandler().listByNetwork(player, network, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @Subcommand("recipe|recipes")
     @Description("View a preview menu containing all Factory Recipes")
     public void onPreview(Player player) {

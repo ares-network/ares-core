@@ -118,6 +118,10 @@ public final class LoggerListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+
         final EntityLiving nmsEntity = ((CraftLivingEntity)event.getEntity()).getHandle();
 
         if (!(nmsEntity instanceof CombatLogger)) {

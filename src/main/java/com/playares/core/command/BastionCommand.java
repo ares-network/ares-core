@@ -48,7 +48,23 @@ public final class BastionCommand extends BaseCommand {
     @Subcommand("near")
     @Description("Show nearby bastion fields")
     public void onNear(Player player) {
-        plugin.getBastionManager().getHandler().showNear(player, new SimplePromise() {
+        plugin.getBastionManager().getHandler().listByNearby(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
+    @Subcommand("list")
+    @Description("Show all bastions in the provided network")
+    @CommandCompletion("@networks")
+    @Syntax("<network name>")
+    public void onList(Player player, String network) {
+        plugin.getBastionManager().getHandler().listByNetwork(player, network, new SimplePromise() {
             @Override
             public void success() {}
 
