@@ -18,11 +18,9 @@ import com.playares.core.utils.BlockUtil;
 import com.playares.humbug.event.FoundOreEvent;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Hopper;
+import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -274,12 +272,15 @@ public final class ClaimListener implements Listener {
 
         final InventoryHolder sourceHolder = event.getSource().getHolder();
         final InventoryHolder destHolder = event.getDestination().getHolder();
+        final Location source = getInventoryLocation(sourceHolder);
+        final Location dest = getInventoryLocation(destHolder);
 
-        if (sourceHolder instanceof Chest && destHolder instanceof Hopper) {
-            final Block source = ((Chest)sourceHolder).getBlock();
-            final Block dest = ((Hopper)destHolder).getBlock();
-            final Claim sourceClaim = manager.getClaimByBlock(source);
-            final Claim destClaim = manager.getClaimByBlock(dest);
+        if (source != null && dest != null) {
+            final Block sourceBlock = source.getBlock();
+            final Block destBlock = dest.getBlock();
+
+            final Claim sourceClaim = manager.getClaimByBlock(sourceBlock);
+            final Claim destClaim = manager.getClaimByBlock(destBlock);
 
             if (sourceClaim != null) {
                 if (destClaim == null) {
@@ -468,22 +469,22 @@ public final class ClaimListener implements Listener {
         final Claim cN = manager.getClaimByBlock(north);
         final Claim cS = manager.getClaimByBlock(south);
 
-        if (cE != null && (east.getType().equals(Material.CHEST) || east.getType().equals(Material.TRAPPED_CHEST)) && !session.getNetworkId().equals(cE.getOwnerId())) {
+        if (cE != null && (east.getType().equals(Material.CHEST) || east.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cE.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cW != null && (west.getType().equals(Material.CHEST) || west.getType().equals(Material.TRAPPED_CHEST)) && !session.getNetworkId().equals(cW.getOwnerId())) {
+        if (cW != null && (west.getType().equals(Material.CHEST) || west.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cW.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cN != null && (north.getType().equals(Material.CHEST) || north.getType().equals(Material.TRAPPED_CHEST)) && !session.getNetworkId().equals(cN.getOwnerId())) {
+        if (cN != null && (north.getType().equals(Material.CHEST) || north.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cN.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cS != null && (south.getType().equals(Material.CHEST) || south.getType().equals(Material.TRAPPED_CHEST)) && !session.getNetworkId().equals(cS.getOwnerId())) {
+        if (cS != null && (south.getType().equals(Material.CHEST) || south.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cS.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
@@ -538,6 +539,31 @@ public final class ClaimListener implements Listener {
                 event.setNewCurrent(event.getOldCurrent());
                 return;
             }
+        }
+    }
+
+    /**
+     * Returns the location of the provided InventoryHolder
+     * @param holder InventoryHolder
+     * @return Bukkit Location
+     */
+    private Location getInventoryLocation(InventoryHolder holder) {
+        if (holder instanceof Chest) {
+            return ((Chest)holder).getLocation();
+        } else if (holder instanceof DoubleChest) {
+            return ((DoubleChest)holder).getLocation();
+        } else if (holder instanceof Furnace) {
+            return ((Furnace)holder).getLocation();
+        } else if (holder instanceof Dispenser) {
+            return ((Dispenser)holder).getLocation();
+        } else if (holder instanceof BrewingStand) {
+            return ((BrewingStand)holder).getLocation();
+        } else if (holder instanceof Hopper) {
+            return ((Hopper)holder).getLocation();
+        } else if (holder instanceof Dropper) {
+            return ((Dropper)holder).getLocation();
+        } else {
+            return null;
         }
     }
 }
