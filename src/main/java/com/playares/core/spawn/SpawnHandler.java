@@ -11,6 +11,8 @@ import com.playares.core.spawn.event.PlayerEnterWorldEvent;
 import com.playares.core.spawn.menu.SpawnSelectorMenu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -162,7 +164,12 @@ public final class SpawnHandler {
         }
 
         manager.getTeleportRequests().put(player.getUniqueId(), found.getUniqueId());
-        found.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GOLD + " has requested to teleport to your location from spawn. Type '" + ChatColor.YELLOW + "/spawn accept " + player.getName() + ChatColor.GOLD + "' to summon them.");
+
+        found.spigot().sendMessage(new ComponentBuilder(player.getName()).color(net.md_5.bungee.api.ChatColor.BLUE)
+        .append(" has requested to teleport to your location from spawn. Type").color(net.md_5.bungee.api.ChatColor.YELLOW)
+        .append("/spawn accept " + player.getName()).color(net.md_5.bungee.api.ChatColor.GOLD)
+        .append("to summon them to your location or ").color(net.md_5.bungee.api.ChatColor.YELLOW)
+        .append("[Click Here]").color(net.md_5.bungee.api.ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spawn accept " + player.getName())).create());
 
         promise.success();
     }
