@@ -21,6 +21,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,8 +32,10 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -256,6 +260,35 @@ public final class ClaimListener implements Listener {
                     }
 
                     player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final InventoryHolder sourceHolder = event.getSource().getHolder();
+        final InventoryHolder destHolder = event.getDestination().getHolder();
+
+        if (sourceHolder instanceof Chest && destHolder instanceof Hopper) {
+            final Block source = ((Chest)sourceHolder).getBlock();
+            final Block dest = ((Hopper)destHolder).getBlock();
+            final Claim sourceClaim = manager.getClaimByBlock(source);
+            final Claim destClaim = manager.getClaimByBlock(dest);
+
+            if (sourceClaim != null) {
+                if (destClaim == null) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (!destClaim.getOwnerId().equals(sourceClaim.getOwnerId())) {
+                    event.setCancelled(true);
                     return;
                 }
             }
