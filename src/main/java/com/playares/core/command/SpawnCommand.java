@@ -21,9 +21,7 @@ public final class SpawnCommand extends BaseCommand {
     public void onSpawn(Player player) {
         plugin.getSpawnManager().getHandler().randomlySpawn(player, new SimplePromise() {
             @Override
-            public void success() {
-                player.sendMessage(ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + "NI " + ChatColor.GRAY + "You awake in a mysterious place..." + ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + " GR");
-            }
+            public void success() {}
 
             @Override
             public void fail(String s) {

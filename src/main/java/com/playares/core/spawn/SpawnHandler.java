@@ -62,6 +62,7 @@ public final class SpawnHandler {
         }
 
         player.teleport(manager.getRandomSpawnLocation().getBukkit().getLocation());
+        player.sendMessage(ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + "NIG " + ChatColor.GRAY + "You awake in a mysterious place..." + ChatColor.DARK_PURPLE + "" + ChatColor.MAGIC + " GGA");
 
         profile.setSpawned(true);
         manager.getPlugin().getPlayerManager().setPlayer(false, profile);
