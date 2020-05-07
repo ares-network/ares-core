@@ -180,7 +180,7 @@ public final class ClaimListener implements Listener {
             return;
         }
 
-        if (claim.getHealth() <= 1 || !claim.isMatured()) {
+        if (claim.getHealth() <= 1 || !claim.isMatured() || player.hasPermission("arescore.admin")) {
             final ItemStack reinforcement = new ItemBuilder().setMaterial(claim.getType().getMaterial()).setAmount(multiBlocks.size()).build();
             block.getWorld().dropItemNaturally(block.getLocation(), reinforcement);
 
