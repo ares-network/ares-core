@@ -529,6 +529,10 @@ public final class ClaimListener implements Listener {
                 continue;
             }
 
+            if (!claim.isMatured()) {
+                continue;
+            }
+
             final Network owner = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
 
             if (owner == null) {
@@ -551,7 +555,7 @@ public final class ClaimListener implements Listener {
             }
 
             if (!valid) {
-                event.setNewCurrent(event.getOldCurrent());
+                event.setNewCurrent(0);
                 return;
             }
         }
