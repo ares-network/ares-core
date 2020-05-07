@@ -46,7 +46,7 @@ public final class SpawnSelectorMenu extends Menu {
         final ItemStack requestIcon = new ItemBuilder()
                 .setMaterial(Material.SKULL_ITEM)
                 .setData((short)3)
-                .setName(ChatColor.GOLD + "Request to be summoned" + ChatColor.GREEN + "" + ChatColor.BOLD + "(PREMIUM ONLY)")
+                .setName(ChatColor.GOLD + "Request to be summoned" + ChatColor.GREEN + "" + ChatColor.BOLD + " (PREMIUM ONLY)")
                 .addLore(ChatColor.GRAY + "Request to spawn at a friend's location")
                 .addLore(ChatColor.RESET + " ")
                 .addLore(ChatColor.RED + "You will not receive any spawn perks")
