@@ -319,6 +319,17 @@ public final class ClaimListener implements Listener {
         }
 
         final Block block = event.getBlock();
+
+        if (block == null) {
+            return;
+        }
+
+        final Material type = block.getType();
+
+        if (!(type.equals(Material.SAND) || type.equals(Material.GRAVEL) || type.equals(Material.ANVIL))) {
+            return;
+        }
+
         final Claim claim = manager.getClaimByBlock(block);
 
         if (claim == null) {
