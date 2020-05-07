@@ -51,6 +51,6 @@ public final class NetworkChatHandler {
             return;
         }
 
-        network.sendMessage(ChatColor.GREEN + "[" + network.getName() + "] " + ChatColor.GOLD + player.getName() + ChatColor.YELLOW + " is located at " + ChatColor.GOLD + new BLocatable(player.getLocation().getBlock()).toString());
+        network.sendRawMessage(ChatColor.GREEN + "[" + network.getName() + "] " + ChatColor.GOLD + player.getName() + ChatColor.YELLOW + " is located at " + ChatColor.GOLD + new BLocatable(player.getLocation().getBlock()).toString());
     }
 }
