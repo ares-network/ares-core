@@ -19,6 +19,7 @@ import com.playares.core.prison.event.PrisonPearlCreateEvent;
 import com.playares.core.prison.event.PrisonPearlReleaseEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -93,29 +94,38 @@ public final class ChatListener implements Listener {
     public void onProcessedChat(ProcessedChatEvent event) {
         final Player player = event.getPlayer();
         final Set<Player> players = event.getRecipients();
-        final List<Player> inRange = manager.getRecipientsInRange(player.getLocation(), ChatMessageType.PLAYER_CHAT);
-        final List<Player> toRemove = Lists.newArrayList();
 
-        for (Player p : players) {
-            if (inRange.contains(p)) {
-                continue;
+        if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
+            final List<Player> inRange = manager.getRecipientsInRange(player.getLocation(), ChatMessageType.PLAYER_CHAT);
+            final List<Player> toRemove = Lists.newArrayList();
+
+            for (Player p : players) {
+                if (inRange.contains(p)) {
+                    continue;
+                }
+
+                toRemove.add(p);
             }
 
-            toRemove.add(p);
+            event.getRecipients().removeAll(toRemove);
         }
-
-        event.getRecipients().removeAll(toRemove);
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         final Player player = event.getEntity();
         final String deathMessage = event.getDeathMessage();
-        final List<Player> inRange = manager.getRecipientsInRange(player.getLocation(), ChatMessageType.DEATH_MESSAGE);
+        final List<Player> recipients = Lists.newArrayList();
+
+        if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
+            recipients.addAll(manager.getRecipientsInRange(player.getLocation(), ChatMessageType.DEATH_MESSAGE));
+        } else {
+            recipients.addAll(Bukkit.getOnlinePlayers());
+        }
 
         event.setDeathMessage(null);
 
-        inRange.forEach(p -> {
+        recipients.forEach(p -> {
             p.sendMessage(deathMessage);
             Players.playSound(p, Sound.AMBIENCE_THUNDER);
         });
@@ -124,14 +134,20 @@ public final class ChatListener implements Listener {
     @EventHandler
     public void onLoggerDeath(LoggerDeathEvent event) {
         final CombatLogger logger = event.getLogger();
-        final List<Player> inRange = manager.getPlugin().getChatManager().getRecipientsInRange(logger.getBukkitEntity().getLocation(), ChatMessageType.DEATH_MESSAGE);
+        final List<Player> recipients = Lists.newArrayList();
         String deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " died";
 
         if (event.getKiller() != null) {
             deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " was slain by " + event.getKiller().getName();
         }
 
-        for (Player p : inRange) {
+        if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
+            recipients.addAll(manager.getRecipientsInRange(logger.getBukkitEntity().getLocation(), ChatMessageType.DEATH_MESSAGE));
+        } else {
+            recipients.addAll(Bukkit.getOnlinePlayers());
+        }
+
+        for (Player p : recipients) {
             p.sendMessage(deathMessage);
         }
     }
@@ -140,20 +156,32 @@ public final class ChatListener implements Listener {
     public void onPlayerPearled(PrisonPearlCreateEvent event) {
         final PrisonPearl prisonPearl = event.getPrisonPearl();
         final Location location = prisonPearl.getBukkitLocation();
-        final List<Player> inRange = manager.getRecipientsInRange(location, ChatMessageType.PLAYER_IMPRISONED);
+        final List<Player> recipients = Lists.newArrayList();
         final String time = Time.convertToRemaining(prisonPearl.getExpireTime() - Time.now());
         final String message = ChatColor.GOLD + prisonPearl.getKillerUsername() + ChatColor.DARK_RED + " has imprisoned " + ChatColor.GOLD + prisonPearl.getImprisonedUsername() + ChatColor.DARK_RED + " for " + ChatColor.RED + time;
 
-        inRange.forEach(p -> p.sendMessage(message));
+        if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
+            recipients.addAll(manager.getRecipientsInRange(location, ChatMessageType.PLAYER_IMPRISONED));
+        } else {
+            recipients.addAll(Bukkit.getOnlinePlayers());
+        }
+
+        recipients.forEach(p -> p.sendMessage(message));
     }
 
     @EventHandler
     public void onPlayerReleased(PrisonPearlReleaseEvent event) {
         final PrisonPearl prisonPearl = event.getPrisonPearl();
         final Location location = prisonPearl.getBukkitLocation();
-        final List<Player> inRange = manager.getRecipientsInRange(location, ChatMessageType.PLAYER_RELEASED);
+        final List<Player> recipients = Lists.newArrayList();
 
-        inRange.forEach(p -> {
+        if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
+            recipients.addAll(manager.getRecipientsInRange(location, ChatMessageType.PLAYER_RELEASED));
+        } else {
+            recipients.addAll(Bukkit.getOnlinePlayers());
+        }
+
+        recipients.forEach(p -> {
             p.sendMessage(ChatColor.GOLD + prisonPearl.getImprisonedUsername() + ChatColor.GREEN + " has been released from their Prison Pearl");
             p.sendMessage(ChatColor.GOLD + "Reason" + ChatColor.YELLOW + ": " + event.getReason());
         });

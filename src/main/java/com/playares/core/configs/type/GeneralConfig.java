@@ -34,8 +34,8 @@ public final class GeneralConfig implements AresConfig {
     @Getter public int networkCreateCooldown;
     @Getter public int networkRenameCooldown;
     @Getter public boolean rangedChatEnabled;
-    @Getter public Map<ChatMessageType, Double> chatRanges;
 
+    @Getter public Map<ChatMessageType, Double> chatRanges;
     @Getter public int combatLoggerEnemyRadius;
     @Getter public int pearlProtectionDuration;
     @Getter public int combatTagAttackedDuration;
