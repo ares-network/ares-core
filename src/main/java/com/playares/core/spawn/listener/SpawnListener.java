@@ -69,7 +69,8 @@ public final class SpawnListener implements Listener {
             return;
         }
 
-        if (kit.isDefault()) {
+        if (kit == null) {
+            defaultKit.give(player);
             return;
         }
 
