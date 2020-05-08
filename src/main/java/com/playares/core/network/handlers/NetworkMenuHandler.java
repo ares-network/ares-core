@@ -73,11 +73,6 @@ public final class NetworkMenuHandler {
             return;
         }
 
-        if (!admin && editedMember.getUniqueId().equals(player.getUniqueId())) {
-            promise.fail("You can not edit your own permissions");
-            return;
-        }
-
         final NetworkPlayerMenu menu = new NetworkPlayerMenu(handler.getManager().getPlugin(), network, editedMember, player);
         menu.open();
     }
