@@ -41,7 +41,11 @@ public final class FactoryRecipeMenu extends Menu {
         final double speedMultiplier = plugin.getFactoryManager().getSpeedMultiplier(player);
         final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
 
-        sortedRecipes.sort(Comparator.comparing(factoryRecipe -> factoryRecipe.isUnlocked(factoryLevel)));
+        final Comparator<FactoryRecipe> passA = Comparator.comparing(factoryRecipe -> factoryRecipe.isUnlocked(factoryLevel));
+        final Comparator<FactoryRecipe> passB = Comparator.comparingInt(factoryRecipe -> factoryRecipe.getRequiredLevel());
+        final Comparator<FactoryRecipe> passC = Comparator.comparing(FactoryRecipe::getName);
+
+        sortedRecipes.sort(passA.thenComparing(passB.reversed()).thenComparing(passC));
         Collections.reverse(sortedRecipes);
 
         for (FactoryRecipe recipe : sortedRecipes) {
