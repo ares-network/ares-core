@@ -1,21 +1,53 @@
 package com.playares.core.factory.data;
 
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-@AllArgsConstructor
 public final class FactoryRecipe {
-    @Getter public String name;
-    @Getter public int jobTime;
-    @Getter public int requiredLevel;
-    @Getter public double experience;
-    @Getter public List<ItemStack> materials;
-    @Getter public List<ItemStack> output;
+    @Getter public final String name;
+    @Getter public final int jobTime;
+    @Getter public final int requiredLevel;
+    @Getter public final double experience;
+    private final List<ItemStack> materials;
+    private final List<ItemStack> output;
+
+    /**
+     * Create a new Factory Recipe instance
+     * @param name Recipe Name
+     * @param jobTime Job Time
+     * @param requiredLevel Required Level
+     * @param experience Experience Reward
+     * @param materials Input Materials
+     * @param output Output Materials
+     */
+    public FactoryRecipe(String name, int jobTime, int requiredLevel, double experience, List<ItemStack> materials, List<ItemStack> output) {
+        this.name = name;
+        this.jobTime = jobTime;
+        this.requiredLevel = requiredLevel;
+        this.experience = experience;
+        this.materials = materials;
+        this.output = output;
+    }
+
+    /**
+     * Returns a copy of the the input materials
+     * @return Collection of Input Materials
+     */
+    public List<ItemStack> getMaterials() {
+        return Lists.newArrayList(materials);
+    }
+
+    /**
+     * Returns a copy of the output materials
+     * @return Collection of Output Materials
+     */
+    public List<ItemStack> getOutput() {
+        return Lists.newArrayList(output);
+    }
 
     /**
      * Returns true if this recipe is unlocked for the provided level
