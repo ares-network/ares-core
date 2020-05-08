@@ -45,7 +45,7 @@ public final class FactoryRecipeMenu extends Menu {
         final List<FactoryRecipe> sortedRecipes = Lists.newArrayList(plugin.getFactoryManager().getRecipeManager().getRecipeRepository());
 
         final Comparator<FactoryRecipe> passA = Comparator.comparing(factoryRecipe -> factoryRecipe.isUnlocked(factoryLevel));
-        final Comparator<FactoryRecipe> passB = Comparator.comparingInt(factoryRecipe -> factoryRecipe.getRequiredLevel());
+        final Comparator<FactoryRecipe> passB = Comparator.comparingInt(FactoryRecipe::getRequiredLevel);
         final Comparator<FactoryRecipe> passC = Comparator.comparing(FactoryRecipe::getName);
 
         sortedRecipes.sort(passA.thenComparing(passB.reversed()).thenComparing(passC));
