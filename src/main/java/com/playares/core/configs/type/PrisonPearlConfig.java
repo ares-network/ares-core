@@ -38,8 +38,8 @@ public final class PrisonPearlConfig implements AresConfig {
         premiumBanDurations = Maps.newHashMap();
 
         for (String rankId : config.getConfigurationSection("settings.ban_duration.premium").getKeys(false)) {
-            final String permission = config.getString("settings.ban_duration.premium" + rankId + ".permission");
-            final int duration = config.getInt("settings.ban_duration.premium" + rankId + ".duration");
+            final String permission = config.getString("settings.ban_duration.premium." + rankId + ".permission");
+            final int duration = config.getInt("settings.ban_duration.premium." + rankId + ".duration");
             premiumBanDurations.put(permission, duration);
         }
 
