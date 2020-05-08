@@ -18,9 +18,7 @@ import com.playares.core.spawn.kits.data.SpawnKit;
 import com.playares.luxe.rewards.event.PlayerClaimRewardEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -88,6 +86,37 @@ public final class SpawnListener implements Listener {
                 Players.playSound(futurePlayer, Sound.NOTE_BASS_GUITAR);
             }
         }).delay(manager.getKitManager().getSpawnKitObtainCooldown() * 20).run();
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+            if (event.getTo().getWorld().getEnvironment().equals(World.Environment.NORMAL)) {
+                final World world = Bukkit.getWorld(manager.getMainWorldName());
+
+                if (world == null) {
+                    return;
+                }
+
+                event.setTo(world.getSpawnLocation());
+
+                return;
+            }
+
+            if (event.getTo().getWorld().getEnvironment().equals(World.Environment.THE_END)) {
+                final Location spawn = manager.getPlugin().getPrisonPearlManager().getPrisonLocation();
+
+                if (spawn == null) {
+                    return;
+                }
+
+                new Scheduler(manager.getPlugin()).sync(() -> event.getPlayer().teleport(spawn.getWorld().getSpawnLocation())).delay(3L).run();
+            }
+        }
     }
 
     @EventHandler
