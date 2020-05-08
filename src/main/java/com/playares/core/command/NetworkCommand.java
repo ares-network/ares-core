@@ -274,7 +274,7 @@ public final class NetworkCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("permission|p|perm|perms")
+    @Subcommand("permission|p|perm|perms|permissions")
     @Description("Edit a players permissions for your network")
     @Syntax("<network name> <username>")
     @CommandCompletion("@networks @players")
