@@ -1,6 +1,7 @@
 package com.playares.core.factory.menu;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.playares.commons.item.ItemBuilder;
 import com.playares.commons.menu.ClickableItem;
 import com.playares.commons.menu.Menu;
@@ -14,6 +15,7 @@ import com.playares.core.factory.data.FactoryRecipe;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public final class FactoryRecipeMenu extends Menu {
     @Getter public Factory factory;
@@ -130,7 +133,7 @@ public final class FactoryRecipeMenu extends Menu {
                     return;
                 }
 
-                final List<ItemStack> toSubtract = Lists.newArrayList();
+                final Map<Material, ItemStack> toSubtract = Maps.newHashMap();
 
                 for (ItemStack requirement : recipe.getMaterials()) {
                     for (ItemStack content : player.getInventory().getContents()) {
@@ -144,11 +147,11 @@ public final class FactoryRecipeMenu extends Menu {
 
                         }
 
-                        if (toSubtract.contains(content)) {
+                        if (toSubtract.containsKey(content.getType())) {
                             continue;
                         }
 
-                        toSubtract.add(content);
+                        toSubtract.put(content.getType(), content);
                     }
                 }
 
@@ -157,7 +160,7 @@ public final class FactoryRecipeMenu extends Menu {
                     return;
                 }
 
-                toSubtract.forEach(item -> {
+                toSubtract.values().forEach(item -> {
                     final ItemStack recipeItem = recipe.getMaterials().stream().filter(inputItem -> inputItem.getType().equals(item.getType()) && inputItem.getDurability() == item.getDurability()).findFirst().orElse(null);
 
                     if (recipeItem == null) {

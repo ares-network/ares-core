@@ -1,11 +1,14 @@
 package com.playares.core.factory.data;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 
 public final class FactoryRecipe {
     @Getter public final String name;
@@ -78,7 +81,7 @@ public final class FactoryRecipe {
      * @return True if required resources are reached
      */
     public boolean hasRequiredMaterials(Player player) {
-        final List<ItemStack> toSubtract = Lists.newArrayList();
+        final Map<Material, ItemStack> toSubtract = Maps.newHashMap();
 
         for (ItemStack requirement : materials) {
             for (ItemStack content : player.getInventory().getContents()) {
@@ -92,11 +95,11 @@ public final class FactoryRecipe {
 
                 }
 
-                if (toSubtract.contains(content)) {
+                if (toSubtract.containsKey(content.getType())) {
                     continue;
                 }
 
-                toSubtract.add(content);
+                toSubtract.put(content.getType(), content);
             }
         }
 
