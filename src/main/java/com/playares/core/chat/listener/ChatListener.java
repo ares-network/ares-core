@@ -135,10 +135,10 @@ public final class ChatListener implements Listener {
     public void onLoggerDeath(LoggerDeathEvent event) {
         final CombatLogger logger = event.getLogger();
         final List<Player> recipients = Lists.newArrayList();
-        String deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " died";
+        String deathMessage = ChatColor.DARK_RED + "(Combat Logger) " + ChatColor.GOLD + logger.getOwnerUsername() + ChatColor.RED + " died";
 
         if (event.getKiller() != null) {
-            deathMessage = "(Combat Logger) " + logger.getOwnerUsername() + " was slain by " + event.getKiller().getName();
+            deathMessage = ChatColor.DARK_RED + "(Combat Logger) " + ChatColor.GOLD + logger.getOwnerUsername() + ChatColor.RED + " was slain by " + event.getKiller().getName();
         }
 
         if (manager.getPlugin().getConfigManager().getGeneralConfig().isRangedChatEnabled()) {
