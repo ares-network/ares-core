@@ -40,11 +40,10 @@ public final class TimerManager {
             for (AresPlayer profile : plugin.getPlayerManager().getPlayerRepository()) {
                 final Set<PlayerTimer> expired = profile.getTimers().stream().filter(Timer::isExpired).collect(Collectors.toSet());
                 final Set<PlayerTimer> timers = profile.getTimers().stream().filter(timer -> !timer.isExpired()).collect(Collectors.toSet());
-
-                expired.forEach(timer -> new Scheduler(plugin).sync(() -> handler.finishTimer(timer)).run());
-
                 final Player player = Bukkit.getPlayer(profile.getUniqueId());
                 final HUDUpdateEvent hudUpdateEvent = new HUDUpdateEvent(player);
+
+                expired.forEach(handler::finishTimer);
 
                 if (player != null && !player.isDead()) {
                     if (essentialsService != null) {
