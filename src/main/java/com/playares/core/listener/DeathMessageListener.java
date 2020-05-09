@@ -38,7 +38,7 @@ public final class DeathMessageListener implements Listener {
 
         slain.getWorld().strikeLightningEffect(slain.getLocation());
 
-        if (killer != null) {
+        if (killer != null && !killer.getUniqueId().equals(slain.getUniqueId())) {
             final String killerUsername = ChatColor.GOLD + killer.getName() + ChatColor.RESET;
             String hand = ChatColor.RESET + "their fists";
 
