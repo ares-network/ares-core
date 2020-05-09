@@ -51,6 +51,14 @@ public final class CombatLogger extends EntityVillager {
             this.inventory.add(item);
         }
 
+        for (ItemStack item : player.getInventory().getArmorContents()) {
+            if (item == null) {
+                continue;
+            }
+
+            this.inventory.add(item);
+        }
+
         living.setHealth(player.getHealth());
         living.setFallDistance(player.getFallDistance());
         living.setNoDamageTicks(player.getNoDamageTicks());
