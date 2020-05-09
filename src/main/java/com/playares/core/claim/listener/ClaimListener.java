@@ -221,42 +221,53 @@ public final class ClaimListener implements Listener {
             return;
         }
 
+        if (!action.equals(Action.RIGHT_CLICK_BLOCK) && !action.equals(Action.PHYSICAL)) {
+            return;
+        }
+
         if (block == null) {
             return;
         }
 
-        if (action.equals(Action.RIGHT_CLICK_BLOCK) || action.equals(Action.PHYSICAL)) {
-            for (Block multiBlock : multiBlocks) {
-                if (!Blocks.isInteractable(multiBlock.getType())) {
-                    return;
-                }
+        for (Block multiBlock : multiBlocks) {
+            final Claim claim = manager.getClaimByBlock(multiBlock);
 
-                final Claim claim = manager.getClaimByBlock(multiBlock);
+            if (claim == null || !claim.isMatured()) {
+                continue;
+            }
 
-                if (claim == null || !claim.isMatured()) {
-                    return;
-                }
+            final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
 
-                final Network network = manager.getPlugin().getNetworkManager().getNetworkByID(claim.getOwnerId());
+            if (network == null) {
+                Logger.error("Failed to obtain network for claim block at " + claim.getLocation().toString());
+                continue;
+            }
 
-                if (network == null) {
-                    Logger.error("A claim was found with no attached network");
-                    return;
-                }
+            boolean canAccess = true;
 
-                final boolean canAccess = (network.isMember(player) && (network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.ACCESS_LAND)));
+            if (!network.isMember(player)) {
+                canAccess = false;
+            }
 
-                if (!canAccess) {
+            if (network.isMember(player) && !(network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.ACCESS_LAND))) {
+                canAccess = false;
+            }
+
+            if (!canAccess) {
+                if (action.equals(Action.PHYSICAL)) {
                     event.setCancelled(true);
 
-                    if (action.equals(Action.PHYSICAL)) {
-                        if (hasPhysicalInteractCooldown(player)) {
-                            return;
-                        }
-
-                        applyPhysicalInteractCooldown(player);
+                    if (hasPhysicalInteractCooldown(player)) {
+                        continue;
                     }
 
+                    applyPhysicalInteractCooldown(player);
+                    player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
+                    return;
+                }
+
+                else if (Blocks.isInteractable(block.getType())) {
+                    event.setCancelled(true);
                     player.sendMessage(ChatColor.RED + "Locked " + claim.getHealthAsPercent() + " with " + claim.getType().getDisplayName() + ", " + (claim.isMatured() ? "is matured" : "matures in " + Time.convertToRemaining(claim.getMatureTime() - Time.now())));
                     return;
                 }
