@@ -17,9 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +26,6 @@ public final class FactoryJobMenu extends Menu {
     @Getter public Ares ares;
     @Getter public Factory factory;
     @Getter private final Scheduler updateScheduler;
-    private BukkitTask updateTask;
 
     public FactoryJobMenu(Ares plugin, Player player, Factory factory) {
         super(plugin, player, "Factory Jobs", 1);
@@ -41,7 +38,7 @@ public final class FactoryJobMenu extends Menu {
     @Override
     public void open() {
         super.open();
-        this.updateTask = updateScheduler.run();
+        addUpdater(this::update, 20L);
     }
 
     private void update() {
@@ -95,16 +92,6 @@ public final class FactoryJobMenu extends Menu {
             addItem(new ClickableItem(icon, pos, click -> {}));
 
             pos += 1;
-        }
-    }
-
-    @Override
-    public void onInventoryClose(InventoryCloseEvent event) {
-        super.onInventoryClose(event);
-
-        if (updateTask != null) {
-            updateTask.cancel();
-            updateTask = null;
         }
     }
 }
