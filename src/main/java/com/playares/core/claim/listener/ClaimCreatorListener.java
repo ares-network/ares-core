@@ -178,13 +178,17 @@ public final class ClaimCreatorListener implements Listener {
         }
 
         if (!existing.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "This block is already claimed");
-            event.setCancelled(true);
-            return;
+            for (Claim existingClaim : existing) {
+                if (!existingClaim.getOwnerId().equals(session.getNetworkId())) {
+                    player.sendMessage(ChatColor.RED + "This block is already claimed by another network");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
 
         if (manager.getPlugin().getConfigManager().getClaimsConfig().getNonReinforceables().contains(block.getType())) {
-            player.sendMessage(ChatColor.RED + "This type of block can not be reinforced");
+            player.sendMessage(ChatColor.RED + "This type of block can not be fortified");
             return;
         }
 
@@ -218,9 +222,20 @@ public final class ClaimCreatorListener implements Listener {
         }
 
         blocks.forEach(claimBlock -> {
-            final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(claimBlock), session.getClaimType());
-            manager.getClaimRepository().add(claim);
-            block.getWorld().spigot().playEffect(claimBlock.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 20, 6);
+            final Claim existingClaim = manager.getClaimByBlock(claimBlock);
+
+            if (existingClaim != null) {
+                existingClaim.getLocation().getBukkit().getWorld().dropItem(existingClaim.getLocation().getBukkit().getLocation(), new ItemStack(existingClaim.getType().getMaterial(), 1));
+                existingClaim.setType(session.getClaimType());
+                existingClaim.setHealth(session.getClaimType().getDurability());
+                existingClaim.setMatureTime(Time.now() + (session.getClaimType().getMatureTimeInSeconds() * 1000L));
+            }
+
+            else {
+                final Claim claim = new Claim(network.getUniqueId(), block.getChunk().getX(), block.getChunk().getZ(), new BLocatable(claimBlock), session.getClaimType());
+                manager.getClaimRepository().add(claim);
+                block.getWorld().spigot().playEffect(claimBlock.getLocation(), Effect.FLYING_GLYPH, 0, 0, (float)1.0, (float)0.5, (float)1.0, (float)0.01, 20, 6);
+            }
         });
     }
 

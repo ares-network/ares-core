@@ -16,7 +16,7 @@ public final class Claim implements MongoDocument<Claim> {
     @Getter @Setter public int chunkZ;
     @Getter @Setter public String chunkWorld;
     @Getter @Setter public BLocatable location;
-    @Getter public ClaimType type;
+    @Getter @Setter public ClaimType type;
     @Getter @Setter public int health;
     @Getter @Setter public long matureTime;
 
