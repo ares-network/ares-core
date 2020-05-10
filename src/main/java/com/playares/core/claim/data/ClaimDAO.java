@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.playares.commons.connect.mongodb.MongoDB;
 import org.bson.Document;
@@ -42,10 +43,13 @@ public final class ClaimDAO {
     public static ImmutableCollection<Claim> getChunkClaims(MongoDB database, int chunkX, int chunkZ, String chunkWorld) {
         final MongoCollection<Document> collection = database.getCollection(NAME, COLL);
         final List<Claim> claims = Lists.newArrayList();
+        final MongoCursor<Document> cursor = collection.find(Filters.and(Filters.eq("chunk_x", chunkX), Filters.eq("chunk_z", chunkZ), Filters.eq("chunk_world", chunkWorld))).cursor();
 
-        for (Document document : collection.find(Filters.and(Filters.eq("chunk_x", chunkX), Filters.eq("chunk_z", chunkZ), Filters.eq("chunk_world", chunkWorld)))) {
-            claims.add(new Claim().fromDocument(document));
+        while (cursor.hasNext()) {
+            claims.add(new Claim().fromDocument(cursor.next()));
         }
+
+        cursor.close();
 
         return ImmutableList.copyOf(claims);
     }
