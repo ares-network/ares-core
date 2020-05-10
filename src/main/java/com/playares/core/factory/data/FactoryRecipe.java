@@ -1,6 +1,6 @@
 package com.playares.core.factory.data;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -15,8 +15,8 @@ public final class FactoryRecipe {
     @Getter public final int jobTime;
     @Getter public final int requiredLevel;
     @Getter public final double experience;
-    private final List<ItemStack> materials;
-    private final List<ItemStack> output;
+    @Getter public final ImmutableList<ItemStack> materials;
+    @Getter public final ImmutableList<ItemStack> output;
 
     /**
      * Create a new Factory Recipe instance
@@ -32,24 +32,8 @@ public final class FactoryRecipe {
         this.jobTime = jobTime;
         this.requiredLevel = requiredLevel;
         this.experience = experience;
-        this.materials = materials;
-        this.output = output;
-    }
-
-    /**
-     * Returns a copy of the the input materials
-     * @return Collection of Input Materials
-     */
-    public List<ItemStack> getMaterials() {
-        return Lists.newArrayList(materials);
-    }
-
-    /**
-     * Returns a copy of the output materials
-     * @return Collection of Output Materials
-     */
-    public List<ItemStack> getOutput() {
-        return Lists.newArrayList(output);
+        this.materials = ImmutableList.copyOf(materials);
+        this.output = ImmutableList.copyOf(output);
     }
 
     /**
