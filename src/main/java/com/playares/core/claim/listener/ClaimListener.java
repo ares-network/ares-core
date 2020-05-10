@@ -163,14 +163,12 @@ public final class ClaimListener implements Listener {
             });
         }
 
-        final Runnable deleteTask = () -> ClaimDAO.deleteClaim(manager.getPlugin().getDatabaseInstance(), claim);
-
         if (network.isMember(player) && (network.getMember(player).hasPermission(NetworkPermission.ADMIN) || network.getMember(player).hasPermission(NetworkPermission.MODIFY_CLAIMS))) {
             final ItemStack reinforcement = new ItemBuilder().setMaterial(claim.getType().getMaterial()).setAmount(multiBlocks.size()).build();
             block.getWorld().dropItemNaturally(block.getLocation(), reinforcement);
 
-            new Scheduler(manager.getPlugin()).async(deleteTask).run();
             manager.getClaimRepository().remove(claim);
+            new Scheduler(manager.getPlugin()).async(() -> ClaimDAO.deleteClaim(manager.getPlugin().getDatabaseInstance(), claim)).run();
 
             if (!otherClaims.isEmpty()) {
                 otherClaims.forEach(otherClaim -> {
@@ -186,8 +184,8 @@ public final class ClaimListener implements Listener {
             final ItemStack reinforcement = new ItemBuilder().setMaterial(claim.getType().getMaterial()).setAmount(multiBlocks.size()).build();
             block.getWorld().dropItemNaturally(block.getLocation(), reinforcement);
 
-            new Scheduler(manager.getPlugin()).async(deleteTask).run();
             manager.getClaimRepository().remove(claim);
+            new Scheduler(manager.getPlugin()).async(() -> ClaimDAO.deleteClaim(manager.getPlugin().getDatabaseInstance(), claim)).run();
 
             if (!otherClaims.isEmpty()) {
                 otherClaims.forEach(otherClaim -> {
@@ -495,22 +493,22 @@ public final class ClaimListener implements Listener {
         final Claim cN = manager.getClaimByBlock(north);
         final Claim cS = manager.getClaimByBlock(south);
 
-        if (cE != null && (east.getType().equals(Material.CHEST) || east.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cE.getOwnerId()))) {
+        if (cE != null && east.getType().equals(block.getType()) && (east.getType().equals(Material.CHEST) || east.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cE.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cW != null && (west.getType().equals(Material.CHEST) || west.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cW.getOwnerId()))) {
+        if (cW != null && west.getType().equals(block.getType()) && (west.getType().equals(Material.CHEST) || west.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cW.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cN != null && (north.getType().equals(Material.CHEST) || north.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cN.getOwnerId()))) {
+        if (cN != null && north.getType().equals(block.getType()) && (north.getType().equals(Material.CHEST) || north.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cN.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
 
-        if (cS != null && (south.getType().equals(Material.CHEST) || south.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cS.getOwnerId()))) {
+        if (cS != null && south.getType().equals(block.getType()) && (south.getType().equals(Material.CHEST) || south.getType().equals(Material.TRAPPED_CHEST)) && (session == null || !session.getNetworkId().equals(cS.getOwnerId()))) {
             player.sendMessage(ChatColor.RED + "You can not place this block because it bypasses a nearby chest reinforcement");
             event.setCancelled(true);
         }
