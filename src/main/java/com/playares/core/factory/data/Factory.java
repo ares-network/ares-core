@@ -85,9 +85,9 @@ public final class Factory implements MongoDocument<Factory> {
 
         for (ItemStack item : output) {
             if (inventory.firstEmpty() != -1) {
-                inventory.addItem(item);
+                inventory.addItem(item.clone());
             } else {
-                chestBlock.getWorld().dropItem(chestBlock.getLocation().add(0.0, 1.0, 0.0), item);
+                chestBlock.getWorld().dropItem(chestBlock.getLocation().add(0.0, 1.0, 0.0), item.clone());
             }
         }
 
