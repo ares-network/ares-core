@@ -15,6 +15,7 @@ import com.playares.core.prison.data.PrisonPearlDAO;
 import com.playares.core.prison.event.PrePrisonPearlEvent;
 import com.playares.core.prison.event.PrisonPearlCreateEvent;
 import com.playares.core.prison.event.PrisonPearlReleaseEvent;
+import com.playares.core.prison.menu.ActivePearlMenu;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public final class PrisonPearlHandler {
@@ -258,6 +260,24 @@ public final class PrisonPearlHandler {
         player.sendMessage(ChatColor.GOLD + "Imprisoned on: " + ChatColor.GRAY + Time.convertToDate(new Date(pearl.getCreateTime())));
         player.sendMessage(ChatColor.GOLD + "Expires in: " + ChatColor.GRAY + Time.convertToRemaining(pearl.getExpireTime() - Time.now()));
         player.sendMessage(ChatColor.GRAY + "You can locate this Prison Pearl by typing '" + ChatColor.GOLD + "/pp locate [username]" + ChatColor.GRAY + "'.");
+        promise.success();
+    }
+
+    /**
+     * Handles opening a GUI containing all active Prison Pearls on the server
+     * @param player Player
+     * @param promise Promise
+     */
+    public void openListMenu(Player player, SimplePromise promise) {
+        final List<PrisonPearl> activePearls = manager.getActivePrisonPearls();
+
+        if (activePearls.isEmpty()) {
+            promise.fail("There are no active Prison Pearls");
+            return;
+        }
+
+        final ActivePearlMenu menu = new ActivePearlMenu(manager.getPlugin(), player, activePearls);
+        menu.open();
         promise.success();
     }
 }

@@ -1,5 +1,6 @@
 package com.playares.core.prison;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.playares.commons.logger.Logger;
 import com.playares.commons.util.bukkit.Scheduler;
@@ -88,6 +89,14 @@ public final class PrisonPearlManager {
      */
     public PrisonPearl getPrisonPearlByItem(ItemStack item) {
         return pearlRepository.stream().filter(pearl -> pearl.match(item) && !pearl.isExpired()).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns an Immutable List containing all active Prison Pearls
+     * @return Immutable List of Prison Pearls
+     */
+    public ImmutableList<PrisonPearl> getActivePrisonPearls() {
+        return ImmutableList.copyOf(pearlRepository.stream().filter(pearl -> !pearl.isReleased() && !pearl.isExpired()).collect(Collectors.toList()));
     }
 
     /**

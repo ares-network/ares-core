@@ -82,6 +82,20 @@ public final class PrisonPearlCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("list")
+    @Description("View a menu containing all active Prison Pearls")
+    public void onList(Player player) {
+        plugin.getPrisonPearlManager().getHandler().openListMenu(player, new SimplePromise() {
+            @Override
+            public void success() {}
+
+            @Override
+            public void fail(String s) {
+                player.sendMessage(ChatColor.RED + s);
+            }
+        });
+    }
+
     @HelpCommand
     public void onHelp(CommandSender sender, CommandHelp help) {
         help.showHelp();
