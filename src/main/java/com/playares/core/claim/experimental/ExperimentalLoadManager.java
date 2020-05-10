@@ -1,6 +1,7 @@
 package com.playares.core.claim.experimental;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.playares.commons.util.bukkit.Scheduler;
 import com.playares.core.claim.ClaimManager;
@@ -16,6 +17,7 @@ import org.bukkit.Chunk;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,13 +44,14 @@ public final class ExperimentalLoadManager {
 
             // Handles unloading chunks from memory to the database
             final Set<QueuedChunk> unload = getChunks(QueuedChunkStatus.UNLOAD);
-            unload.forEach(unloadEntry -> {
-                final Collection<Claim> toUnload = manager.getClaimByChunk(unloadEntry.getX(), unloadEntry.getZ(), unloadEntry.getWorld());
+            final List<Claim> toRemove = Lists.newArrayList();
 
-                ClaimDAO.saveClaims(manager.getPlugin().getDatabaseInstance(), toUnload);
+            unload.forEach(unloadEntry -> toRemove.addAll(manager.getClaimByChunk(unloadEntry.getX(), unloadEntry.getZ(), unloadEntry.getWorld())));
 
-                manager.getClaimRepository().removeAll(toUnload);
-            });
+            if (!toRemove.isEmpty()) {
+                manager.getClaimRepository().removeAll(toRemove);
+                ClaimDAO.saveClaims(manager.getPlugin().getDatabaseInstance(), toRemove);
+            }
 
             queuedChunks.removeAll(unload);
 
